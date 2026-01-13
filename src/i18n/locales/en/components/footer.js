@@ -3,7 +3,7 @@ export default {
   ourCommunity: 'Our Community',
   foundingTeam: 'Founding Team',
   contactUs: 'Contact Us',
-  fullNamePlaceholder: 'Enter your full name',
+  fullNamePlaceholder: 'Content to connect',
   emailPlaceholder: 'Email',
   contactMessage: 'will contact you as soon as possible^^',
   sendContact: 'Send contact information',

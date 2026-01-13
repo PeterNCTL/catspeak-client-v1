@@ -1,14 +1,14 @@
 export default {
-  badge: 'Cath Speak',
+  badge: 'Cat Speak',
   heading: 'Chính sách bảo mật',
   subtitle:
-    'Cam kết bảo vệ quyền riêng tư và dữ liệu cá nhân của người dùng. Chính sách này mô tả cách Cath Speak thu thập, sử dụng và lưu trữ thông tin của bạn.',
+    'Cam kết bảo vệ quyền riêng tư và dữ liệu cá nhân của người dùng. Chính sách này mô tả cách Cat Speak thu thập, sử dụng và lưu trữ thông tin của bạn.',
   footer: 'COPYRIGHT 09-2025 | CAT SPEAK – LANGUAGE IN HAND',
   sections: [
     {
       title: '1. Thông tin chúng tôi thu thập',
       intro:
-        'Khi bạn sử dụng Cath Speak, chúng tôi có thể thu thập những thông tin cần thiết để vận hành dịch vụ và mang lại trải nghiệm cá nhân hoá.',
+        'Khi bạn sử dụng Cat Speak, chúng tôi có thể thu thập những thông tin cần thiết để vận hành dịch vụ và mang lại trải nghiệm cá nhân hoá.',
       bullets: [
         'Thông tin cá nhân cơ bản: Họ tên, email, số điện thoại.',
         'Thông tin tài khoản: Tên đăng nhập, mật khẩu, ảnh đại diện.',
@@ -30,7 +30,7 @@ export default {
     {
       title: '3. Chia sẻ và công khai thông tin',
       intro:
-        'Cath Speak không bán thông tin cá nhân của bạn cho bên thứ ba. Tuy nhiên, thông tin có thể được chia sẻ trong các trường hợp sau:',
+        'Cat Speak không bán thông tin cá nhân của bạn cho bên thứ ba. Tuy nhiên, thông tin có thể được chia sẻ trong các trường hợp sau:',
       bullets: [
         'Đối tác công nghệ hỗ trợ vận hành (hạ tầng máy chủ, thanh toán).',
         'Cơ quan pháp luật khi có yêu cầu hợp pháp.',
@@ -63,7 +63,7 @@ export default {
     {
       title: '7. Cookies và công nghệ tương tự',
       bullets: [
-        'Cath Speak dùng cookies để ghi nhớ tuỳ chọn và cải thiện hiệu suất.',
+        'Cat Speak dùng cookies để ghi nhớ tuỳ chọn và cải thiện hiệu suất.',
         'Bạn có thể quản lý cookie trong trình duyệt hoặc từ chối một phần cookie (có thể ảnh hưởng trải nghiệm).',
         'Một số tính năng sẽ không hoạt động nếu tắt toàn bộ cookies.',
       ],
@@ -71,7 +71,7 @@ export default {
     {
       title: '8. Cập nhật chính sách bảo mật',
       intro:
-        'Chúng tôi có thể thay đổi chính sách để phù hợp với sản phẩm và yêu cầu pháp luật. Khi có bản cập nhật quan trọng, Cath Speak sẽ thông báo tại mục "Cập nhật lần cuối".',
+        'Chúng tôi có thể thay đổi chính sách để phù hợp với sản phẩm và yêu cầu pháp luật. Khi có bản cập nhật quan trọng, Cat Speak sẽ thông báo tại mục "Cập nhật lần cuối".',
     },
     {
       title: '9. Liên hệ',

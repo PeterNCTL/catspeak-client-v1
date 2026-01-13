@@ -8,9 +8,9 @@ const HeaderLogo = () => {
       <Link
         to="/"
         className="flex items-center gap-4"
-        aria-label="Cath Speak Home"
+        aria-label="Cat Speak Home"
       >
-        <img src={MainLogo} alt="Cath Speak logo" className="h-10 w-auto" />
+        <img src={MainLogo} alt="Cat Speak logo" className="h-10 w-auto" />
       </Link>
     </div>
   )

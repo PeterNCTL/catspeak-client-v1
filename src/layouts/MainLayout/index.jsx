@@ -5,6 +5,7 @@ import HeaderBar from "./HeaderBar";
 import FooterBar from "./FooterBar";
 import Auth from "@components/Auth";
 import MessageWidget from "@/components/messages/MessageWidget";
+import AuthModalContext from "@/context/AuthModalContext";
 
 const { Content } = Layout;
 
@@ -31,29 +32,31 @@ const MainLayout = () => {
   } = theme.useToken();
 
   return (
-    <Layout
-      className="flex justify-center bg-white"
-    >
-      {/* Header full width */}
-      <HeaderBar onGetStarted={() => openAuthModal("login")} />
+    <AuthModalContext.Provider value={{ openAuthModal, closeAuthModal }}>
+      <Layout
+        className="flex justify-center bg-white"
+      >
+        {/* Header full width */}
+        <HeaderBar onGetStarted={() => openAuthModal("login")} />
 
-      <Content className="w-full flex justify-center">
-        <Outlet />
-      </Content>
+        <Content className="w-full flex justify-center">
+          <Outlet />
+        </Content>
 
-      {/* Footer full width (bên trong tự giới hạn 1200px) */}
-      <FooterBar />
+        {/* Footer full width (bên trong tự giới hạn 1200px) */}
+        <FooterBar />
 
-      <Auth
-        isOpen={authModal.isOpen}
-        mode={authModal.mode}
-        onClose={closeAuthModal}
-        onSwitchMode={openAuthModal}
-      />
+        <Auth
+          isOpen={authModal.isOpen}
+          mode={authModal.mode}
+          onClose={closeAuthModal}
+          onSwitchMode={openAuthModal}
+        />
 
-      {/* Floating message bubble, hiển thị trên mọi trang */}
-      <MessageWidget />
-    </Layout>
+        {/* Floating message bubble, hiển thị trên mọi trang */}
+        <MessageWidget />
+      </Layout>
+    </AuthModalContext.Provider>
   );
 };
 

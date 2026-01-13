@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom"
 import { useCreateVideoSessionMutation } from "@/store/api/videoSessionsApi"
 import { useGetRoomsQuery } from "@/store/api/roomsApi"
 import { useLanguage } from "@/context/LanguageContext"
+import { useAuthModal } from "@/context/AuthModalContext"
+import useAuth from "@/hooks/useAuth"
 
 export const useRoomsPageLogic = () => {
   const { t } = useLanguage()
@@ -19,6 +21,8 @@ export const useRoomsPageLogic = () => {
   const totalLetters = 220
 
   const navigate = useNavigate()
+  const { isAuthenticated } = useAuth()
+  const { openAuthModal } = useAuthModal()
   const [createVideoSession, { isLoading: isCreating }] =
     useCreateVideoSessionMutation()
 
@@ -42,6 +46,13 @@ export const useRoomsPageLogic = () => {
   const [isCreatingStudyGroup, setIsCreatingStudyGroup] = useState(false)
 
   const handleCreateOneOnOneSession = () => {
+    // Check if user is authenticated
+    if (!isAuthenticated) {
+      // Show login popup instead of navigating to login page
+      openAuthModal("login")
+      return
+    }
+    // If authenticated, navigate to queue page
     navigate("/queue")
   }
 
