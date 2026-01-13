@@ -1,14 +1,14 @@
 export default {
-  badge: 'Cath Speak',
+  badge: 'Cat Speak',
   heading: 'Privacy Policy',
   subtitle:
-    'We are committed to protecting your privacy and personal data. This policy explains how Cath Speak collects, uses, and stores your information.',
+    'We are committed to protecting your privacy and personal data. This policy explains how Cat Speak collects, uses, and stores your information.',
   footer: 'COPYRIGHT 09-2025 | CAT SPEAK – LANGUAGE IN HAND',
   sections: [
     {
       title: '1. Information We Collect',
       intro:
-        'Cath Speak gathers the data needed to operate the service and deliver a personalised learning experience.',
+        'Cat Speak gathers the data needed to operate the service and deliver a personalised learning experience.',
       bullets: [
         'Basic details: full name, email, phone number.',
         'Account details: username, password, avatar.',
