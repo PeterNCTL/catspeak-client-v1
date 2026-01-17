@@ -28,7 +28,7 @@ const RootRoute = () => {
     return <Navigate to="/admin" replace />
   }
 
-  return <HomePage />
+  return <LandingPage />
 }
 
 const routesConfig = [

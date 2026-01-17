@@ -57,6 +57,12 @@ export const useRoomsPageLogic = () => {
   }
 
   const handleCreateStudyGroupSession = async () => {
+    // Check if user is authenticated
+    if (!isAuthenticated) {
+      openAuthModal("login")
+      return
+    }
+
     if (isCreatingStudyGroup) return
     setIsCreatingStudyGroup(true)
     try {

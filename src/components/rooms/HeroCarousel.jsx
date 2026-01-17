@@ -63,7 +63,7 @@ const HeroCarousel = ({ slides }) => {
           <BubbleChevronRight aria-label="Next slide" onClick={handleNext} />
         </div>
 
-        <style jsx global>{`
+        <style>{`
           .carousel-dots li button {
             background-color: #fff !important;
             opacity: 0.5;

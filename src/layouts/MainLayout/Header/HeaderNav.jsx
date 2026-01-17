@@ -21,22 +21,6 @@ const HeaderNav = () => {
   // Community dropdown menu items
   const communityMenuItems = [
     {
-      key: "english",
-      label: (
-        <div className="flex items-center gap-3 px-2 py-1.5">
-          <img
-            src={USA}
-            alt="English"
-            className="w-6 h-6 rounded-full object-cover"
-          />
-          <span className="text-sm font-semibold text-gray-700">English</span>
-        </div>
-      ),
-      onClick: () => {
-        navigate("/community?language=english")
-      },
-    },
-    {
       key: "vietnam",
       label: (
         <div className="flex items-center gap-3 px-2 py-1.5">
@@ -70,6 +54,22 @@ const HeaderNav = () => {
         navigate("/community?language=chinese")
       },
     },
+    {
+      key: "english",
+      label: (
+        <div className="flex items-center gap-3 px-2 py-1.5">
+          <img
+            src={USA}
+            alt="English"
+            className="w-6 h-6 rounded-full object-cover"
+          />
+          <span className="text-sm font-semibold text-gray-700">Anh</span>
+        </div>
+      ),
+      onClick: () => {
+        navigate("/community?language=english")
+      },
+    },
   ]
 
   const renderNavItem = ({ key, href, hasDropdown, noActive }) => {
@@ -81,8 +81,8 @@ const HeaderNav = () => {
       noActive
         ? "text-white/80 hover:text-white hover:bg-white/10 hover:shadow-[inset_-1px_-1px_3px_rgba(255,255,255,0.3),inset_1px_1px_3px_rgba(0,0,0,0.2)]" // Always normal style
         : isActive
-        ? "text-white bg-white/20 shadow-[inset_-2px_-2px_4px_rgba(255,255,255,0.3),inset_2px_2px_4px_rgba(0,0,0,0.2)] hover:shadow-[inset_-1px_-1px_3px_rgba(255,255,255,0.3),inset_1px_1px_3px_rgba(0,0,0,0.2)]"
-        : "text-white/80 hover:text-white hover:bg-white/10 hover:shadow-[inset_-1px_-1px_3px_rgba(255,255,255,0.3),inset_1px_1px_3px_rgba(0,0,0,0.2)]",
+          ? "text-white bg-white/20 shadow-[inset_-2px_-2px_4px_rgba(255,255,255,0.3),inset_2px_2px_4px_rgba(0,0,0,0.2)] hover:shadow-[inset_-1px_-1px_3px_rgba(255,255,255,0.3),inset_1px_1px_3px_rgba(0,0,0,0.2)]"
+          : "text-white/80 hover:text-white hover:bg-white/10 hover:shadow-[inset_-1px_-1px_3px_rgba(255,255,255,0.3),inset_1px_1px_3px_rgba(0,0,0,0.2)]",
     ].join(" ")
 
     if (hasDropdown && key === "community") {
@@ -97,7 +97,7 @@ const HeaderNav = () => {
         <Dropdown
           key={key}
           menu={{ items: communityMenuItems }}
-          trigger={["click"]}
+          trigger={["hover"]}
           placement="bottom"
           classNames={{ root: "min-w-[200px]" }}
           onOpenChange={(open) => {
