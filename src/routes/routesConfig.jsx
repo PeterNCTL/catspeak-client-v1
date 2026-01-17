@@ -5,8 +5,6 @@ import {
   PolicyPage,
   HomePage,
   VideoCallRoom,
-  LoginPage,
-  RegisterPage,
   RoomDetailPage,
   QueuePage,
   ComingSoonPage,
@@ -135,22 +133,6 @@ const routesConfig = [
         element: <ComingSoonPage />,
       },
     ],
-  },
-  {
-    path: "/login",
-    element: (
-      <GuestGuard>
-        <LoginPage />
-      </GuestGuard>
-    ),
-  },
-  {
-    path: "/register",
-    element: (
-      <GuestGuard>
-        <RegisterPage />
-      </GuestGuard>
-    ),
   },
   {
     path: "/403",
