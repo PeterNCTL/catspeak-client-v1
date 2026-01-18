@@ -22,8 +22,8 @@ const LanguageBar = () => {
   }
 
   return (
-    <div className="absolute px-4 md:px-8 z-10 left-3 -bottom-14">
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+    <div className="relative z-10 mt-6 px-4 md:absolute md:top-auto md:-bottom-14 md:mt-0 md:left-0 md:px-8">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-3 md:max-w-4xl">
         {languages.map((lang, idx) => (
           <div
             key={lang.code}

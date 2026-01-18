@@ -1,9 +1,8 @@
 import React, { useState } from "react"
-import { Card, Input, Button, Typography } from "antd"
+import { Card, Input, Button } from "antd"
 import { FiEdit3, FiSend } from "react-icons/fi"
 
 const { TextArea } = Input
-const { Text } = Typography
 
 const CreateStoryWidget = ({
   onCreate,
@@ -21,16 +20,16 @@ const CreateStoryWidget = ({
 
   return (
     <Card
-      className="rounded-2xl border-transparent shadow-sm"
+      className="rounded-2xl border-gray-200 shadow-sm"
       title={
         <div className="flex items-center gap-2">
           <FiEdit3 className="text-[#990011]" />
           <span className="font-bold">Create Story</span>
         </div>
       }
-      variant="borderless"
+      bordered={true}
     >
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-10">
         <TextArea
           placeholder={
             canCreate
@@ -45,17 +44,14 @@ const CreateStoryWidget = ({
           disabled={!canCreate}
           className="rounded-xl border-gray-200 focus:border-[#990011] focus:shadow-none"
         />
-        <div className="flex items-center justify-between">
-          <Text type="secondary" className="text-xs">
-            {activeCount}/2 Active
-          </Text>
+        <div className="flex items-center justify-end">
           <Button
             type="primary"
             icon={<FiSend />}
             onClick={handleSubmit}
             loading={isCreating}
             disabled={!content.trim() || !canCreate}
-            className="bg-[#990011] hover:!bg-[#7a000d] rounded-lg"
+            className="bg-[#990011] text-white"
           >
             Post
           </Button>

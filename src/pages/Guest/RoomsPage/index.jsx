@@ -13,6 +13,7 @@ import HeroCarousel from "@/components/rooms/HeroCarousel"
 import LiveMessages from "@/components/rooms/LiveMessages"
 import { useLanguage } from "@/context/LanguageContext"
 import ClassTab from "@/components/rooms/ClassTab"
+import colors from "@/utils/colors"
 
 const RoomsPage = () => {
   const { t } = useLanguage()
@@ -111,7 +112,10 @@ const RoomsPage = () => {
                           </div>
                         </>
                       ) : (
-                        <div className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-gray-200 bg-white py-20 text-center">
+                        <div
+                          className="flex flex-col border items-center justify-center rounded-3xl bg-white py-20 text-center"
+                          style={{ borderColor: colors.border }}
+                        >
                           <div className="mb-4 text-6xl">🏜️</div>
                           <h3 className="mb-2 text-xl font-bold text-gray-800">
                             No rooms found
@@ -134,7 +138,10 @@ const RoomsPage = () => {
                     </span>
                   ),
                   children: (
-                    <div className="rounded-3xl border border-dashed border-gray-200 bg-white p-10 text-center text-gray-500">
+                    <div
+                      className="rounded-3xl border bg-white p-10 text-center text-gray-500"
+                      style={{ borderColor: colors.border }}
+                    >
                       Nội dung cho tab "teaching" sẽ được cập nhật.
                     </div>
                   ),
@@ -148,7 +155,10 @@ const RoomsPage = () => {
                     </span>
                   ),
                   children: (
-                    <div className="rounded-3xl border border-dashed border-gray-200 bg-white p-10 text-center text-gray-500">
+                    <div
+                      className="rounded-3xl border bg-white p-10 text-center text-gray-500"
+                      style={{ borderColor: colors.border }}
+                    >
                       Nội dung cho tab "group" sẽ được cập nhật.
                     </div>
                   ),

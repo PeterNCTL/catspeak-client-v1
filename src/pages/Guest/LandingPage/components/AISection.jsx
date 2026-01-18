@@ -7,7 +7,7 @@ const AISection = () => {
   const BannerAI = language === "en" ? BannerAIEN : BannerAIVI
 
   return (
-    <div className="mt-24 w-full px-4 md:px-8 pb-16">
+    <div className="mt-12 md:mt-24 w-full px-4 md:px-8 pb-16">
       <div className="mx-auto max-w-screen-xl grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12 lg:items-center">
         {/* Left Side - Banner Image */}
         <div className="relative order-2 lg:order-1">

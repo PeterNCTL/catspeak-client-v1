@@ -58,7 +58,7 @@ export const authApi = baseApi.injectEndpoints({
             setCredentials({
               ...data,
               user: data.user || user,
-            })
+            }),
           )
         } catch (err) {
           console.error(err)
@@ -83,6 +83,7 @@ export const authApi = baseApi.injectEndpoints({
         try {
           await queryFulfilled
           dispatch(logout())
+          dispatch(baseApi.util.resetApiState())
         } catch (err) {
           console.error(err)
         }
@@ -94,6 +95,27 @@ export const authApi = baseApi.injectEndpoints({
         method: "GET",
       }),
       providesTags: ["User"],
+    }),
+    verifyEmail: builder.mutation({
+      query: (body) => ({
+        url: "/Auth/verify-email",
+        method: "POST",
+        body,
+      }),
+    }),
+    forgotPassword: builder.mutation({
+      query: (body) => ({
+        url: "/Auth/forgot-password",
+        method: "POST",
+        body,
+      }),
+    }),
+    resetPassword: builder.mutation({
+      query: (body) => ({
+        url: "/Auth/reset-password",
+        method: "POST",
+        body,
+      }),
     }),
   }),
 })
@@ -107,4 +129,7 @@ export const {
 
   useLogoutMutation,
   useGetProfileQuery,
+  useVerifyEmailMutation,
+  useForgotPasswordMutation,
+  useResetPasswordMutation,
 } = authApi

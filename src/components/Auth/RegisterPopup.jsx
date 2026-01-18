@@ -1,89 +1,38 @@
 import { useState } from "react"
-import { FiEye, FiEyeOff, FiX } from "react-icons/fi"
+import { FiX } from "react-icons/fi"
 import { useLanguage } from "@context/LanguageContext.jsx"
-import LiquidGlassButton from "@components/LiquidGlassButton"
+import AuthButton from "./AuthButton"
 import { useRegisterMutation } from "@/store/api/authApi"
 import { useNavigate } from "react-router-dom"
 import AuthPopupAnim from "./AuthPopupAnim"
+import { Form, Alert, message } from "antd"
+import RegisterFormFields from "./RegisterFormFields"
 
 const RegisterPopup = ({ onClose, onSwitchMode }) => {
-  const [showPassword, setShowPassword] = useState(false)
   const { t } = useLanguage()
   const authText = t.auth
   const navigate = useNavigate()
   const [register, { isLoading }] = useRegisterMutation()
+  const [form] = Form.useForm()
+  const [apiError, setApiError] = useState(null)
 
-  // Form state
-  const [formData, setFormData] = useState({
-    username: "",
-    email: "",
-    password: "",
-    dateOfBirth: "",
-  })
-  const [errors, setErrors] = useState({})
-  const [agreed, setAgreed] = useState(false)
-
-  const handleChange = (e) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
-    // Clear error when user types
-    if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: "" }))
-    }
-  }
-
-  const validateForm = () => {
-    const newErrors = {}
-
-    if (!formData.username.trim()) {
-      newErrors.username = "Username is required"
-    }
-
-    if (!formData.email.trim()) {
-      newErrors.email = "Email is required"
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = "Email is invalid"
-    }
-
-    if (!formData.password) {
-      newErrors.password = "Password is required"
-    } else if (formData.password.length < 6) {
-      newErrors.password = "Password must be at least 6 characters"
-    }
-
-    if (!formData.dateOfBirth) {
-      newErrors.dateOfBirth = "Date of birth is required"
-    }
-
-    if (!agreed) {
-      newErrors.agreement = "You must agree to the terms"
-    }
-
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
-
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-
-    if (!validateForm()) {
-      return
-    }
-
+  const onFinish = async (values) => {
+    setApiError(null)
     try {
-      await register(formData).unwrap()
+      await register(values).unwrap()
+      message.success("Registration successful! Please check your email.")
       onClose()
       navigate("/")
     } catch (err) {
       console.error("Registration failed:", err)
-      setErrors({
-        submit: err?.data?.message || "Registration failed. Please try again.",
-      })
+      setApiError(
+        err?.data?.message || "Registration failed. Please try again.",
+      )
     }
   }
 
   return (
-    <AuthPopupAnim className="relative rounded-[32px] bg-white px-8 pb-10 pt-12 text-gray-800 shadow-[0_25px_60px_rgba(0,0,0,0.12)]">
+    <AuthPopupAnim className="relative max-w-6xl w-full rounded-[32px] bg-white px-8 pb-10 pt-12 text-gray-800 shadow-[0_25px_60px_rgba(0,0,0,0.12)]">
       <button
         type="button"
         aria-label="Close"
@@ -97,127 +46,26 @@ const RegisterPopup = ({ onClose, onSwitchMode }) => {
         {authText.registerTitle}
       </h2>
 
-      {errors.submit && (
-        <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-600">
-          {errors.submit}
-        </div>
-      )}
+      <Form
+        form={form}
+        name="register_form"
+        layout="vertical"
+        onFinish={onFinish}
+        className="mt-8 flex flex-col gap-2"
+        requiredMark={false}
+      >
+        <RegisterFormFields authText={authText} />
 
-      <form onSubmit={handleSubmit} className="mt-8 grid grid-cols-1 gap-5">
-        <label className="text-sm font-semibold text-gray-700">
-          {authText.usernameLabel || "Username"}
-          <input
-            type="text"
-            name="username"
-            value={formData.username}
-            onChange={handleChange}
-            placeholder={authText.usernamePlaceholder || "Enter your username"}
-            className={`mt-2 w-full rounded-full border ${
-              errors.username ? "border-red-500" : "border-gray-200"
-            } px-4 py-3 text-sm text-gray-700 outline-none transition focus:border-[#f08d1d] focus:ring-1 focus:ring-[#f08d1d]`}
-          />
-          {errors.username && (
-            <span className="text-xs text-red-500 mt-1">{errors.username}</span>
-          )}
-        </label>
-
-        <label className="text-sm font-semibold text-gray-700">
-          {authText.emailLabel}
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            placeholder={authText.emailPlaceholder}
-            className={`mt-2 w-full rounded-full border ${
-              errors.email ? "border-red-500" : "border-gray-200"
-            } px-4 py-3 text-sm text-gray-700 outline-none transition focus:border-[#f08d1d] focus:ring-1 focus:ring-[#f08d1d]`}
-          />
-          {errors.email && (
-            <span className="text-xs text-red-500 mt-1">{errors.email}</span>
-          )}
-        </label>
-
-        <label className="text-sm font-semibold text-gray-700">
-          {authText.passwordLabel}
-          <div
-            className={`mt-2 flex items-center rounded-full border ${
-              errors.password ? "border-red-500" : "border-gray-200"
-            } px-4 py-3`}
-          >
-            <input
-              type={showPassword ? "text" : "password"}
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              placeholder={authText.passwordPlaceholder}
-              className="w-full text-sm text-gray-700 outline-none"
-            />
-            <button
-              type="button"
-              className="ml-2 text-lg text-gray-500 transition hover:text-gray-700"
-              onClick={() => setShowPassword((prev) => !prev)}
-            >
-              {showPassword ? <FiEye /> : <FiEyeOff />}
-            </button>
-          </div>
-          {errors.password && (
-            <span className="text-xs text-red-500 mt-1">{errors.password}</span>
-          )}
-        </label>
-
-        <label className="text-sm font-semibold text-gray-700">
-          {authText.dateOfBirthLabel || "Date of Birth"}
-          <input
-            type="date"
-            name="dateOfBirth"
-            value={formData.dateOfBirth}
-            onChange={handleChange}
-            className={`mt-2 w-full rounded-full border ${
-              errors.dateOfBirth ? "border-red-500" : "border-gray-200"
-            } px-4 py-3 text-sm text-gray-700 outline-none transition focus:border-[#f08d1d] focus:ring-1 focus:ring-[#f08d1d]`}
-          />
-          {errors.dateOfBirth && (
-            <span className="text-xs text-red-500 mt-1">
-              {errors.dateOfBirth}
-            </span>
-          )}
-        </label>
-
-        <label className="flex items-start gap-3 text-sm text-gray-600">
-          <input
-            type="checkbox"
-            className="mt-1 h-4 w-4 accent-[#f08d1d]"
-            checked={agreed}
-            onChange={(e) => setAgreed(e.target.checked)}
-          />
-          <span>
-            {authText.agreePrefix}{" "}
-            <button type="button" className="font-semibold text-[#6e34c5]">
-              {authText.serviceTerms}
-            </button>{" "}
-            {authText.and}{" "}
-            <button type="button" className="font-semibold text-[#6e34c5]">
-              {authText.privacyPolicy}
-            </button>{" "}
-            {authText.companySuffix}
-          </span>
-        </label>
-        {errors.agreement && (
-          <span className="text-xs text-red-500 -mt-3">{errors.agreement}</span>
+        {apiError && (
+          <Alert message={apiError} type="error" showIcon className="mb-2" />
         )}
 
-        <LiquidGlassButton
-          type="submit"
-          variant="gradient"
-          className="mt-2 w-full rounded-[16px] py-3 text-lg font-black uppercase tracking-widest text-white"
-          disabled={isLoading}
-        >
+        <AuthButton type="submit" className="mt-2" disabled={isLoading}>
           {isLoading
             ? "ĐANG ĐĂNG KÝ..."
             : authText.registerButton.toUpperCase()}
-        </LiquidGlassButton>
-      </form>
+        </AuthButton>
+      </Form>
 
       <div className="mt-6 text-center text-sm text-gray-600">
         <div className="relative mb-4">
@@ -229,7 +77,7 @@ const RegisterPopup = ({ onClose, onSwitchMode }) => {
         {authText.haveAccount}{" "}
         <button
           type="button"
-          className="font-semibold text-[#6e34c5]"
+          className="font-semibold text-[#8f0d15] hover:underline"
           onClick={() => onSwitchMode("login")}
         >
           {authText.loginLink}

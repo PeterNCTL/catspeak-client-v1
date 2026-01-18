@@ -9,6 +9,8 @@ import {
   logout,
 } from "@store/slices/authSlice"
 
+import { baseApi } from "@/store/api/baseApi"
+
 export const useAuth = () => {
   const dispatch = useDispatch()
 
@@ -27,9 +29,12 @@ export const useAuth = () => {
       role,
       status,
       isAdmin: role === "Admin",
-      logout: () => dispatch(logout()),
+      logout: () => {
+        dispatch(logout())
+        dispatch(baseApi.util.resetApiState())
+      },
     }),
-    [user, token, isAuthenticated, role, status, dispatch]
+    [user, token, isAuthenticated, role, status, dispatch],
   )
 }
 

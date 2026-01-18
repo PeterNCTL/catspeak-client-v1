@@ -58,7 +58,7 @@ const ChatBox = ({
 
             const isMe = String(msg.senderId) === String(currentUser?.id)
             const sender = allParticipants.find(
-              (p) => p.accountId === msg.senderId
+              (p) => p.accountId === msg.senderId,
             )
             const senderName = isMe
               ? "You"
@@ -108,7 +108,7 @@ const ChatBox = ({
             onChange={(e) => setMessage(e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder={isConnected ? "Type Something..." : "Connecting..."}
-            className="flex-1 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-headingColor placeholder:text-gray-400 focus:border-cath-orange-500 focus:outline-none focus:ring-1 focus:ring-cath-orange-500 disabled:opacity-50"
+            className="flex-1 rounded-lg border border-gray-200  px-3 py-2 text-sm text-headingColor placeholder:text-gray-400 focus:border-cath-orange-500 focus:outline-none focus:ring-1 focus:ring-cath-orange-500 disabled:opacity-50"
           />
           <button
             onClick={handleSend}

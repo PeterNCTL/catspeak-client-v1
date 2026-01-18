@@ -1,5 +1,6 @@
 import React from "react"
-import { Typography, message } from "antd"
+import { Typography, message, Tag } from "antd"
+import dayjs from "dayjs"
 import { useLanguage } from "@/context/LanguageContext"
 import {
   useGetStoriesQuery,
@@ -27,8 +28,15 @@ const CatSpeakPage = () => {
   const [deleteStory, { isLoading: isDeleting }] = useDeleteStoryMutation()
 
   // Safe Data Extraction
-  const stories = Array.isArray(storiesData?.data) ? storiesData.data : []
-  const myStories = Array.isArray(myStoriesData?.data) ? myStoriesData.data : []
+  const stories = storiesData?.data ?? []
+  const myStoriesRaw = myStoriesData?.data ?? []
+
+  console.log(stories)
+
+  // Filter out expired stories
+  const myStories = myStoriesRaw.filter((story) => {
+    return dayjs(story.expiresAt).isAfter(dayjs())
+  })
 
   // Derived State
   const canCreate = myStories.length < 2
@@ -72,24 +80,50 @@ const CatSpeakPage = () => {
   }
 
   return (
-    <div className="min-h-screen w-full bg-gray-50 py-8">
+    <div className="min-h-screen w-full py-8">
       <div className="mx-auto grid max-w-screen-xl gap-8 px-4 md:grid-cols-[1fr_350px] lg:px-8">
         {/* LEFT COLUMN: PUBLIC FEED */}
-        <div className="flex flex-col gap-6">
-          <div className="mb-2">
-            <Title level={2} className="!mb-0 !font-black !text-gray-900">
-              Community Stories
-            </Title>
-            <Text type="secondary" className="text-lg">
-              Discover what others are talking about.
-            </Text>
+        <div className="flex flex-col gap-10">
+          {/* MY STORIES SECTION */}
+          <div className="flex flex-col gap-6">
+            <div className="flex items-center gap-3">
+              <Title level={2} className="!mb-0 !font-black !text-gray-900">
+                My Stories
+              </Title>
+              <Tag
+                color="red"
+                className="rounded-full border-none bg-red-50 px-3 py-1 text-sm font-bold text-[#990011]"
+              >
+                {myStories.length}/2
+              </Tag>
+            </div>
+            <MyStoriesWidget
+              stories={myStories}
+              isLoading={loadingMyStories}
+              onDelete={handleDelete}
+              isDeleting={isDeleting}
+            />
           </div>
 
-          <StoryFeed
-            stories={stories}
-            isLoading={loadingStories}
-            onInteract={handleInteract}
-          />
+          <div className="h-px w-full bg-gray-100" />
+
+          {/* COMMUNITY STORIES SECTION */}
+          <div className="flex flex-col gap-6">
+            <div className="mb-2">
+              <Title level={2} className="!mb-0 !font-black !text-gray-900">
+                Community Stories
+              </Title>
+              <Text type="secondary" className="text-lg">
+                Discover what others are talking about.
+              </Text>
+            </div>
+
+            <StoryFeed
+              stories={stories}
+              isLoading={loadingStories}
+              onInteract={handleInteract}
+            />
+          </div>
         </div>
 
         {/* RIGHT COLUMN: MY DASHBOARD */}
@@ -99,13 +133,6 @@ const CatSpeakPage = () => {
             isCreating={isCreating}
             canCreate={canCreate}
             activeCount={myStories.length}
-          />
-
-          <MyStoriesWidget
-            stories={myStories}
-            isLoading={loadingMyStories}
-            onDelete={handleDelete}
-            isDeleting={isDeleting}
           />
 
           <TipsWidget />

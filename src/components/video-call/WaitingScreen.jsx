@@ -14,7 +14,7 @@ const WaitingScreen = ({
   const participants = session?.participants || []
 
   return (
-    <div className="flex h-screen w-full flex-col items-center justify-center bg-gray-50 text-textColor font-sans">
+    <div className="flex h-screen w-full flex-col items-center justify-center  text-textColor font-sans">
       <div className="mb-8 text-center">
         <h1 className="mb-2 text-3xl font-semibold text-headingColor">
           {session?.name || session?.roomName || "Ready to join?"}
@@ -30,7 +30,7 @@ const WaitingScreen = ({
                     src={
                       p.avatarImageUrl ||
                       `https://ui-avatars.com/api/?name=${encodeURIComponent(
-                        p.username
+                        p.username,
                       )}&background=random`
                     }
                     alt={p.username}
@@ -75,7 +75,7 @@ const WaitingScreen = ({
         )}
 
         {!cameraOn && (
-          <div className="flex h-full w-full items-center justify-center bg-gray-50">
+          <div className="flex h-full w-full items-center justify-center ">
             <div className="flex h-24 w-24 items-center justify-center rounded-full bg-white text-3xl font-bold text-cath-red-600 shadow-md border border-gray-100">
               {user?.username?.[0]?.toUpperCase() || "U"}
             </div>

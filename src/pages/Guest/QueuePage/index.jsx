@@ -49,7 +49,7 @@ const QueuePage = () => {
         setHasJoinedSignalR(false)
       },
     }),
-    [navigate]
+    [navigate],
   )
 
   const { isConnected, joinQueue, leaveQueue } = useQueueSignaling(handlers)
@@ -149,7 +149,7 @@ const QueuePage = () => {
         </p>
 
         {position > 0 && (
-          <div className="mb-8 flex items-center gap-2 rounded-xl bg-gray-50 px-5 py-3 text-sm font-medium text-headingColor border border-gray-100">
+          <div className="mb-8 flex items-center gap-2 rounded-xl  px-5 py-3 text-sm font-medium text-headingColor border border-gray-100">
             <span>Vị trí của bạn:</span>
             <span className="flex h-6 w-6 items-center justify-center rounded-md bg-white shadow-sm border border-gray-100 text-cath-orange-600 font-bold">
               {position}

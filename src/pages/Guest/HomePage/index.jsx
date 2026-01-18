@@ -86,7 +86,7 @@ const HomePage = () => {
                 onClick={!card.disabled ? card.action : undefined}
                 className={`group h-full overflow-hidden rounded-[2rem] border-2 transition-colors duration-300 ${
                   card.disabled
-                    ? "cursor-not-allowed border-gray-100 bg-gray-50 opacity-60"
+                    ? "cursor-not-allowed border-gray-100 opacity-60"
                     : "cursor-pointer border-gray-200 hover:border-[#990011]"
                 }`}
                 styles={{
@@ -130,7 +130,7 @@ const HomePage = () => {
 
                 {!card.disabled && (
                   <div className="mt-8 flex w-full justify-end">
-                    <div className="rounded-full bg-gray-50 p-2 transition-all duration-300 group-hover:bg-[#990011]/10 group-hover:translate-x-2">
+                    <div className="rounded-full  p-2 transition-all duration-300 group-hover:bg-[#990011]/10 group-hover:translate-x-2">
                       <svg
                         className="h-6 w-6 text-gray-400 transition-colors group-hover:text-[#990011]"
                         fill="none"

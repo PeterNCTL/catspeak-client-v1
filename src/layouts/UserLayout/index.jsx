@@ -1,20 +1,20 @@
-import { useState } from 'react'
-import { Layout, theme } from 'antd'
-import { Outlet } from 'react-router-dom'
-import HeaderBar from '../MainLayout/HeaderBar'
-import FooterBar from '../MainLayout/FooterBar'
-import Auth from '@components/Auth'
-import MessageWidget from '@/components/messages/MessageWidget'
+import { useState } from "react"
+import { Layout, theme } from "antd"
+import { Outlet } from "react-router-dom"
+import HeaderBar from "../MainLayout/HeaderBar"
+import Footer from "../MainLayout/Footer"
+import Auth from "@components/Auth"
+import MessageWidget from "@/components/messages/MessageWidget"
 
 const { Content } = Layout
 
 const UserLayout = () => {
   const [authModal, setAuthModal] = useState({
     isOpen: false,
-    mode: 'login',
+    mode: "login",
   })
 
-  const openAuthModal = (mode = 'login') =>
+  const openAuthModal = (mode = "login") =>
     setAuthModal({
       isOpen: true,
       mode,
@@ -31,18 +31,16 @@ const UserLayout = () => {
   } = theme.useToken()
 
   return (
-    <Layout
-      className="flex justify-center bg-white"
-    >
+    <Layout className="flex justify-center bg-white">
       {/* Header full width */}
-      <HeaderBar onGetStarted={() => openAuthModal('login')} />
+      <HeaderBar onGetStarted={() => openAuthModal("login")} />
 
       <Content className="w-full flex justify-center">
         <Outlet />
       </Content>
 
       {/* Footer full width */}
-      <FooterBar />
+      <Footer />
 
       <Auth
         isOpen={authModal.isOpen}
@@ -58,4 +56,3 @@ const UserLayout = () => {
 }
 
 export default UserLayout
-

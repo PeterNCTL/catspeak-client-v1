@@ -22,18 +22,18 @@ const FAQSection = () => {
   }
 
   return (
-    <div className="mt-24 w-full px-4 md:px-8 pb-16">
+    <div className="mt-12 md:mt-24 w-full px-4 md:px-8 pb-16">
       <div className="relative mx-auto max-w-screen-xl">
         {/* Background Ticket Image */}
-        <div className="relative rounded-3xl overflow-hidden">
+        <div className="relative rounded-3xl overflow-hidden min-h-[600px]">
           <img
             src={BGTicket}
             alt="FAQ Background"
-            className="w-full h-auto object-cover"
+            className="absolute inset-0 w-full h-full object-cover z-0"
           />
 
           {/* Content Overlay */}
-          <div className="absolute inset-0 p-8 md:p-12 lg:p-16 flex flex-col">
+          <div className="relative z-10 p-6 md:p-12 lg:p-16 flex flex-col h-full">
             {/* Header Section */}
             <div className="flex flex-col md:flex-row md:items-start md:justify-between mb-8 md:mb-10">
               <div className="flex-1 mb-6 md:mb-0">

@@ -6,7 +6,7 @@ const ValuesSection = () => {
   const Hero1 = language === "en" ? Hero1EN : Hero1VI
 
   return (
-    <div className="mt-24 w-full px-4 md:px-8">
+    <div className="mt-12 md:mt-32 w-full px-4 md:px-8">
       <div className="mx-auto max-w-screen-xl">
         <div className="flex flex-col items-center justify-center space-y-4 mb-8">
           <div className="text-xl uppercase text-gray-500 font-bold">

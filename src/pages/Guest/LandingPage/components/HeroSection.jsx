@@ -6,7 +6,7 @@ const HeroSection = ({ openAuthModal }) => {
   const { t } = useLanguage()
 
   return (
-    <div className="relative mx-auto overflow-visible rounded-[32px] bg-gradient-to-b from-cath-red-500 via-cath-red-700 to-[#f08d1d] p-8 md:p-12 drop-shadow-[0_20px_30px_rgba(0,0,0,0.15)]">
+    <div className="relative mx-auto overflow-visible rounded-[32px] bg-gradient-to-b from-cath-red-500 via-cath-red-700 to-[#f08d1d] p-6 md:p-12 drop-shadow-[0_20px_30px_rgba(0,0,0,0.15)]">
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12">
         {/* Left Side - Banner Image */}
         <div className="relative">
@@ -20,18 +20,18 @@ const HeroSection = ({ openAuthModal }) => {
             />
 
             {/* Nút phía dưới ảnh */}
-            <div className="absolute bottom-6 left-6 right-6 flex flex-row-reverse gap-4 z-20">
+            <div className="absolute bottom-6 left-6 right-6 flex flex-col-reverse gap-3 sm:flex-row-reverse sm:gap-4 z-20">
               <LiquidGlassButton
                 onClick={() => openAuthModal("login")}
                 variant="default"
-                className="flex-1 max-w-[220px] rounded-[999px] px-6 py-3 text-sm font-semibold text-white"
+                className="flex-1 w-full sm:w-auto sm:max-w-[220px] rounded-[999px] px-6 py-3 text-sm font-semibold text-white"
               >
                 {t.auth.loginButton}
               </LiquidGlassButton>
               <LiquidGlassButton
                 onClick={() => openAuthModal("register")}
                 variant="yellow"
-                className="flex-1 max-w-[220px] rounded-[999px] px-6 py-3 text-sm font-semibold text-white"
+                className="flex-1 w-full sm:w-auto sm:max-w-[220px] rounded-[999px] px-6 py-3 text-sm font-semibold text-white"
               >
                 {t.auth.registerButton}
               </LiquidGlassButton>

@@ -4,6 +4,7 @@ import { AnimatePresence } from "framer-motion"
 import LoginPopup from "./LoginPopup"
 import RegisterPopup from "./RegisterPopup"
 import ForgotPasswordPopup from "./ForgotPasswordPopup"
+import ResetPasswordPopup from "./ResetPasswordPopup"
 
 const Auth = ({ isOpen, mode = "login", onClose, onSwitchMode }) => {
   if (!isOpen) return null
@@ -18,10 +19,19 @@ const Auth = ({ isOpen, mode = "login", onClose, onSwitchMode }) => {
             onSwitchMode={onSwitchMode}
           />
         )
+
       case "forgot":
         return (
           <ForgotPasswordPopup
             key="forgot"
+            onClose={onClose}
+            onSwitchMode={onSwitchMode}
+          />
+        )
+      case "reset-password":
+        return (
+          <ResetPasswordPopup
+            key="reset-password"
             onClose={onClose}
             onSwitchMode={onSwitchMode}
           />
@@ -45,11 +55,15 @@ const Auth = ({ isOpen, mode = "login", onClose, onSwitchMode }) => {
         aria-label="Close authentication modal"
         onClick={onClose}
       />
-      <div className="relative z-10 w-full max-w-xl">
+      <div
+        className={`relative z-10 w-full ${
+          mode === "register" ? "max-w-4xl" : "max-w-xl"
+        }`}
+      >
         <AnimatePresence mode="wait">{renderPopup()}</AnimatePresence>
       </div>
     </div>,
-    document.body
+    document.body,
   )
 }
 

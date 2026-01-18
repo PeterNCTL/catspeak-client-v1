@@ -10,6 +10,7 @@ import {
   ComingSoonPage,
   RoomsPage,
   CatSpeakPage,
+  VerifyEmailPage,
 } from "@pages/Guest"
 import { UserDashboard, UserProfile, UserSetting } from "@pages/User"
 import { AdminPage } from "@pages/Admin"
@@ -49,6 +50,14 @@ const routesConfig = [
       {
         path: "room/:id",
         element: <RoomDetailPage />,
+      },
+      {
+        path: "reset-password",
+        element: <HomePage />,
+      },
+      {
+        path: "verify-email",
+        element: <VerifyEmailPage />,
       },
     ],
   },

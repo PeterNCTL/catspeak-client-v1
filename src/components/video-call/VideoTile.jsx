@@ -93,7 +93,7 @@ const VideoTile = ({
 
       {/* Show Avatar if no stream OR video is off */}
       {(!stream || !isVideoVisible) && (
-        <div className="flex h-full w-full items-center justify-center bg-gray-50">
+        <div className="flex h-full w-full items-center justify-center ">
           {propAvatar ? (
             <img
               src={propAvatar}

@@ -7,3 +7,5 @@ export { default as QueuePage } from "./QueuePage"
 export { default as ComingSoonPage } from "./ComingSoonPage"
 export { default as RoomsPage } from "./RoomsPage"
 export { default as CatSpeakPage } from "./CatSpeakPage"
+
+export { default as VerifyEmailPage } from "./VerifyEmailPage"

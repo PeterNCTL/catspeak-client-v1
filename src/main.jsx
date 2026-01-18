@@ -30,5 +30,5 @@ createRoot(document.getElementById("root")).render(
         <App />
       </LanguageProvider>
     </ConfigProvider>
-  </StrictMode>
+  </StrictMode>,
 )

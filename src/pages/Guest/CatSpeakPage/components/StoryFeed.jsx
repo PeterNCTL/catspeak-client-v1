@@ -41,8 +41,8 @@ const StoryFeed = ({ stories, isLoading, onInteract }) => {
       {stories.map((story) => (
         <Card
           key={story.storyId}
-          className="overflow-hidden rounded-2xl border-transparent shadow-sm transition-shadow hover:shadow-md"
-          bordered={false}
+          className="overflow-hidden rounded-2xl border-gray-200 shadow-sm"
+          bordered={true}
         >
           <div className="flex items-start gap-4">
             <Avatar
@@ -78,7 +78,7 @@ const StoryFeed = ({ stories, isLoading, onInteract }) => {
                   shape="round"
                   icon={<FiMessageCircle />}
                   onClick={() => onInteract(story.storyId, 1)}
-                  className="bg-[#990011] hover:!bg-[#7a000d]"
+                  className="bg-[#990011] text-white border-[#990011] hover:!bg-[#7a000d] hover:!border-[#7a000d] hover:!text-white"
                 >
                   Connect
                 </Button>
@@ -87,7 +87,7 @@ const StoryFeed = ({ stories, isLoading, onInteract }) => {
                   shape="round"
                   icon={<FiX />}
                   onClick={() => onInteract(story.storyId, 0)}
-                  className="text-gray-500 hover:text-gray-700 hover:bg-gray-100"
+                  className="border border-gray-300 bg-white text-gray-500 hover:text-gray-700 hover:bg-gray-50"
                 >
                   Pass
                 </Button>
