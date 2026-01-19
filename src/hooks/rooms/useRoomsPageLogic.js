@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useSearchParams } from "react-router-dom"
 import { useCreateVideoSessionMutation } from "@/store/api/videoSessionsApi"
 import { useGetRoomsQuery } from "@/store/api/roomsApi"
 import { useLanguage } from "@/context/LanguageContext"
@@ -26,10 +26,24 @@ export const useRoomsPageLogic = () => {
   const [createVideoSession, { isLoading: isCreating }] =
     useCreateVideoSessionMutation()
 
-  // Pass pagination params to the query
+  // Read filters from URL
+  const [searchParams] = useSearchParams()
+  // "language" in URL -> "languageType" for API (capitalize first letter: "vietnamese" -> "Vietnamese")
+  const rawLanguage = searchParams.get("language")
+  const languageType = rawLanguage
+    ? rawLanguage.charAt(0).toUpperCase() + rawLanguage.slice(1)
+    : undefined
+
+  const roomType = searchParams.get("roomType") || undefined
+  const requiredLevel = searchParams.get("requiredLevel") || undefined
+
+  // Pass pagination & filters params to the query
   const { data: responseData, isLoading: isLoadingRooms } = useGetRoomsQuery({
     page,
     pageSize,
+    roomType,
+    languageType,
+    requiredLevel,
   })
 
   // Extract rooms and pagination data safely
@@ -56,31 +70,17 @@ export const useRoomsPageLogic = () => {
     navigate("/queue")
   }
 
-  const handleCreateStudyGroupSession = async () => {
+  const handleCreateStudyGroupSession = () => {
     // Check if user is authenticated
     if (!isAuthenticated) {
       openAuthModal("login")
       return
     }
 
-    if (isCreatingStudyGroup) return
-    setIsCreatingStudyGroup(true)
-    try {
-      const response = await createVideoSession({
-        name: "Study Group",
-        roomType: 2,
-        requiredLevel: "Beginner",
-      }).unwrap()
-
-      const sessionId = response.sessionId || response.id
-      if (sessionId) {
-        navigate(`/meet/${sessionId}`)
-      }
-    } catch (error) {
-      console.error("Failed to create study group session:", error)
-    } finally {
-      setIsCreatingStudyGroup(false)
-    }
+    navigate({
+      pathname: "/create-room",
+      search: searchParams.toString(),
+    })
   }
 
   const current = useMemo(() => slides[active] || {}, [active, slides])

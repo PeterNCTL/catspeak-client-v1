@@ -13,7 +13,7 @@ const LEVELS = {
 const FiltersSidebar = () => {
   const { t } = useLanguage()
   const filtersText = t.rooms.filters
-  const [searchParams] = useSearchParams()
+  const [searchParams, setSearchParams] = useSearchParams()
   const currentLanguage = searchParams.get("language") || "english"
   const currentLevels = LEVELS[currentLanguage]
 
@@ -70,14 +70,29 @@ const FiltersSidebar = () => {
               </h3>
 
               <div className="flex flex-col gap-3">
-                {currentLevels.map((level) => (
-                  <Checkbox
-                    key={level}
-                    className="text-gray-600 font-medium hover:text-[#990011] transition-colors"
-                  >
-                    {level}
-                  </Checkbox>
-                ))}
+                {currentLevels.map((level) => {
+                  const isChecked = searchParams.get("requiredLevel") === level
+                  return (
+                    <Checkbox
+                      key={level}
+                      checked={isChecked}
+                      onChange={(e) => {
+                        const newParams = new URLSearchParams(searchParams)
+                        if (e.target.checked) {
+                          newParams.set("requiredLevel", level)
+                        } else {
+                          newParams.delete("requiredLevel")
+                        }
+                        // Reset page to 1 when filter changes
+                        newParams.set("page", "1")
+                        setSearchParams(newParams)
+                      }}
+                      className="text-gray-600 font-medium hover:text-[#990011] transition-colors"
+                    >
+                      {level}
+                    </Checkbox>
+                  )
+                })}
               </div>
             </div>
           </div>

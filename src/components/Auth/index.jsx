@@ -3,7 +3,7 @@ import { createPortal } from "react-dom"
 import { AnimatePresence } from "framer-motion"
 import LoginPopup from "./LoginPopup"
 import RegisterPopup from "./RegisterPopup"
-import ForgotPasswordPopup from "./ForgotPasswordPopup"
+
 import ResetPasswordPopup from "./ResetPasswordPopup"
 
 const Auth = ({ isOpen, mode = "login", onClose, onSwitchMode }) => {
@@ -22,7 +22,7 @@ const Auth = ({ isOpen, mode = "login", onClose, onSwitchMode }) => {
 
       case "forgot":
         return (
-          <ForgotPasswordPopup
+          <ResetPasswordPopup
             key="forgot"
             onClose={onClose}
             onSwitchMode={onSwitchMode}

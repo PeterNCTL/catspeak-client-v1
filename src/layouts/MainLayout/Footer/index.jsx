@@ -7,7 +7,7 @@ import { FaFacebookF, FaYoutube } from "react-icons/fa"
 import { SiZalo } from "react-icons/si"
 
 import CommunitySection from "./components/CommunitySection"
-import FoundersSection from "./components/FoundersSection"
+
 import ContactSection from "./components/ContactSection"
 import FooterBottom from "./components/FooterBottom"
 
@@ -53,19 +53,14 @@ const Footer = () => {
           {/* Social Icons - Top Right Overlapping on Desktop, Centered on Mobile */}
           <div className="relative z-30 flex justify-center lg:absolute lg:-top-7 lg:right-[10%] mb-8 lg:mb-0 gap-6 mt-[-28px] lg:mt-0">
             <a
-              href="#"
+              href="https://www.facebook.com/share/1DzTNUSEAN/"
               className="flex h-14 w-14 items-center justify-center rounded-full bg-white text-[#910B09] shadow-lg transition-all duration-300 hover:bg-[#910B09] hover:text-white"
             >
               <FaFacebookF size={32} />
             </a>
+
             <a
-              href="#"
-              className="flex h-14 w-14 items-center justify-center rounded-full bg-white text-[#910B09] shadow-lg transition-all duration-300 hover:bg-[#910B09] hover:text-white"
-            >
-              <FaYoutube size={32} />
-            </a>
-            <a
-              href="#"
+              href="https://zalo.me/g/gffkqu214"
               className="flex h-14 w-14 items-center justify-center rounded-full bg-white text-[#910B09] shadow-lg transition-all duration-300 hover:bg-[#910B09] hover:text-white"
             >
               <SiZalo size={32} />
@@ -79,9 +74,8 @@ const Footer = () => {
             </div>
 
             <div className="flex flex-col justify-between w-full lg:col-span-11 gap-8 lg:gap-4">
-              <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-4 px-0 lg:px-8 text-white pt-4 lg:pt-10">
+              <div className="w-full flex flex-col lg:flex-row justify-around gap-8 lg:gap-1 px-0 lg:px-8 text-white pt-4 lg:pt-10">
                 <CommunitySection languages={languages} />
-                <FoundersSection />
                 <ContactSection />
               </div>
 

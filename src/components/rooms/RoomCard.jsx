@@ -1,7 +1,7 @@
 import React from "react"
 import { useNavigate } from "react-router-dom"
 import { Card } from "antd"
-import { FiCalendar, FiClock } from "react-icons/fi"
+import { FiCalendar, FiUsers } from "react-icons/fi"
 
 const RoomCard = ({ room }) => {
   const navigate = useNavigate()
@@ -13,10 +13,7 @@ const RoomCard = ({ room }) => {
   // Safe defaults or mappings
   const createDate = new Date(room.createDate)
   const dateStr = createDate.toLocaleDateString("vi-VN")
-  const timeStr = createDate.toLocaleTimeString("vi-VN", {
-    hour: "2-digit",
-    minute: "2-digit",
-  })
+
   const statusLabel = room.status === 1 ? "Đang diễn ra" : "Đã kết thúc"
 
   // Custom Cover Component
@@ -30,17 +27,6 @@ const RoomCard = ({ room }) => {
           backgroundSize: "20px 20px",
         }}
       />
-
-      {/* Status Badge */}
-      <div
-        className={`relative z-10 w-fit rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wider shadow-sm ${
-          room.status === 1
-            ? "bg-[#990011] text-white"
-            : "bg-gray-200 text-gray-500"
-        }`}
-      >
-        {statusLabel}
-      </div>
 
       {/* Decorative Corner Icon using Room ID */}
       <div className="absolute -bottom-6 -right-6 z-0 rounded-full bg-slate-100 p-8 opacity-50">
@@ -56,14 +42,14 @@ const RoomCard = ({ room }) => {
       hoverable
       onClick={handleClick}
       cover={<CardCover />}
-      className="overflow-hidden rounded-3xl border-gray-100 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-gray-200/50"
+      className="overflow-hidden rounded-3xl border-[#E5E5E5] shadow-sm transition-all duration-300 hover:border-[#990011] hover:shadow-lg hover:shadow-gray-200/50"
       styles={{
         body: { padding: "1.25rem 1.25rem 1.25rem 1.25rem" },
       }}
     >
       <div className="relative pt-3">
         {/* Floating Room ID Badge */}
-        <div className="absolute -top-[3.25rem] left-0 flex h-12 min-w-[3rem] items-center justify-center rounded-2xl bg-white p-2 shadow-sm ring-1 ring-gray-100">
+        <div className="absolute -top-[3.25rem] left-0 flex h-12 min-w-[3rem] items-center justify-center rounded-2xl bg-white p-2 shadow-sm ring-1 ring-[#E5E5E5]">
           <span className="text-xl font-bold text-gray-700">
             #{room.roomId}
           </span>
@@ -73,7 +59,16 @@ const RoomCard = ({ room }) => {
           {room.name}
         </h3>
 
-        <div className="my-3 h-px w-full bg-gray-100" />
+        {/* Required Level Badge */}
+        {room.requiredLevel && (
+          <div className="mb-2">
+            <span className="inline-block px-2 py-1 bg-gray-100 text-[#990011] text-[10px] font-bold uppercase tracking-wider rounded-md">
+              {room.requiredLevel}
+            </span>
+          </div>
+        )}
+
+        <div className="my-3 h-px w-full bg-[#E5E5E5]" />
 
         <div className="flex items-center justify-between text-xs font-medium text-gray-500">
           <div className="flex items-center gap-1.5">
@@ -82,8 +77,8 @@ const RoomCard = ({ room }) => {
           </div>
 
           <div className="flex items-center gap-1.5">
-            <FiClock className="h-4 w-4 text-gray-400" />
-            <span>{timeStr}</span>
+            <FiUsers className="h-4 w-4 text-gray-400" />
+            <span>{room.maxParticipants}</span>
           </div>
         </div>
       </div>

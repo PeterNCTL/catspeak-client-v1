@@ -4,9 +4,25 @@ import { baseApi } from "./baseApi"
 export const roomsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     // Get all rooms created by the current user
+    // Get all rooms created by the current user
     getRooms: builder.query({
-      query: ({ page = 1, pageSize = 10 } = {}) =>
-        `/rooms?page=${page}&pageSize=${pageSize}`,
+      query: ({
+        page = 1,
+        pageSize = 10,
+        roomType,
+        languageType,
+        requiredLevel,
+      } = {}) => {
+        const params = new URLSearchParams({
+          page,
+          pageSize,
+        })
+        if (roomType) params.append("roomType", roomType)
+        if (languageType) params.append("languageType", languageType)
+        if (requiredLevel) params.append("requiredLevel", requiredLevel)
+
+        return `/rooms?${params.toString()}`
+      },
       providesTags: ["Rooms"],
     }),
 

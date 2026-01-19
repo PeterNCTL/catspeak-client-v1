@@ -11,6 +11,7 @@ import {
   RoomsPage,
   CatSpeakPage,
   VerifyEmailPage,
+  CreateRoomPage,
 } from "@pages/Guest"
 import { UserDashboard, UserProfile, UserSetting } from "@pages/User"
 import { AdminPage } from "@pages/Admin"
@@ -55,6 +56,7 @@ const routesConfig = [
         path: "reset-password",
         element: <HomePage />,
       },
+
       {
         path: "verify-email",
         element: <VerifyEmailPage />,
@@ -120,6 +122,14 @@ const routesConfig = [
     element: (
       <AuthGuard>
         <QueuePage />
+      </AuthGuard>
+    ),
+  },
+  {
+    path: "/create-room",
+    element: (
+      <AuthGuard>
+        <CreateRoomPage />
       </AuthGuard>
     ),
   },

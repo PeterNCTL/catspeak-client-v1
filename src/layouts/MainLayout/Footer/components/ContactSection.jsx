@@ -7,11 +7,11 @@ const ContactSection = () => {
   const footerText = t.footer
 
   return (
-    <div className="col-span-1 lg:col-span-4">
-      <div className="font-bold text-lg uppercase text-center tracking-wide mb-4">
+    <div className="flex-1 w-full flex flex-col items-center lg:items-end">
+      <div className="font-bold text-lg uppercase text-center tracking-wide mb-4 w-full max-w-md">
         {footerText.contactUs}
       </div>
-      <div className="px-0 lg:px-10">
+      <div className="px-0 w-full max-w-md">
         <form className="flex flex-col gap-5">
           <Input
             placeholder={footerText.usernamePlaceholder}

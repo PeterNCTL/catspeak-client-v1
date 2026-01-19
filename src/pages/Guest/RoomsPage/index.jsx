@@ -178,25 +178,6 @@ const RoomsPage = () => {
           </ConfigProvider>
         </div>
       </div>
-
-      {/* Live messages footer for all tabs */}
-      <div className="mx-auto max-w-screen-xl px-6 pb-12">
-        <LiveMessages
-          messages={[
-            "Có ai mới học tiếng anh khum?",
-            "Lớp A2 – Gia đình mở chưa?",
-            "Thầy ơi cho xin tài liệu!",
-            "Team debate tối nay không?",
-            "Link zoom đâu vậy mọi người?",
-            "Có suất speaking 1:1 không?",
-          ]}
-          inputValue={liveInput}
-          onChangeInput={setLiveInput}
-          onSend={handleSendLive}
-          userLetters={userLetters}
-          totalLetters={totalLetters}
-        />
-      </div>
     </div>
   )
 }

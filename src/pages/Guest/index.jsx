@@ -9,3 +9,4 @@ export { default as RoomsPage } from "./RoomsPage"
 export { default as CatSpeakPage } from "./CatSpeakPage"
 
 export { default as VerifyEmailPage } from "./VerifyEmailPage"
+export { default as CreateRoomPage } from "./CreateRoomPage"

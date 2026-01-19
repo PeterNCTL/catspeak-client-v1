@@ -1,2 +1,3 @@
 export { default as footer } from "./footer"
 export { default as rooms } from "./rooms"
+export { default as faq } from "./faq"

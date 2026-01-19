@@ -110,6 +110,13 @@ export const authApi = baseApi.injectEndpoints({
         body,
       }),
     }),
+    verifyResetOtp: builder.mutation({
+      query: (body) => ({
+        url: "/Auth/verify-reset-otp",
+        method: "POST",
+        body,
+      }),
+    }),
     resetPassword: builder.mutation({
       query: (body) => ({
         url: "/Auth/reset-password",
@@ -131,5 +138,6 @@ export const {
   useGetProfileQuery,
   useVerifyEmailMutation,
   useForgotPasswordMutation,
+  useVerifyResetOtpMutation,
   useResetPasswordMutation,
 } = authApi

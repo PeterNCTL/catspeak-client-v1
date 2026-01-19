@@ -40,7 +40,7 @@ const FAQSection = () => {
                 {/* Corner Label with underline */}
                 <div className="relative inline-block mb-3">
                   <div className="text-sm md:text-base uppercase tracking-[0.15em] text-cath-yellow-400 font-bold">
-                    {t.home.faq.corner}
+                    {t.faq.corner}
                   </div>
                   <div
                     className="absolute bottom-0 left-0 h-0.5 bg-cath-yellow-400"
@@ -49,7 +49,7 @@ const FAQSection = () => {
                 </div>
                 {/* Main Title */}
                 <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight">
-                  {t.home.faq.title}
+                  {t.faq.title}
                 </h2>
               </div>
 
@@ -71,7 +71,7 @@ const FAQSection = () => {
                   </svg>
                   <input
                     type="text"
-                    placeholder={t.home.faq.searchPlaceholder}
+                    placeholder={t.faq.searchPlaceholder}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="flex-1 outline-none text-white placeholder-gray-400 text-sm md:text-base bg-transparent"
@@ -82,7 +82,7 @@ const FAQSection = () => {
 
             {/* FAQ Questions Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-y-1 gap-x-4 md:gap-x-6 flex-1 p-4 items-start">
-              {t.home.faq.questions.map((item, originalIndex) => {
+              {t.faq.questions.map((item, originalIndex) => {
                 // Check if question matches search query
                 const matchesSearch =
                   item.question

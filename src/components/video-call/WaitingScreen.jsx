@@ -1,5 +1,12 @@
 import React from "react"
-import { FiMic, FiMicOff, FiVideo, FiVideoOff } from "react-icons/fi"
+import { useNavigate, useSearchParams } from "react-router-dom"
+import {
+  FiMic,
+  FiMicOff,
+  FiVideo,
+  FiVideoOff,
+  FiArrowLeft,
+} from "react-icons/fi"
 
 const WaitingScreen = ({
   session,
@@ -11,10 +18,25 @@ const WaitingScreen = ({
   onToggleCam,
   onJoin,
 }) => {
+  const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const participants = session?.participants || []
 
   return (
-    <div className="flex h-screen w-full flex-col items-center justify-center  text-textColor font-sans">
+    <div className="relative flex h-screen w-full flex-col items-center justify-center  text-textColor font-sans">
+      {/* Back Button */}
+      <button
+        onClick={() =>
+          navigate({ pathname: "/community", search: searchParams.toString() })
+        }
+        className="absolute top-8 left-8 flex items-center gap-2 text-gray-500 hover:text-gray-800 transition-colors"
+      >
+        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-white shadow-sm border border-gray-200">
+          <FiArrowLeft className="w-5 h-5" />
+        </div>
+        <span className="font-medium">Back to Community</span>
+      </button>
+
       <div className="mb-8 text-center">
         <h1 className="mb-2 text-3xl font-semibold text-headingColor">
           {session?.name || session?.roomName || "Ready to join?"}

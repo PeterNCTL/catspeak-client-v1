@@ -6,7 +6,7 @@ const CommunitySection = ({ languages }) => {
   const footerText = t.footer
 
   return (
-    <div className="col-span-1 lg:col-span-3 text-center lg:text-left">
+    <div className="flex-1 text-center lg:text-left">
       <div className="font-bold text-lg uppercase tracking-wide">
         {footerText.ourCommunity}
       </div>
