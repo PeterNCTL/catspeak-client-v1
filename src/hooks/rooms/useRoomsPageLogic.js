@@ -35,7 +35,13 @@ export const useRoomsPageLogic = () => {
     : undefined
 
   const roomType = searchParams.get("roomType") || undefined
-  const requiredLevel = searchParams.get("requiredLevel") || undefined
+  const requiredLevelsParam = searchParams.get("requiredLevels")
+  // Split comma-separated values into array, filter empty strings
+  const requiredLevel = requiredLevelsParam
+    ? requiredLevelsParam.split(",").map((s) => s.trim()).filter(Boolean)
+    : []
+  // If array is empty, pass undefined to avoid sending empty param or empty array logic
+  const requiredLevelArg = requiredLevel.length > 0 ? requiredLevel : undefined
 
   // Pass pagination & filters params to the query
   const { data: responseData, isLoading: isLoadingRooms } = useGetRoomsQuery({
@@ -43,7 +49,7 @@ export const useRoomsPageLogic = () => {
     pageSize,
     roomType,
     languageType,
-    requiredLevel,
+    requiredLevel: requiredLevelArg,
   })
 
   // Extract rooms and pagination data safely

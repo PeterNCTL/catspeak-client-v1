@@ -6,8 +6,22 @@ import { Input, Checkbox, ConfigProvider, theme } from "antd"
 import colors from "@/utils/colors"
 
 const LEVELS = {
-  english: ["A1", "A2", "B1", "B2", "C1", "C2"],
-  chinese: ["HSK 1", "HSK 2", "HSK 3", "HSK 4", "HSK 5", "HSK 6"],
+  english: [
+    { label: "A1", value: "A1" },
+    { label: "A2", value: "A2" },
+    { label: "B1", value: "B1" },
+    { label: "B2", value: "B2" },
+    { label: "C1", value: "C1" },
+    { label: "C2", value: "C2" },
+  ],
+  chinese: [
+    { label: "HSK 1", value: "HSK1" },
+    { label: "HSK 2", value: "HSK2" },
+    { label: "HSK 3", value: "HSK3" },
+    { label: "HSK 4", value: "HSK4" },
+    { label: "HSK 5", value: "HSK5" },
+    { label: "HSK 6", value: "HSK6" },
+  ],
 }
 
 const FiltersSidebar = () => {
@@ -70,26 +84,45 @@ const FiltersSidebar = () => {
               </h3>
 
               <div className="flex flex-col gap-3">
-                {currentLevels.map((level) => {
-                  const isChecked = searchParams.get("requiredLevel") === level
+                {currentLevels.map((levelObj) => {
+                  const requiredLevelsParam = searchParams.get("requiredLevels")
+                  const currentLevelsArray = requiredLevelsParam
+                    ? requiredLevelsParam.split(",").map((s) => s.trim())
+                    : []
+                  const isChecked = currentLevelsArray.includes(levelObj.value)
                   return (
                     <Checkbox
-                      key={level}
+                      key={levelObj.value}
                       checked={isChecked}
                       onChange={(e) => {
                         const newParams = new URLSearchParams(searchParams)
+
+                        let newLevels = [...currentLevelsArray]
+
                         if (e.target.checked) {
-                          newParams.set("requiredLevel", level)
+                          if (!newLevels.includes(levelObj.value)) {
+                            newLevels.push(levelObj.value)
+                          }
                         } else {
-                          newParams.delete("requiredLevel")
+                          newLevels = newLevels.filter(
+                            (l) => l !== levelObj.value
+                          )
                         }
+
+                        // Set as comma-separated string or delete if empty
+                        if (newLevels.length > 0) {
+                          newParams.set("requiredLevels", newLevels.join(", "))
+                        } else {
+                          newParams.delete("requiredLevels")
+                        }
+
                         // Reset page to 1 when filter changes
                         newParams.set("page", "1")
                         setSearchParams(newParams)
                       }}
                       className="text-gray-600 font-medium hover:text-[#990011] transition-colors"
                     >
-                      {level}
+                      {levelObj.label}
                     </Checkbox>
                   )
                 })}
