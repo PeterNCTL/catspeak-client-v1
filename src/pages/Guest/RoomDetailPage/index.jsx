@@ -4,6 +4,7 @@ import { useGetRoomByIdQuery } from "@/store/api/roomsApi"
 import {
   useGetActiveVideoSessionsQuery,
   useJoinVideoSessionMutation,
+  useCreateVideoSessionMutation,
 } from "@/store/api/videoSessionsApi"
 import LiquidGlassButton from "@components/LiquidGlassButton"
 import {
@@ -23,10 +24,15 @@ const RoomDetailPage = () => {
     error,
   } = useGetRoomByIdQuery(id)
 
-  const { data: activeSessions, isLoading: isLoadingSessions } =
-    useGetActiveVideoSessionsQuery()
+  const {
+    data: activeSessions,
+    isLoading: isLoadingSessions,
+    refetch: refetchActiveSessions,
+  } = useGetActiveVideoSessionsQuery()
   const [joinVideoSession, { isLoading: isJoining }] =
     useJoinVideoSessionMutation()
+  const [createVideoSession, { isLoading: isCreating }] =
+    useCreateVideoSessionMutation()
 
   const activeSession = activeSessions?.find((s) => s.roomId === parseInt(id))
 
@@ -52,17 +58,53 @@ const RoomDetailPage = () => {
   })
 
   const handleJoinRoom = async () => {
-    if (!activeSession) return
     try {
-      await joinVideoSession(activeSession.sessionId).unwrap()
+      let sessionId
+
+      if (activeSession) {
+        // Session exists → join existing session
+        sessionId = activeSession.sessionId
+        try {
+          await joinVideoSession(sessionId).unwrap()
+        } catch (err) {
+          console.warn(
+            "Join session API failed (user might already be in session). Proceeding to room.",
+            err
+          )
+        }
+      } else {
+        // No session → create new session for this persistent room
+        try {
+          const newSession = await createVideoSession({
+            roomId: parseInt(id),
+          }).unwrap()
+          sessionId = newSession.sessionId
+        } catch (err) {
+          // Handle race condition: another user might have created session simultaneously
+          console.warn("Create session failed, checking for active session...", err)
+
+          // Retry: refetch active sessions and try to join
+          const { data: refreshedSessions } = await refetchActiveSessions()
+          const retrySession = refreshedSessions?.find((s) => s.roomId === parseInt(id))
+
+          if (retrySession) {
+            sessionId = retrySession.sessionId
+            await joinVideoSession(sessionId).unwrap()
+          } else {
+            // If still no session, show error
+            console.error("Failed to create or join session:", err)
+            alert("Không thể tham gia phòng. Vui lòng thử lại.")
+            return
+          }
+        }
+      }
+
+      // Navigate to video call room
+      navigate(`/meet/${sessionId}`)
     } catch (err) {
-      console.warn(
-        "Join session API failed (user might already be in session). Proceeding to room.",
-        err
-      )
+      console.error("Failed to join/create session:", err)
+      alert("Đã xảy ra lỗi. Vui lòng thử lại.")
     }
-    // Navigate regardless of API result, letting VideoCallRoom handle the specific session state
-    navigate(`/meet/${activeSession.sessionId}`)
   }
 
   const image =
@@ -80,9 +122,8 @@ const RoomDetailPage = () => {
               className="aspect-video w-full object-cover"
             />
             <div
-              className={`absolute left-6 top-6 rounded-full px-4 py-1 text-sm font-bold uppercase text-white shadow ${
-                room.status === 1 ? "bg-[#990011]" : "bg-gray-500"
-              }`}
+              className={`absolute left-6 top-6 rounded-full px-4 py-1 text-sm font-bold uppercase text-white shadow ${room.status === 1 ? "bg-[#990011]" : "bg-gray-500"
+                }`}
             >
               {room.status === 1 ? "Đang diễn ra" : "Đã kết thúc"}
             </div>
@@ -157,12 +198,13 @@ const RoomDetailPage = () => {
               variant="gradient"
               className="w-full rounded-2xl py-4 text-lg font-bold uppercase tracking-wide text-white disabled:opacity-50 disabled:cursor-not-allowed"
               onClick={handleJoinRoom}
+              disabled={isJoining || isCreating}
             >
               {isJoining
                 ? "Đang tham gia..."
-                : !activeSession
-                ? "Phiên chưa bắt đầu"
-                : "Tham gia ngay"}
+                : isCreating
+                  ? "Đang tạo phòng..."
+                  : "Tham gia ngay"}
             </LiquidGlassButton>
 
             <button

@@ -183,7 +183,7 @@ const VideoCallContent = ({
     // 2. Leave VideoSDK meeting
     leaveMeeting()
 
-    navigate("/rooms")
+    navigate("/community")
   }
 
   const handleCopyLink = () => {
