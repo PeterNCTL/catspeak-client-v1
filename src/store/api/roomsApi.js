@@ -22,9 +22,9 @@ export const roomsApi = baseApi.injectEndpoints({
         if (requiredLevel) {
           if (Array.isArray(requiredLevel)) {
             // Join array with comma and space to match backend format
-            params.append("requiredLevels", requiredLevel.join(", "))
+            params.append("requiredLevel", requiredLevel.join(", "))
           } else {
-            params.append("requiredLevels", requiredLevel)
+            params.append("requiredLevel", requiredLevel)
           }
         }
 

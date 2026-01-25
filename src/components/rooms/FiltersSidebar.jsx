@@ -85,7 +85,7 @@ const FiltersSidebar = () => {
 
               <div className="flex flex-col gap-3">
                 {currentLevels.map((levelObj) => {
-                  const requiredLevelsParam = searchParams.get("requiredLevels")
+                  const requiredLevelsParam = searchParams.get("requiredLevel")
                   const currentLevelsArray = requiredLevelsParam
                     ? requiredLevelsParam.split(",").map((s) => s.trim())
                     : []
@@ -111,9 +111,9 @@ const FiltersSidebar = () => {
 
                         // Set as comma-separated string or delete if empty
                         if (newLevels.length > 0) {
-                          newParams.set("requiredLevels", newLevels.join(", "))
+                          newParams.set("requiredLevel", newLevels.join(", "))
                         } else {
-                          newParams.delete("requiredLevels")
+                          newParams.delete("requiredLevel")
                         }
 
                         // Reset page to 1 when filter changes

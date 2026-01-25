@@ -17,12 +17,12 @@ const RegisterFormFields = ({ authText }) => {
 
   return (
     <>
-      {/* Full Name */}
+      {/* Username */}
       <FormInput
-        name="fullName"
+        name="username"
         label={authText.fullNameLabel}
         placeholder={authText.fullNamePlaceholder}
-        rules={[{ required: true, message: "Please input your full name!" }]}
+        rules={[{ required: true, message: "Please input your username!" }]}
       />
 
       {/* Email */}
@@ -36,21 +36,21 @@ const RegisterFormFields = ({ authText }) => {
         ]}
       />
 
-      {/* Phone Number and Language - Side by Side */}
+      {/* Date of Birth and Preferred Language - Side by Side */}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <FormInput
-          name="phoneNumber"
-          label={authText.phoneLabel}
-          placeholder={authText.phonePlaceholder}
+          name="dateOfBirth"
+          label="Ngày sinh"
+          placeholder="YYYY-MM-DD"
           rules={[
-            { required: true, message: "Please input your phone number!" },
+            { required: true, message: "Please input your date of birth!" },
           ]}
         />
 
         <FormSelect
-          name="language"
+          name="preferredLanguage"
           label={authText.languageLabel}
-          placeholder="Choose your language"
+          placeholder="Chọn ngôn ngữ bạn muốn học"
           rules={[{ required: true, message: "Please select a language!" }]}
           options={languageOptions}
         />
@@ -72,7 +72,7 @@ const RegisterFormFields = ({ authText }) => {
         <FormSelect
           name="country"
           label={authText.countryLabel}
-          placeholder="Choose your country"
+          placeholder="Chọn quốc gia bạn đang sinh sống"
           rules={[{ required: true, message: "Please select your country!" }]}
           options={countryOptions}
         />
@@ -89,10 +89,10 @@ const RegisterFormFields = ({ authText }) => {
                 value
                   ? Promise.resolve()
                   : Promise.reject(
-                      new Error(
-                        "You must agree to the terms and privacy policy",
-                      ),
+                    new Error(
+                      "You must agree to the terms and privacy policy",
                     ),
+                  ),
             },
           ]}
         >
@@ -123,8 +123,8 @@ const RegisterFormFields = ({ authText }) => {
                 value
                   ? Promise.resolve()
                   : Promise.reject(
-                      new Error("You must agree to the payment and IP policy"),
-                    ),
+                    new Error("You must agree to the payment and IP policy"),
+                  ),
             },
           ]}
         >
