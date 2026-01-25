@@ -35,7 +35,7 @@ export const useRoomsPageLogic = () => {
     : undefined
 
   const roomType = searchParams.get("roomType") || undefined
-  const requiredLevelsParam = searchParams.get("requiredLevels")
+  const requiredLevelsParam = searchParams.get("requiredLevel")
   // Split comma-separated values into array, filter empty strings
   const requiredLevel = requiredLevelsParam
     ? requiredLevelsParam.split(",").map((s) => s.trim()).filter(Boolean)
