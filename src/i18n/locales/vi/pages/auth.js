@@ -5,7 +5,8 @@ export default {
   forgotDescription:
     "Nhập email đã đăng ký, chúng tôi sẽ gửi hướng dẫn đặt lại mật khẩu cho bạn.",
   forgotStep1Title: "Quên mật khẩu?",
-  forgotStep1Subtitle: "Đừng lo! Nhập email của bạn và chúng tôi sẽ gửi mã xác thực",
+  forgotStep1Subtitle:
+    "Đừng lo! Nhập email của bạn và chúng tôi sẽ gửi mã xác thực",
   forgotStep2Title: "Xác minh OTP",
   forgotStep2Subtitle: "Chúng tôi đã gửi mã 6 chữ số đến",
   forgotStep3Title: "Đặt mật khẩu mới",
@@ -66,4 +67,18 @@ export default {
   privacyPolicy: "Chính sách bảo mật",
   paymentPolicy: "Chính sách thanh toán",
   ipPolicy: "Bản quyền sở hữu trí tuệ",
+  languagePlaceholder: "Chọn ngôn ngữ bạn muốn học",
+  countryPlaceholder: "Chọn quốc gia bạn đang sinh sống",
+  validationUsernameRequired: "Vui lòng nhập tên đăng nhập!",
+  validationEmailRequired: "Vui lòng nhập email!",
+  validationEmailInvalid: "Vui lòng nhập email hợp lệ!",
+  validationDobRequired: "Vui lòng nhập ngày sinh!",
+  validationLanguageRequired: "Vui lòng chọn ngôn ngữ!",
+  validationCountryRequired: "Vui lòng chọn quốc gia!",
+  validationPasswordRequired: "Vui lòng nhập mật khẩu!",
+  validationPasswordMin: "Mật khẩu phải có ít nhất 6 ký tự",
+  validationTermsRequired:
+    "Bạn phải đồng ý với điều khoản và chính sách bảo mật",
+  validationPolicyRequired:
+    "Bạn phải đồng ý với chính sách thanh toán và bản quyền",
 }

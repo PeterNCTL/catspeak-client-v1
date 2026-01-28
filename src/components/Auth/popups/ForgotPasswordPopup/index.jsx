@@ -4,7 +4,7 @@ import { MailOutlined } from "@ant-design/icons"
 import { useLanguage } from "@context/LanguageContext.jsx"
 import { Form, Input, Button, message } from "antd"
 import { useForgotPasswordMutation } from "@/store/api/authApi"
-import AuthPopupAnim from "./AuthPopupAnim"
+import AuthPopupAnim from "../../ui/AuthPopupAnim"
 
 const ForgotPasswordPopup = ({ onClose, onSwitchMode }) => {
   const { t } = useLanguage()

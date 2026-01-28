@@ -1,10 +1,10 @@
 import { useEffect } from "react"
 import { createPortal } from "react-dom"
 import { AnimatePresence } from "framer-motion"
-import LoginPopup from "./LoginPopup"
-import RegisterPopup from "./RegisterPopup"
+import LoginPopup from "./popups/LoginPopup/index.jsx"
+import RegisterPopup from "./popups/RegisterPopup/index.jsx"
 
-import ResetPasswordPopup from "./ResetPasswordPopup"
+import ResetPasswordPopup from "./popups/ResetPasswordPopup/index.jsx"
 
 const Auth = ({ isOpen, mode = "login", onClose, onSwitchMode }) => {
   if (!isOpen) return null

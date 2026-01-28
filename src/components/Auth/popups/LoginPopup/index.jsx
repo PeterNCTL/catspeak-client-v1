@@ -1,11 +1,13 @@
 import { useState } from "react"
 import { FiX } from "react-icons/fi"
 import { useLanguage } from "@context/LanguageContext.jsx"
-import AuthButton from "./AuthButton"
-import { Form, Input, Checkbox, message, Alert } from "antd"
+import AuthButton from "../../ui/AuthButton"
+import { Form, Checkbox, message, Alert } from "antd"
 
 import { useLoginMutation } from "@/store/api/authApi"
-import AuthPopupAnim from "./AuthPopupAnim"
+import AuthPopupAnim from "../../ui/AuthPopupAnim"
+
+import FormInput from "../../ui/FormInput"
 
 const LoginPopup = ({ onClose, onSwitchMode }) => {
   const { t } = useLanguage()
@@ -57,38 +59,25 @@ const LoginPopup = ({ onClose, onSwitchMode }) => {
         className="mt-8 flex flex-col gap-2"
         requiredMark={false}
       >
-        <Form.Item
+        <FormInput
           name="email"
-          label={
-            <span className="text-sm font-semibold text-gray-700">
-              {authText.emailLabel}
-            </span>
-          }
+          label={authText.emailLabel}
+          placeholder={authText.emailPlaceholder}
           rules={[
-            { required: true, message: "Please input your email!" },
-            { type: "email", message: "Please enter a valid email!" },
+            { required: true, message: authText.validationEmailRequired },
+            { type: "email", message: authText.validationEmailInvalid },
           ]}
-        >
-          <Input
-            placeholder={authText.emailPlaceholder}
-            className="rounded-full px-4 py-3 text-base"
-          />
-        </Form.Item>
+        />
 
-        <Form.Item
+        <FormInput
           name="password"
-          label={
-            <span className="text-sm font-semibold text-gray-700">
-              {authText.passwordLabel}
-            </span>
-          }
-          rules={[{ required: true, message: "Please input your password!" }]}
-        >
-          <Input.Password
-            placeholder={authText.passwordPlaceholder}
-            className="rounded-full px-4 py-3 text-base"
-          />
-        </Form.Item>
+          label={authText.passwordLabel}
+          placeholder={authText.passwordPlaceholder}
+          type="password"
+          rules={[
+            { required: true, message: authText.validationPasswordRequired },
+          ]}
+        />
 
         <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-gray-600 mb-2">
           <Form.Item name="remember" valuePropName="checked" noStyle>

@@ -1,10 +1,10 @@
 import { useState } from "react"
 import { FiX } from "react-icons/fi"
 import { useLanguage } from "@context/LanguageContext.jsx"
-import AuthButton from "./AuthButton"
+import AuthButton from "../../ui/AuthButton"
 import { useRegisterMutation } from "@/store/api/authApi"
 import { useNavigate } from "react-router-dom"
-import AuthPopupAnim from "./AuthPopupAnim"
+import AuthPopupAnim from "../../ui/AuthPopupAnim"
 import { Form, Alert, message } from "antd"
 import RegisterFormFields from "./RegisterFormFields"
 

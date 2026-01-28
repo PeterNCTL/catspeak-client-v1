@@ -5,7 +5,8 @@ export default {
   forgotDescription:
     "Enter the email you registered with and we will send password reset instructions.",
   forgotStep1Title: "Forgot Password?",
-  forgotStep1Subtitle: "No worries! Enter your email and we'll send you a reset code",
+  forgotStep1Subtitle:
+    "No worries! Enter your email and we'll send you a reset code",
   forgotStep2Title: "Verify OTP",
   forgotStep2Subtitle: "We've sent a 6-digit code to",
   forgotStep3Title: "Set New Password",
@@ -66,4 +67,16 @@ export default {
   privacyPolicy: "Privacy Policy",
   paymentPolicy: "Payment Policy",
   ipPolicy: "Intellectual Property Rights",
+  languagePlaceholder: "Select language you want to learn",
+  countryPlaceholder: "Select country you live in",
+  validationUsernameRequired: "Please input your username!",
+  validationEmailRequired: "Please input your email!",
+  validationEmailInvalid: "Please enter a valid email!",
+  validationDobRequired: "Please input your date of birth!",
+  validationLanguageRequired: "Please select a language!",
+  validationCountryRequired: "Please select your country!",
+  validationPasswordRequired: "Please input your password!",
+  validationPasswordMin: "Password must be at least 6 characters",
+  validationTermsRequired: "You must agree to the terms and privacy policy",
+  validationPolicyRequired: "You must agree to the payment and IP policy",
 }

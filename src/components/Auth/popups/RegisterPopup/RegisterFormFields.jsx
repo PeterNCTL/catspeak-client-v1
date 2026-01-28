@@ -1,6 +1,6 @@
-import FormInput from "./FormInput"
-import FormSelect from "./FormSelect"
-import AgreementCheckbox from "./AgreementCheckbox"
+import FormInput from "../../ui/FormInput"
+import FormSelect from "../../ui/FormSelect"
+import AgreementCheckbox from "../../ui/AgreementCheckbox"
 
 const RegisterFormFields = ({ authText }) => {
   const languageOptions = [
@@ -22,7 +22,9 @@ const RegisterFormFields = ({ authText }) => {
         name="username"
         label={authText.fullNameLabel}
         placeholder={authText.fullNamePlaceholder}
-        rules={[{ required: true, message: "Please input your username!" }]}
+        rules={[
+          { required: true, message: authText.validationUsernameRequired },
+        ]}
       />
 
       {/* Email */}
@@ -31,8 +33,8 @@ const RegisterFormFields = ({ authText }) => {
         label={authText.emailLabel}
         placeholder={authText.emailPlaceholder}
         rules={[
-          { required: true, message: "Please input your email!" },
-          { type: "email", message: "Please enter a valid email!" },
+          { required: true, message: authText.validationEmailRequired },
+          { type: "email", message: authText.validationEmailInvalid },
         ]}
       />
 
@@ -40,18 +42,21 @@ const RegisterFormFields = ({ authText }) => {
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <FormInput
           name="dateOfBirth"
-          label="Ngày sinh"
-          placeholder="YYYY-MM-DD"
-          rules={[
-            { required: true, message: "Please input your date of birth!" },
-          ]}
+          label={authText.dateOfBirthLabel}
+          placeholder={authText.dateOfBirthPlaceholder}
+          rules={[{ required: true, message: authText.validationDobRequired }]}
         />
 
         <FormSelect
           name="preferredLanguage"
           label={authText.languageLabel}
-          placeholder="Chọn ngôn ngữ bạn muốn học"
-          rules={[{ required: true, message: "Please select a language!" }]}
+          placeholder={authText.languagePlaceholder}
+          rules={[
+            {
+              required: true,
+              message: authText.validationLanguageRequired,
+            },
+          ]}
           options={languageOptions}
         />
       </div>
@@ -64,16 +69,18 @@ const RegisterFormFields = ({ authText }) => {
           placeholder={authText.passwordPlaceholder}
           type="password"
           rules={[
-            { required: true, message: "Please input your password!" },
-            { min: 6, message: "Password must be at least 6 characters" },
+            { required: true, message: authText.validationPasswordRequired },
+            { min: 6, message: authText.validationPasswordMin },
           ]}
         />
 
         <FormSelect
           name="country"
           label={authText.countryLabel}
-          placeholder="Chọn quốc gia bạn đang sinh sống"
-          rules={[{ required: true, message: "Please select your country!" }]}
+          placeholder={authText.countryPlaceholder}
+          rules={[
+            { required: true, message: authText.validationCountryRequired },
+          ]}
           options={countryOptions}
         />
       </div>
@@ -88,11 +95,7 @@ const RegisterFormFields = ({ authText }) => {
               validator: (_, value) =>
                 value
                   ? Promise.resolve()
-                  : Promise.reject(
-                    new Error(
-                      "You must agree to the terms and privacy policy",
-                    ),
-                  ),
+                  : Promise.reject(new Error(authText.validationTermsRequired)),
             },
           ]}
         >
@@ -123,8 +126,8 @@ const RegisterFormFields = ({ authText }) => {
                 value
                   ? Promise.resolve()
                   : Promise.reject(
-                    new Error("You must agree to the payment and IP policy"),
-                  ),
+                      new Error(authText.validationPolicyRequired),
+                    ),
             },
           ]}
         >

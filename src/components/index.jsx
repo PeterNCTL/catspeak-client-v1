@@ -1,6 +1,5 @@
-export { default as LiquidGlassButton } from './LiquidGlassButton'
-export { default as Auth } from './Auth'
-export { default as LoginPopup } from './Auth/LoginPopup'
-export { default as RegisterPopup } from './Auth/RegisterPopup'
-export { default as ForgotPasswordPopup } from './Auth/ForgotPasswordPopup'
-
+export { default as LiquidGlassButton } from "./LiquidGlassButton"
+export { default as Auth } from "./Auth"
+export { default as LoginPopup } from "./Auth/popups/LoginPopup/index.jsx"
+export { default as RegisterPopup } from "./Auth/popups/RegisterPopup/index.jsx"
+export { default as ForgotPasswordPopup } from "./Auth/popups/ForgotPasswordPopup"

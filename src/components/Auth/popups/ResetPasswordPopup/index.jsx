@@ -2,10 +2,10 @@ import React, { useState } from "react"
 import { FiX } from "react-icons/fi"
 import { CheckCircleOutlined } from "@ant-design/icons"
 import { Button } from "antd"
-import AuthPopupAnim from "./AuthPopupAnim"
-import RequestOtpStep from "./ResetPasswordSteps/RequestOtpStep"
-import VerifyOtpStep from "./ResetPasswordSteps/VerifyOtpStep"
-import ResetPasswordFormStep from "./ResetPasswordSteps/ResetPasswordFormStep"
+import AuthPopupAnim from "../../ui/AuthPopupAnim"
+import RequestOtpStep from "./RequestOtpStep"
+import VerifyOtpStep from "./VerifyOtpStep"
+import ResetPasswordFormStep from "./ResetPasswordFormStep"
 
 const STEPS = {
   REQUEST_OTP: 0,
