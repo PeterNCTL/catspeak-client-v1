@@ -38,6 +38,8 @@ export default {
   },
   filters: {
     title: "PHÒNG",
+    totalSuffix: "phòng",
+    breadcrumb: "Phòng",
     search: "Tìm kiếm",
     searchPlaceholder: "Tìm kiếm",
     topicsAndLevels: "CHỦ ĐỀ | TRÌNH ĐỘ",
@@ -60,6 +62,15 @@ export default {
       a1: "A1",
       b2: "B2",
     },
+    categories: {
+      random: "Kết nối ngẫu hứng",
+      exam: "Luyện thi",
+      friends: "Kết bạn bốn phương",
+      trending: "Trending",
+      practice: "Luyện thi",
+      others: "Khác",
+    },
+    seeMore: "Xem thêm",
   },
   tabs: {
     communicate: "Giao tiếp",
@@ -69,5 +80,20 @@ export default {
   },
   badge: {
     live: "ĐANG DIỄN RA",
+  },
+  createRoom: {
+    title: "Tên phòng của bạn là gì?",
+    namePlaceholder: "ví dụ: Luyện tập vui vẻ",
+    requiredLevel: "Trình độ yêu cầu",
+    cancel: "Hủy",
+    create: "Tạo phòng",
+    validation: {
+      required: "Vui lòng nhập tên phòng",
+      minLength: "Sử dụng ít nhất 3 ký tự",
+    },
+  },
+  sessionActions: {
+    queue11: "Ghép 1:1",
+    create25: "Tạo phòng 2:5",
   },
 }

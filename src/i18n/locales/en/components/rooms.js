@@ -37,6 +37,8 @@ export default {
   },
   filters: {
     title: "ROOMS",
+    totalSuffix: "rooms",
+    breadcrumb: "Rooms",
     search: "Search",
     searchPlaceholder: "Search",
     topicsAndLevels: "TOPICS | LEVELS",
@@ -59,6 +61,15 @@ export default {
       a1: "A1",
       b2: "B2",
     },
+    categories: {
+      random: "Random Connection",
+      exam: "Exam Prep",
+      friends: "Make Friends",
+      trending: "Trending",
+      practice: "Exam Prep",
+      others: "Others",
+    },
+    seeMore: "See more",
   },
   tabs: {
     communicate: "Communicate",
@@ -68,5 +79,20 @@ export default {
   },
   badge: {
     live: "LIVE NOW",
+  },
+  createRoom: {
+    title: "What's your room name?",
+    namePlaceholder: "e.g. Chill Practice",
+    requiredLevel: "Required Level",
+    cancel: "Cancel",
+    create: "Create Room",
+    validation: {
+      required: "Please enter a room name",
+      minLength: "Use at least 3 characters",
+    },
+  },
+  sessionActions: {
+    queue11: "Queue 1:1",
+    create25: "Create 2:5 room",
   },
 }

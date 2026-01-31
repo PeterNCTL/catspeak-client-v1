@@ -1,4 +1,3 @@
-import React from "react"
 import { motion } from "framer-motion"
 import { FiUsers, FiCpu, FiMessageCircle } from "react-icons/fi"
 import { useRoomsPageLogic } from "@/hooks/rooms/useRoomsPageLogic"

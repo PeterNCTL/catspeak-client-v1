@@ -1,12 +1,13 @@
 import { useState } from "react"
 import { createPortal } from "react-dom"
 import { AnimatePresence } from "framer-motion"
-import { LoginPopup, RegisterPopup } from "@components"
-import HeroSection from "./components/HeroSection"
-import LanguageBar from "./components/LanguageBar"
-import ValuesSection from "./components/ValuesSection"
-import AISection from "./components/AISection"
-import FAQSection from "./components/FAQSection"
+import LoginPopup from "@/components/Auth/popups/LoginPopup/index.jsx"
+import RegisterPopup from "@/components/Auth/popups/RegisterPopup/index.jsx"
+import HeroSection from "@/components/landing/HeroSection"
+import LanguageBar from "@/components/landing/LanguageBar"
+import ValuesSection from "@/components/landing/ValuesSection"
+import AISection from "@/components/landing/AISection"
+import FAQSection from "@/components/landing/FAQSection"
 
 const LandingPage = () => {
   const [authModal, setAuthModal] = useState({

@@ -3,7 +3,7 @@ export default {
   ourCommunity: "Cộng đồng của chúng tôi",
   foundingTeam: "Đội ngũ founders sáng lập",
   contactUs: "Liên lạc với chúng tôi",
-  usernamePlaceholder: "Username",
+  contactPlaceholder: "Nhập thông tin cần liên lạc với chúng tôi",
   emailPlaceholder: "Email",
   contactMessage: "sẽ liên lạc với bạn sớm nhất có thể bạn nhé^^",
   sendContact: "Gửi thông tin liên hệ",

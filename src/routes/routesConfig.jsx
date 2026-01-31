@@ -9,9 +9,13 @@ import {
   QueuePage,
   ComingSoonPage,
   RoomsPage,
-  CatSpeakPage,
+  // CatSpeakPage, // Deprecated in route config, replaced by NewsPage etc.
+  NewsPage,
+  DiscoverPage,
+  VideoPage,
+  MailPage,
+  CatSpeakLayout,
   VerifyEmailPage,
-  CreateRoomPage,
 } from "@pages/Guest"
 import { UserDashboard, UserProfile, UserSetting } from "@pages/User"
 import { AdminPage } from "@pages/Admin"
@@ -46,7 +50,29 @@ const routesConfig = [
       },
       {
         path: "cat-speak",
-        element: <CatSpeakPage />,
+        element: <CatSpeakLayout />,
+        children: [
+          {
+            index: true,
+            element: <Navigate to="news" replace />,
+          },
+          {
+            path: "news",
+            element: <NewsPage />,
+          },
+          {
+            path: "discover",
+            element: <DiscoverPage />,
+          },
+          {
+            path: "video",
+            element: <VideoPage />,
+          },
+          {
+            path: "mail",
+            element: <MailPage />,
+          },
+        ],
       },
       {
         path: "room/:id",
@@ -122,14 +148,6 @@ const routesConfig = [
     element: (
       <AuthGuard>
         <QueuePage />
-      </AuthGuard>
-    ),
-  },
-  {
-    path: "/create-room",
-    element: (
-      <AuthGuard>
-        <CreateRoomPage />
       </AuthGuard>
     ),
   },

@@ -1,7 +1,7 @@
 import React from "react"
 import { ConfigProvider } from "antd"
 import { MainLogo } from "@assets/icons/logo"
-import LanguageSwitcher from "@components/LanguageSwitcher"
+import LanguageSwitcher from "@/components/common/LanguageSwitcher"
 
 const AuthLayout = ({ children, title, subtitle }) => {
   return (

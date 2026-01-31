@@ -7,7 +7,7 @@ import HeaderLogo from "./Header/HeaderLogo"
 import HeaderNav, { navLinks } from "./Header/HeaderNav"
 import HeaderUserControls from "./Header/HeaderUserControls"
 import HeaderGuestControls from "./Header/HeaderGuestControls"
-import LanguageSwitcher from "@/components/LanguageSwitcher"
+import LanguageSwitcher from "@/components/common/LanguageSwitcher"
 import { useLanguage } from "@/context/LanguageContext"
 
 import useAuth from "@/hooks/useAuth"
@@ -18,7 +18,7 @@ const HeaderBar = ({ onGetStarted }) => {
   const [drawerOpen, setDrawerOpen] = React.useState(false)
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-white/95 shadow-[0_10px_40px_rgba(0,0,0,0.05)] backdrop-blur border-b">
+    <header className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur border-b">
       <div className="mx-auto flex max-w-screen-xl items-center justify-between px-8 py-5 max-md:px-4">
         {/* Left Section: Burger (Mobile) + Logo */}
         <div className="flex items-center gap-4">

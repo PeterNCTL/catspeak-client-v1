@@ -1,7 +1,6 @@
 import { useState, useMemo } from "react"
-import { useNavigate, useSearchParams } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import { useCreateVideoSessionMutation } from "@/store/api/videoSessionsApi"
-import { useGetRoomsQuery } from "@/store/api/roomsApi"
 import { useLanguage } from "@/context/LanguageContext"
 import { useAuthModal } from "@/context/AuthModalContext"
 import useAuth from "@/hooks/useAuth"
@@ -14,7 +13,6 @@ export const useRoomsPageLogic = () => {
   const [active, setActive] = useState(0)
   const [allowConnect, setAllowConnect] = useState(true)
   const [page, setPage] = useState(1)
-  const pageSize = 6
   const [tab, setTab] = useState("communicate")
   const [liveInput, setLiveInput] = useState("")
   const [userLetters, setUserLetters] = useState(2)
@@ -26,44 +24,14 @@ export const useRoomsPageLogic = () => {
   const [createVideoSession, { isLoading: isCreating }] =
     useCreateVideoSessionMutation()
 
-  // Read filters from URL
-  const [searchParams] = useSearchParams()
-  // "language" in URL -> "languageType" for API (capitalize first letter: "vietnamese" -> "Vietnamese")
-  const rawLanguage = searchParams.get("language")
-  const languageType = rawLanguage
-    ? rawLanguage.charAt(0).toUpperCase() + rawLanguage.slice(1)
-    : undefined
-
-  const roomType = searchParams.get("roomType") || undefined
-  const requiredLevelsParam = searchParams.get("requiredLevel")
-  // Split comma-separated values into array, filter empty strings
-  const requiredLevel = requiredLevelsParam
-    ? requiredLevelsParam.split(",").map((s) => s.trim()).filter(Boolean)
-    : []
-  // If array is empty, pass undefined to avoid sending empty param or empty array logic
-  const requiredLevelArg = requiredLevel.length > 0 ? requiredLevel : undefined
-
-  // Pass pagination & filters params to the query
-  const { data: responseData, isLoading: isLoadingRooms } = useGetRoomsQuery({
-    page,
-    pageSize,
-    roomType,
-    languageType,
-    requiredLevel: requiredLevelArg,
-  })
-
-  // Extract rooms and pagination data safely
-  const rooms = Array.isArray(responseData?.data) ? responseData.data : []
-  const additionalData = responseData?.additionalData || {}
-  const totalCount = additionalData.totalCount || 0
-
-  // Note: API returns totalPages, but we can also calculate it or just use it.
-  // The API response says "totalPages": 8.
-  const apiTotalPages = additionalData.totalPages || 0
-
   // Separate loading states
   const [isCreatingOneOnOne, setIsCreatingOneOnOne] = useState(false)
   const [isCreatingStudyGroup, setIsCreatingStudyGroup] = useState(false)
+
+  /*
+   * NEW: Modal State for Create Room
+   */
+  const [isCreateRoomModalOpen, setCreateRoomModalOpen] = useState(false)
 
   const handleCreateOneOnOneSession = () => {
     // Check if user is authenticated
@@ -83,20 +51,11 @@ export const useRoomsPageLogic = () => {
       return
     }
 
-    navigate({
-      pathname: "/create-room",
-      search: searchParams.toString(),
-    })
+    // Open Modal instead of navigating
+    setCreateRoomModalOpen(true)
   }
 
   const current = useMemo(() => slides[active] || {}, [active, slides])
-
-  // Total pages now comes from API or calculated from totalCount if needed.
-  // Using Math.max(1, ...) ensures at least 1 page.
-  const totalPages = Math.max(1, apiTotalPages)
-
-  // Rooms are already paged by the API, so we just return them.
-  const pagedRooms = rooms
 
   const handleSendLive = (msg) => {
     if (!msg?.trim()) return
@@ -119,13 +78,10 @@ export const useRoomsPageLogic = () => {
       isCreating: isCreating || isCreatingOneOnOne || isCreatingStudyGroup, // Backward compatibility or global loading
       isCreatingOneOnOne,
       isCreatingStudyGroup,
-      isLoadingRooms,
-      rooms, // This is the current page's rooms
+      isCreateRoomModalOpen,
     },
     derived: {
       current,
-      totalPages,
-      pagedRooms,
       slides, // Export slides so UI components can use the same translated list
     },
     actions: {
@@ -139,6 +95,7 @@ export const useRoomsPageLogic = () => {
       handleSendLive,
       next,
       prev,
+      setCreateRoomModalOpen,
     },
   }
 }

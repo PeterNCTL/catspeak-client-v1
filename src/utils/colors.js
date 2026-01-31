@@ -48,6 +48,7 @@ export const colors = {
   secondary: "#1E1F26",
   primaryText: "#868CA0",
   text555: "#555",
+  textGray: "#7A7574",
 
   // Border colors
   border: "#E5E5E5",

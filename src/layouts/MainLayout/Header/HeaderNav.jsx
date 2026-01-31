@@ -124,7 +124,7 @@ const HeaderNav = () => {
   }
 
   return (
-    <nav className="hidden items-center justify-between rounded-full bg-[linear-gradient(180deg,#f5c34a_0%,#f08d1d_20%,#c2131a_100%)] p-1 gap-1 text-white shadow-[0_4px_12px_rgba(194,19,26,0.2)] lg:flex">
+    <nav className="hidden items-center justify-between rounded-full bg-[linear-gradient(180deg,#FAC126_0%,#990011_100%)] p-1 gap-1 text-white shadow-[0_4px_12px_rgba(194,19,26,0.2)] lg:flex">
       {navLinks.map(renderNavItem)}
     </nav>
   )

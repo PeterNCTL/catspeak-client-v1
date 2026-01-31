@@ -1,9 +1,11 @@
 import { HoGuomBaner } from "@assets/images/home"
 import { useLanguage } from "@context/LanguageContext.jsx"
 import LiquidGlassButton from "@components/LiquidGlassButton"
+import useAuth from "@/hooks/useAuth"
 
 const HeroSection = ({ openAuthModal }) => {
   const { t } = useLanguage()
+  const { isAuthenticated } = useAuth()
 
   return (
     <div className="relative mx-auto overflow-visible rounded-[32px] bg-gradient-to-b from-cath-red-500 via-cath-red-700 to-[#f08d1d] p-6 md:p-12 drop-shadow-[0_20px_30px_rgba(0,0,0,0.15)]">
@@ -19,23 +21,25 @@ const HeroSection = ({ openAuthModal }) => {
               className="w-full h-52 object-cover md:h-64 lg:h-[320px]"
             />
 
-            {/* Nút phía dưới ảnh */}
-            <div className="absolute bottom-6 left-6 right-6 flex flex-col-reverse gap-3 sm:flex-row-reverse sm:gap-4 z-20">
-              <LiquidGlassButton
-                onClick={() => openAuthModal("login")}
-                variant="default"
-                className="flex-1 w-full sm:w-auto sm:max-w-[220px] rounded-[999px] px-6 py-3 text-sm font-semibold text-white"
-              >
-                {t.auth.loginButton}
-              </LiquidGlassButton>
-              <LiquidGlassButton
-                onClick={() => openAuthModal("register")}
-                variant="yellow"
-                className="flex-1 w-full sm:w-auto sm:max-w-[220px] rounded-[999px] px-6 py-3 text-sm font-semibold text-white"
-              >
-                {t.auth.registerButton}
-              </LiquidGlassButton>
-            </div>
+            {/* Buton action, hide if user is logged in */}
+            {!isAuthenticated && (
+              <div className="absolute bottom-6 left-6 right-6 z-20 flex flex-col-reverse gap-3 sm:flex-row-reverse sm:gap-4">
+                <LiquidGlassButton
+                  onClick={() => openAuthModal("login")}
+                  variant="default"
+                  className="w-full flex-1 rounded-[999px] px-6 py-3 text-sm font-semibold text-white sm:w-auto sm:max-w-[220px]"
+                >
+                  {t.auth.loginButton}
+                </LiquidGlassButton>
+                <LiquidGlassButton
+                  onClick={() => openAuthModal("register")}
+                  variant="yellow"
+                  className="w-full flex-1 rounded-[999px] px-6 py-3 text-sm font-semibold text-white sm:w-auto sm:max-w-[220px]"
+                >
+                  {t.auth.registerButton}
+                </LiquidGlassButton>
+              </div>
+            )}
           </div>
 
           {/* Khung trắng trang trí ở góc dưới trái (giống mẫu) */}

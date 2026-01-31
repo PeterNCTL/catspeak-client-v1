@@ -1,41 +1,52 @@
 import React, { useState } from "react"
 import { Dropdown } from "antd"
 import { FiChevronDown } from "react-icons/fi"
-import { useLanguage } from "../context/LanguageContext"
+import { useLanguage } from "@/context/LanguageContext"
+
+import colors from "@/utils/colors"
 
 const LanguageSwitcher = ({ className = "" }) => {
   const { language, setLanguage } = useLanguage()
   const [isOpen, setIsOpen] = useState(false)
 
+  const getItemStyle = (key) => ({
+    backgroundColor: language === key ? colors.primary2 : "transparent",
+    borderRadius: "8px",
+  })
+
   const items = [
     {
       key: "vi",
+      style: getItemStyle("vi"),
       label: (
-        <div className="px-2 py-1.5">
-          <span className="text-sm font-semibold text-gray-700">
-            Tiếng Việt
-          </span>
-        </div>
+        <span className="text-sm font-semibold text-gray-700">
+          Tiếng Việt (Quốc Ngữ)
+        </span>
       ),
       onClick: () => setLanguage("vi"),
     },
     {
-      key: "cn",
+      key: "vi-nom",
       label: (
-        <div className="px-2 py-1.5">
-          <span className="text-sm font-semibold text-gray-700">
-            Tiếng Trung
-          </span>
-        </div>
+        <span className="text-sm font-semibold text-gray-400 cursor-not-allowed">
+          Tiếng Việt (Nôm) - Sắp ra mắt
+        </span>
       ),
-      onClick: () => setLanguage("cn"),
+      disabled: true,
+    },
+    {
+      key: "zh",
+      style: getItemStyle("zh"),
+      label: (
+        <span className="text-sm font-semibold text-gray-700">Tiếng Trung</span>
+      ),
+      onClick: () => setLanguage("zh"),
     },
     {
       key: "en",
+      style: getItemStyle("en"),
       label: (
-        <div className="px-2 py-1.5">
-          <span className="text-sm font-semibold text-gray-700">Tiếng Anh</span>
-        </div>
+        <span className="text-sm font-semibold text-gray-700">Tiếng Anh</span>
       ),
       onClick: () => setLanguage("en"),
     },
@@ -44,8 +55,8 @@ const LanguageSwitcher = ({ className = "" }) => {
   const getDisplayLabel = () => {
     switch (language) {
       case "vi":
-        return "Tiếng Việt"
-      case "cn":
+        return "Tiếng Việt (Quốc Ngữ)"
+      case "zh":
         return "Tiếng Trung"
       case "en":
         return "Tiếng Anh"

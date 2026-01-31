@@ -3,7 +3,7 @@ export default {
   ourCommunity: "Our Community",
   foundingTeam: "Founding Team",
   contactUs: "Contact Us",
-  usernamePlaceholder: "Username",
+  contactPlaceholder: "Enter your contact information",
   emailPlaceholder: "Email",
   contactMessage: "will contact you as soon as possible^^",
   sendContact: "Send contact information",

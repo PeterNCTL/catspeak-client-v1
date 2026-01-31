@@ -1,46 +1,81 @@
 import React from "react"
-import { Pagination, Tabs, ConfigProvider } from "antd"
-import { motion } from "framer-motion"
+import { Tabs, ConfigProvider } from "antd"
 import { FiMessageCircle, FiMonitor, FiUsers, FiLayers } from "react-icons/fi"
-// RoomTabs import removed
+import { useSearchParams } from "react-router-dom"
 import FiltersSidebar from "@/components/rooms/FiltersSidebar"
 import ClassSidebar from "@/components/rooms/ClassSidebar"
-import RoomsGrid from "@/components/rooms/RoomsGrid"
 import { useRoomsPageLogic } from "@/hooks/rooms/useRoomsPageLogic"
 import WelcomeSection from "@/components/rooms/WelcomeSection"
 import SessionActionButtons from "@/components/rooms/SessionActionButtons"
 import HeroCarousel from "@/components/rooms/HeroCarousel"
-import LiveMessages from "@/components/rooms/LiveMessages"
 import { useLanguage } from "@/context/LanguageContext"
-import ClassTab from "@/components/rooms/ClassTab"
-import colors from "@/utils/colors"
+import { useGetRoomsQuery } from "@/store/api/roomsApi"
+import {
+  CommunicateTab,
+  TeachingTab,
+  GroupTab,
+  ClassTab,
+} from "@/components/rooms/tabs"
+import CreateRoomModal from "@/components/rooms/CreateRoomModal"
 
 const RoomsPage = () => {
   const { t } = useLanguage()
   const { state, derived, actions } = useRoomsPageLogic()
+  const { allowConnect, page, tab } = state
+  const { slides } = derived
   const {
-    active,
-    allowConnect,
-    page,
-    tab,
-    liveInput,
-    userLetters,
-    totalLetters,
-    // isCreating, // Not strictly needed here anymore if we use split states directly
-  } = state
-  const { current, totalPages, pagedRooms, slides } = derived
-  const {
-    setActive,
     setAllowConnect,
     setPage,
     setTab,
-    setLiveInput,
     handleCreateOneOnOneSession,
     handleCreateStudyGroupSession,
-    handleSendLive,
-    next,
-    prev,
   } = actions
+
+  // --- Extracting Data Fetching Logic ---
+  const [searchParams] = useSearchParams()
+  const languageParam = searchParams.get("language")
+  const languageType = languageParam
+    ? languageParam
+        .split(",")
+        .map((l) => l.trim().replace(/^\w/, (c) => c.toUpperCase()))
+        .filter(Boolean)
+    : undefined
+
+  const requiredLevelsParam = searchParams.get("requiredLevels")
+  const requiredLevels = requiredLevelsParam
+    ? requiredLevelsParam
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean)
+    : []
+  const requiredLevelsArg =
+    requiredLevels.length > 0 ? requiredLevels : undefined
+  const categoriesParam = searchParams.get("categories")
+  const categories = categoriesParam
+    ? categoriesParam.split(",").map((c) => c.trim())
+    : undefined
+  const pageSize = 12
+
+  // Only fetch data in RoomsPage if we are in a specific category (Filtered View)
+  // Otherwise, the CommunicateTab's sections will fetch their own data.
+  const shouldFetch = !!categories
+
+  const { data: responseData, isLoading } = useGetRoomsQuery(
+    {
+      page,
+      pageSize,
+      languageType,
+      requiredLevels: requiredLevelsArg,
+      categories,
+    },
+    { skip: !shouldFetch },
+  )
+
+  // Process data
+  const rooms = responseData?.data ?? []
+  const additionalData = responseData?.additionalData ?? {}
+  const totalPages = additionalData.totalPages || 1
+  // --------------------------------------
 
   return (
     <div className="w-full">
@@ -73,7 +108,6 @@ const RoomsPage = () => {
         {tab === "class" ? <ClassSidebar /> : <FiltersSidebar />}
 
         {/* Content area - NOW ON RIGHT */}
-        {/* Content area - NOW ON RIGHT */}
         <div className="flex flex-col">
           <ConfigProvider
             theme={{
@@ -95,38 +129,15 @@ const RoomsPage = () => {
                     </span>
                   ),
                   children: (
-                    <>
-                      {pagedRooms.length > 0 ? (
-                        <>
-                          <RoomsGrid rooms={pagedRooms} />
-
-                          {/* Pagination (Moved from RoomsGrid) */}
-                          <div className="mt-6 flex justify-center">
-                            <Pagination
-                              current={page} // page is 1-indexed
-                              pageSize={1} // Treat each "item" as a page since we only have totalPages
-                              total={totalPages}
-                              onChange={setPage}
-                              showSizeChanger={false}
-                            />
-                          </div>
-                        </>
-                      ) : (
-                        <div
-                          className="flex flex-col border items-center justify-center rounded-3xl bg-white py-20 text-center"
-                          style={{ borderColor: colors.border }}
-                        >
-                          <div className="mb-4 text-6xl">🏜️</div>
-                          <h3 className="mb-2 text-xl font-bold text-gray-800">
-                            No rooms found
-                          </h3>
-                          <p className="text-gray-500">
-                            There are no active rooms right now. Why not create
-                            one?
-                          </p>
-                        </div>
-                      )}
-                    </>
+                    <CommunicateTab
+                      rooms={rooms}
+                      selectedCategories={categories}
+                      page={page}
+                      totalPages={totalPages}
+                      setPage={setPage}
+                      languageType={languageType}
+                      requiredLevels={requiredLevelsArg}
+                    />
                   ),
                 },
                 {
@@ -137,14 +148,7 @@ const RoomsPage = () => {
                       {t.rooms.tabs.teaching}
                     </span>
                   ),
-                  children: (
-                    <div
-                      className="rounded-3xl border bg-white p-10 text-center text-gray-500"
-                      style={{ borderColor: colors.border }}
-                    >
-                      Nội dung cho tab "teaching" sẽ được cập nhật.
-                    </div>
-                  ),
+                  children: <TeachingTab />,
                 },
                 {
                   key: "group",
@@ -154,14 +158,7 @@ const RoomsPage = () => {
                       {t.rooms.tabs.group}
                     </span>
                   ),
-                  children: (
-                    <div
-                      className="rounded-3xl border bg-white p-10 text-center text-gray-500"
-                      style={{ borderColor: colors.border }}
-                    >
-                      Nội dung cho tab "group" sẽ được cập nhật.
-                    </div>
-                  ),
+                  children: <GroupTab />,
                 },
                 {
                   key: "class",
@@ -178,6 +175,10 @@ const RoomsPage = () => {
           </ConfigProvider>
         </div>
       </div>
+      <CreateRoomModal
+        open={state.isCreateRoomModalOpen}
+        onCancel={() => actions.setCreateRoomModalOpen(false)}
+      />
     </div>
   )
 }

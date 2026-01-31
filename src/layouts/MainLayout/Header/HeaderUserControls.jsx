@@ -76,14 +76,14 @@ const HeaderUserControls = () => {
   return (
     <div className="flex items-center gap-4">
       {/* Notification Bell */}
-      <button className="relative hidden lg:flex items-center justify-center h-10 w-10 rounded-full bg-gradient-to-b from-[#f5c34a] to-[#c2131a] shadow-lg hover:shadow-xl transition-shadow">
+      <button className="relative hidden lg:flex items-center justify-center h-10 w-10 rounded-full bg-gradient-to-b from-[#FAC126] to-[#990011] shadow-lg hover:shadow-xl transition-shadow">
         <FiBell className="h-5 w-5 text-white" />
       </button>
 
       {/* Avatar / Profile Trigger */}
       <div className="relative">
         <Dropdown
-          dropdownRender={() => dropdownContent}
+          popupRender={() => dropdownContent}
           trigger={["click"]}
           open={isOpen}
           onOpenChange={setIsOpen}
@@ -97,7 +97,7 @@ const HeaderUserControls = () => {
                 className={`flex items-center justify-center h-10 w-10 rounded-full overflow-hidden shadow-lg ${
                   user?.avatarImageUrl && !imageError
                     ? "bg-gray-100"
-                    : "bg-gradient-to-b from-[#f5c34a] to-[#c2131a]"
+                    : "bg-gradient-to-b from-[#FAC126] to-[#990011]"
                 }`}
               >
                 {user?.avatarImageUrl && !imageError ? (

@@ -4,27 +4,41 @@ import { baseApi } from "./baseApi"
 export const roomsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     // Get all rooms created by the current user
-    // Get all rooms created by the current user
     getRooms: builder.query({
       query: ({
         page = 1,
         pageSize = 10,
         roomType,
         languageType,
-        requiredLevel,
+        requiredLevels,
+        categories,
       } = {}) => {
         const params = new URLSearchParams({
           page,
           pageSize,
         })
         if (roomType) params.append("roomType", roomType)
-        if (languageType) params.append("languageType", languageType)
-        if (requiredLevel) {
-          if (Array.isArray(requiredLevel)) {
-            // Join array with comma and space to match backend format
-            params.append("requiredLevel", requiredLevel.join(", "))
+        if (languageType) {
+          if (Array.isArray(languageType)) {
+            languageType.forEach((lang) => params.append("languageTypes", lang))
           } else {
-            params.append("requiredLevel", requiredLevel)
+            params.append("languageTypes", languageType)
+          }
+        }
+        if (categories) {
+          if (Array.isArray(categories)) {
+            params.append("categories", categories.join(", "))
+          } else {
+            params.append("categories", categories)
+          }
+        }
+        if (requiredLevels) {
+          if (Array.isArray(requiredLevels)) {
+            requiredLevels.forEach((level) =>
+              params.append("requiredLevels", level),
+            )
+          } else {
+            params.append("requiredLevels", requiredLevels)
           }
         }
 

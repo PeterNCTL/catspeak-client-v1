@@ -14,7 +14,7 @@ const ContactSection = () => {
       <div className="px-0 w-full max-w-md">
         <form className="flex flex-col gap-5">
           <Input
-            placeholder={footerText.usernamePlaceholder}
+            placeholder={footerText.contactPlaceholder}
             className="rounded-full border border-white/60 bg-white px-5 py-2 text-base text-gray-800 placeholder-gray-400 shadow-md hover:border-yellow-300 focus:border-yellow-300"
           />
           <Input

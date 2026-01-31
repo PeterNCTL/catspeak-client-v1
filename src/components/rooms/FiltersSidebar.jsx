@@ -14,6 +14,11 @@ const LEVELS = {
     { label: "C1", value: "C1" },
     { label: "C2", value: "C2" },
   ],
+  vietnamese: [
+    { label: "Beginner", value: "Beginner" },
+    { label: "Intermediate", value: "Intermediate" },
+    { label: "Advanced", value: "Advanced" },
+  ],
   chinese: [
     { label: "HSK 1", value: "HSK1" },
     { label: "HSK 2", value: "HSK2" },
@@ -28,8 +33,9 @@ const FiltersSidebar = () => {
   const { t } = useLanguage()
   const filtersText = t.rooms.filters
   const [searchParams, setSearchParams] = useSearchParams()
-  const currentLanguage = searchParams.get("language") || "english"
-  const currentLevels = LEVELS[currentLanguage]
+  const currentLanguage =
+    searchParams.get("language")?.toLowerCase() || "english"
+  const currentLevels = LEVELS[currentLanguage] || LEVELS.english
 
   // Use Ant Design theme token for consistent colors
   const { token } = theme.useToken()
@@ -85,7 +91,7 @@ const FiltersSidebar = () => {
 
               <div className="flex flex-col gap-3">
                 {currentLevels.map((levelObj) => {
-                  const requiredLevelsParam = searchParams.get("requiredLevel")
+                  const requiredLevelsParam = searchParams.get("requiredLevels")
                   const currentLevelsArray = requiredLevelsParam
                     ? requiredLevelsParam.split(",").map((s) => s.trim())
                     : []
@@ -105,15 +111,15 @@ const FiltersSidebar = () => {
                           }
                         } else {
                           newLevels = newLevels.filter(
-                            (l) => l !== levelObj.value
+                            (l) => l !== levelObj.value,
                           )
                         }
 
                         // Set as comma-separated string or delete if empty
                         if (newLevels.length > 0) {
-                          newParams.set("requiredLevel", newLevels.join(", "))
+                          newParams.set("requiredLevels", newLevels.join(","))
                         } else {
-                          newParams.delete("requiredLevel")
+                          newParams.delete("requiredLevels")
                         }
 
                         // Reset page to 1 when filter changes

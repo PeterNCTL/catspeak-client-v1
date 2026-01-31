@@ -1,6 +1,16 @@
-import React from "react";
-import { Card, Col, Descriptions, Row, Typography, Calendar, Space, List, Tag } from "antd";
-import { FolderFilled, FileFilled } from "@ant-design/icons";
+import React from "react"
+import {
+  Card,
+  Col,
+  Descriptions,
+  Row,
+  Typography,
+  Calendar,
+  Space,
+  List,
+  Tag,
+} from "antd"
+import { FolderFilled, FileFilled } from "@ant-design/icons"
 
 const classInfo = {
   code: "CATH-ENG-A2",
@@ -13,19 +23,19 @@ const classInfo = {
   finishDate: "10/11/2025",
   breakCount: 0,
   link: "https://cathspeak.com/class/a2",
-};
+}
 
 const materials = [
   { name: "11/09/2025", size: "26.5MB", type: "folder" },
   { name: "15/09/2025", size: "18.2MB", type: "folder" },
   { name: "Slides_Week1.pdf", size: "4.5MB", type: "file" },
-];
+]
 
 const records = [
   { name: "Record_11-09-2025.mp4", size: "26.5MB" },
   { name: "Record_18-09-2025.mp4", size: "28.1MB" },
   { name: "Record_25-09-2025.mp4", size: "27.3MB" },
-];
+]
 
 const ClassTab = () => {
   return (
@@ -40,13 +50,27 @@ const ClassTab = () => {
               labelStyle={{ width: 140 }}
               contentStyle={{ fontWeight: 500 }}
             >
-              <Descriptions.Item label="Mã lớp">{classInfo.code}</Descriptions.Item>
-              <Descriptions.Item label="Tên lớp">{classInfo.name}</Descriptions.Item>
-              <Descriptions.Item label="Giáo viên">{classInfo.teacher}</Descriptions.Item>
-              <Descriptions.Item label="Số lượng học viên">{classInfo.students}</Descriptions.Item>
-              <Descriptions.Item label="Tổng buổi học">{classInfo.sessions}</Descriptions.Item>
-              <Descriptions.Item label="Nghỉ học">{classInfo.breakCount}</Descriptions.Item>
-              <Descriptions.Item label="Học phí">{classInfo.tuition}</Descriptions.Item>
+              <Descriptions.Item label="Mã lớp">
+                {classInfo.code}
+              </Descriptions.Item>
+              <Descriptions.Item label="Tên lớp">
+                {classInfo.name}
+              </Descriptions.Item>
+              <Descriptions.Item label="Giáo viên">
+                {classInfo.teacher}
+              </Descriptions.Item>
+              <Descriptions.Item label="Số lượng học viên">
+                {classInfo.students}
+              </Descriptions.Item>
+              <Descriptions.Item label="Tổng buổi học">
+                {classInfo.sessions}
+              </Descriptions.Item>
+              <Descriptions.Item label="Nghỉ học">
+                {classInfo.breakCount}
+              </Descriptions.Item>
+              <Descriptions.Item label="Học phí">
+                {classInfo.tuition}
+              </Descriptions.Item>
               <Descriptions.Item label="Ngày dự kiến kết thúc">
                 {classInfo.finishDate}
               </Descriptions.Item>
@@ -95,7 +119,9 @@ const ClassTab = () => {
           renderItem={(item) => (
             <List.Item>
               <List.Item.Meta
-                avatar={<FileFilled style={{ color: "#1890ff", fontSize: 20 }} />}
+                avatar={
+                  <FileFilled style={{ color: "#1890ff", fontSize: 20 }} />
+                }
                 title={item.name}
                 description={<Tag color="default">{item.size}</Tag>}
               />
@@ -104,8 +130,7 @@ const ClassTab = () => {
         />
       </Card>
     </Space>
-  );
-};
+  )
+}
 
-export default ClassTab;
-
+export default ClassTab

@@ -1,9 +1,7 @@
 import { motion } from "framer-motion"
+import { fluentEaseOut } from "@/utils/animations"
 
 const AuthPopupAnim = ({ children, className, ...props }) => {
-  // Fluent design motion curve
-  const fluentEaseOut = [0.16, 1, 0.3, 1]
-
   // Animation variants
   const modalVariants = {
     hidden: {

@@ -2,6 +2,7 @@ import React from "react"
 import { motion } from "framer-motion"
 import { BubblePillMessage } from "@/components/ui/button"
 import { badges } from "@/constants/constants"
+import { useLanguage } from "@/context/LanguageContext"
 
 const SessionActionButtons = ({
   handleCreateOneOnOneSession,
@@ -9,6 +10,8 @@ const SessionActionButtons = ({
   isCreatingOneOnOne,
   isCreatingStudyGroup,
 }) => {
+  const { t } = useLanguage()
+
   return (
     <div className="relative mt-6 pl-6">
       {/* Line removed as requested */}
@@ -28,6 +31,11 @@ const SessionActionButtons = ({
             (isOneOnOne && isCreatingOneOnOne) ||
             (isStudyGroup && isCreatingStudyGroup)
 
+          // Determine translated label based on the original label
+          let label = b.label
+          if (isOneOnOne) label = t.rooms.sessionActions.queue11
+          if (isStudyGroup) label = t.rooms.sessionActions.create25
+
           return (
             <motion.div
               key={b.label}
@@ -43,7 +51,7 @@ const SessionActionButtons = ({
                 ) : (
                   <Icon className="mr-2 h-4 w-4" />
                 )}
-                {b.label}
+                {label}
               </BubblePillMessage>
             </motion.div>
           )

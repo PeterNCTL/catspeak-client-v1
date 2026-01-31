@@ -1,88 +1,194 @@
-import React from "react"
+import React, { useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { Card } from "antd"
-import { FiCalendar, FiUsers } from "react-icons/fi"
+import { FiClock, FiUsers, FiLink } from "react-icons/fi"
+import { FaBookmark } from "react-icons/fa"
+import { Spin } from "antd" // Import Spin for loading state
+import colors from "@/utils/colors"
+import {
+  useGetActiveVideoSessionsQuery,
+  useJoinVideoSessionMutation,
+  useCreateVideoSessionMutation,
+} from "@/store/api/videoSessionsApi"
 
 const RoomCard = ({ room }) => {
   const navigate = useNavigate()
 
-  const handleClick = () => {
-    navigate(`/room/${room.roomId}`)
+  // API Hooks
+  const { data: activeSessions, refetch: refetchActiveSessions } =
+    useGetActiveVideoSessionsQuery()
+  const [joinVideoSession, { isLoading: isJoining }] =
+    useJoinVideoSessionMutation()
+  const [createVideoSession, { isLoading: isCreating }] =
+    useCreateVideoSessionMutation()
+
+  const isLoading = isJoining || isCreating
+
+  const handleJoinRoom = async (e) => {
+    e.stopPropagation()
+    if (isLoading) return
+
+    try {
+      const roomId = room.roomId
+      const activeSession = activeSessions?.find(
+        (s) => s.roomId === parseInt(roomId),
+      )
+      let sessionId
+
+      if (activeSession) {
+        // Session exists → join existing session
+        sessionId = activeSession.sessionId
+        try {
+          await joinVideoSession(sessionId).unwrap()
+        } catch (err) {
+          console.warn(
+            "Join session API failed or already in session. Proceeding...",
+            err,
+          )
+        }
+      } else {
+        // No session → create new session
+        try {
+          const newSession = await createVideoSession({
+            roomId: parseInt(roomId),
+          }).unwrap()
+          sessionId = newSession.sessionId
+        } catch (err) {
+          console.warn(
+            "Create session failed, checking for active session...",
+            err,
+          )
+          // Retry logic
+          const { data: refreshedSessions } = await refetchActiveSessions()
+          const retrySession = refreshedSessions?.find(
+            (s) => s.roomId === parseInt(roomId),
+          )
+
+          if (retrySession) {
+            sessionId = retrySession.sessionId
+            await joinVideoSession(sessionId).unwrap()
+          } else {
+            console.error("Failed to create or join session:", err)
+            // You might want to use message.error only if context allows or just verify silently
+            return
+          }
+        }
+      }
+
+      navigate(`/meet/${sessionId}`)
+    } catch (err) {
+      console.error("Failed to join/create session:", err)
+    }
   }
 
-  // Safe defaults or mappings
+  // Date formatting
   const createDate = new Date(room.createDate)
   const dateStr = createDate.toLocaleDateString("vi-VN")
 
-  const statusLabel = room.status === 1 ? "Đang diễn ra" : "Đã kết thúc"
+  // Calculate duration based on roomType
+  // roomType 1 (1:1) -> 15 mins
+  // roomType 2 (Group) -> 20 mins
+  const durationMinutes = room.roomType === 1 ? 15 : 20
+  const endDate = new Date(createDate.getTime() + durationMinutes * 60000)
 
-  // Custom Cover Component
-  const CardCover = () => (
-    <div className="relative flex h-32 w-full items-start justify-between bg-slate-50 p-4">
-      {/* Subtle Grid Pattern */}
-      <div
-        className="absolute inset-0 opacity-[0.4]"
-        style={{
-          backgroundImage: "radial-gradient(#94a3b8 1px, transparent 1px)",
-          backgroundSize: "20px 20px",
-        }}
-      />
+  const formatTime = (date) =>
+    date.toLocaleTimeString("vi-VN", {
+      hour: "2-digit",
+      minute: "2-digit",
+    })
 
-      {/* Decorative Corner Icon using Room ID */}
-      <div className="absolute -bottom-6 -right-6 z-0 rounded-full bg-slate-100 p-8 opacity-50">
-        <span className="text-8xl font-black text-slate-200 select-none">
-          {room.roomId % 10}
-        </span>
-      </div>
-    </div>
-  )
+  const timeStr = `${formatTime(createDate)} - ${formatTime(endDate)}`
+
+  // Placeholder code simulation
+  const roomCode = `room-${room.roomId}`.toLowerCase()
 
   return (
-    <Card
-      hoverable
-      onClick={handleClick}
-      cover={<CardCover />}
-      className="overflow-hidden rounded-3xl border-[#E5E5E5] shadow-sm transition-all duration-300 hover:border-[#990011] hover:shadow-lg hover:shadow-gray-200/50"
-      styles={{
-        body: { padding: "1.25rem 1.25rem 1.25rem 1.25rem" },
+    <div
+      onClick={handleJoinRoom}
+      className={`group relative flex w-full flex-col overflow-hidden rounded-[32px] border bg-white shadow-sm transition-all duration-300 hover:shadow-xl ${
+        isLoading ? "cursor-wait opacity-70" : "cursor-pointer"
+      }`}
+      style={{
+        fontFamily: "'Inter', sans-serif",
+        borderColor: colors.border,
       }}
     >
-      <div className="relative pt-3">
-        {/* Floating Room ID Badge */}
-        <div className="absolute -top-[3.25rem] left-0 flex h-12 min-w-[3rem] items-center justify-center rounded-2xl bg-white p-2 shadow-sm ring-1 ring-[#E5E5E5]">
-          <span className="text-xl font-bold text-gray-700">
-            #{room.roomId}
-          </span>
+      {/* Loading Overlay */}
+      {isLoading && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/50">
+          <Spin />
+        </div>
+      )}
+
+      {/* Cover Image Section */}
+      <div className="relative h-48 w-full overflow-hidden">
+        <img
+          src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80"
+          alt="Room Cover"
+          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+        />
+
+        {/* Top Overlay: Tags & Bookmark */}
+        <div className="absolute left-4 top-4 flex gap-2">
+          {room.requiredLevel && (
+            <span className="rounded-full bg-[#990011] px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white">
+              {room.requiredLevel}
+            </span>
+          )}
         </div>
 
-        <h3 className="mb-1 text-lg font-bold text-gray-800 line-clamp-2 min-h-[3.5rem] pt-2 group-hover:text-[#990011] transition-colors duration-200">
+        <div className="absolute right-4 top-0">
+          <div className="relative">
+            <FaBookmark className="h-8 w-6 text-[#990011] drop-shadow-md" />
+          </div>
+        </div>
+      </div>
+
+      {/* Content Section */}
+      <div className="flex flex-1 flex-col p-5">
+        {/* Title */}
+        <h3 className="mb-2 text-xl font-bold text-gray-900 line-clamp-1">
           {room.name}
         </h3>
 
-        {/* Required Level Badge */}
-        {room.requiredLevel && (
-          <div className="mb-2">
-            <span className="inline-block px-2 py-1 bg-gray-100 text-[#990011] text-[10px] font-bold uppercase tracking-wider rounded-md">
-              {room.requiredLevel}
+        {/* Room Link/Code */}
+        <div className="mb-4 flex items-center gap-2">
+          <FiLink className="text-xl text-yellow-500" />
+          <span className="h-4 w-[1px] bg-gray-300"></span>
+          <span className="text-sm font-medium text-yellow-500">
+            {roomCode}
+          </span>
+        </div>
+
+        {/* Divider */}
+        <div className="mb-4 h-px w-full bg-gray-100"></div>
+
+        {/* Footer Info */}
+        <div className="flex items-center justify-between">
+          {/* Participants */}
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full border border-red-100 bg-white shadow-sm">
+              <FiUsers className="text-lg text-[#990011]" />
+            </div>
+            <span className="text-lg font-bold text-gray-600">
+              {room.currentParticipantCount || 0}/{room.maxParticipants}
             </span>
           </div>
-        )}
 
-        <div className="my-3 h-px w-full bg-[#E5E5E5]" />
-
-        <div className="flex items-center justify-between text-xs font-medium text-gray-500">
-          <div className="flex items-center gap-1.5">
-            <FiCalendar className="h-4 w-4 text-gray-400" />
-            <span>{dateStr}</span>
-          </div>
-
-          <div className="flex items-center gap-1.5">
-            <FiUsers className="h-4 w-4 text-gray-400" />
-            <span>{room.maxParticipants}</span>
+          {/* Date/Time */}
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full border border-red-100 bg-white shadow-sm">
+              <FiClock className="text-lg text-[#990011]" />
+            </div>
+            <div className="flex flex-col text-right">
+              <span className="text-xs font-bold text-gray-600">{dateStr}</span>
+              <span className="text-[10px] font-medium text-gray-400">
+                {timeStr}
+              </span>
+            </div>
           </div>
         </div>
       </div>
-    </Card>
+    </div>
   )
 }
 
