@@ -1,7 +1,6 @@
-import { Input } from "antd"
-import { FiSend } from "react-icons/fi"
+import { Send } from "@mui/icons-material"
 import { useLanguage } from "@context/LanguageContext.jsx"
-import { Typography } from "@mui/material"
+import { Typography, TextField } from "@mui/material"
 
 const ContactSection = () => {
   const { t } = useLanguage()
@@ -11,21 +10,75 @@ const ContactSection = () => {
     <div className="flex-1 w-full flex flex-col items-center lg:items-end">
       <Typography
         variant="subtitle1"
-        className="font-bold uppercase text-center tracking-wide mb-4 w-full max-w-md"
+        className="font-bold uppercase text-center tracking-wide w-full max-w-md"
+        sx={{ marginBottom: 2 }}
       >
         {footerText.contactUs}
       </Typography>
-      <div className="px-0 w-full max-w-md">
+
+      <div className="w-full max-w-md">
         <form className="flex flex-col gap-5">
-          <Input
+          <TextField
             placeholder={footerText.contactPlaceholder}
-            className="rounded-full border border-white/60 bg-white px-5 py-2 text-base text-gray-800 placeholder-gray-400 shadow-md hover:border-yellow-300 focus:border-yellow-300"
+            variant="outlined"
+            fullWidth
+            inputProps={{
+              style: {
+                fontSize: "16px", // Prevents iOS zoom on focus
+              },
+            }}
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                borderRadius: "9999px",
+                backgroundColor: "white",
+                "& fieldset": {
+                  borderColor: "rgba(255, 255, 255, 0.6)",
+                },
+                "&:hover fieldset": {
+                  borderColor: "#fcd34d",
+                },
+                "&.Mui-focused fieldset": {
+                  borderColor: "#fcd34d",
+                },
+              },
+              "& .MuiOutlinedInput-input": {
+                padding: { xs: "12px 20px", sm: "10px 20px" },
+                fontSize: "16px",
+              },
+            }}
           />
-          <Input
+          <TextField
+            type="email"
             placeholder={footerText.emailPlaceholder}
-            className="rounded-full border border-white/60 bg-white px-5 py-2 text-base text-gray-800 placeholder-gray-400 shadow-md hover:border-yellow-300 focus:border-yellow-300"
+            variant="outlined"
+            fullWidth
+            inputProps={{
+              style: {
+                fontSize: "16px", // Prevents iOS zoom on focus
+              },
+            }}
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                borderRadius: "9999px",
+                backgroundColor: "white",
+                "& fieldset": {
+                  borderColor: "rgba(255, 255, 255, 0.6)",
+                },
+                "&:hover fieldset": {
+                  borderColor: "#fcd34d",
+                },
+                "&.Mui-focused fieldset": {
+                  borderColor: "#fcd34d",
+                },
+              },
+              "& .MuiOutlinedInput-input": {
+                padding: { xs: "12px 20px", sm: "10px 20px" },
+                fontSize: "16px",
+              },
+            }}
           />
         </form>
+
         <div className="mt-4 flex items-center justify-between text-sm text-white/90">
           <div className="flex-1 pr-4 italic text-white/90">
             <Typography
@@ -35,16 +88,18 @@ const ContactSection = () => {
             >
               Cat Speak{" "}
             </Typography>
+
             <Typography variant="body2" component="span" className="text-sm">
               {footerText.contactMessage}
             </Typography>
           </div>
+
           <button
             type="button"
             className="flex h-10 w-10 items-center justify-center rounded-full bg-yellow-300 text-[#bc1e46] shadow-lg transition hover:scale-105"
             aria-label={footerText.sendContact}
           >
-            <FiSend size={20} />
+            <Send sx={{ fontSize: 20 }} />
           </button>
         </div>
       </div>

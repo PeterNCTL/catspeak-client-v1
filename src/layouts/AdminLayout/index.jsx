@@ -1,12 +1,16 @@
-import { Layout } from 'antd'
-import { Outlet } from 'react-router-dom'
+import { Layout } from "antd"
+import { Outlet, ScrollRestoration } from "react-router-dom"
 
 const AdminLayout = () => (
   <Layout className="min-h-screen bg-[#08030a] text-white">
     <Layout.Header className="flex items-center justify-between bg-black/40 px-8 py-4 backdrop-blur">
       <div>
-        <p className="text-xs uppercase tracking-[0.3em] text-white/50">Admin</p>
-        <h1 className="text-lg font-semibold text-white">CathSpeak Control Center</h1>
+        <p className="text-xs uppercase tracking-[0.3em] text-white/50">
+          Admin
+        </p>
+        <h1 className="text-lg font-semibold text-white">
+          CathSpeak Control Center
+        </h1>
       </div>
       <span className="text-sm text-white/70">Xin chào, Quản trị viên</span>
     </Layout.Header>
@@ -15,8 +19,8 @@ const AdminLayout = () => (
         <Outlet />
       </div>
     </Layout.Content>
+    <ScrollRestoration />
   </Layout>
 )
 
 export default AdminLayout
-

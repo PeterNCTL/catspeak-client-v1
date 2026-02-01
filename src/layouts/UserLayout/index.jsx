@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { Layout, theme } from "antd"
-import { Outlet } from "react-router-dom"
+import { Outlet, ScrollRestoration } from "react-router-dom"
 import HeaderBar from "../MainLayout/HeaderBar"
 import Footer from "../MainLayout/Footer"
 import Auth from "@components/Auth"
@@ -51,6 +51,8 @@ const UserLayout = () => {
 
       {/* Floating message bubble */}
       <MessageWidget />
+
+      <ScrollRestoration />
     </Layout>
   )
 }

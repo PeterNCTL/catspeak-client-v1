@@ -18,5 +18,5 @@ export default {
     payment: "Chính sách thanh toán và hoàn tiền",
     copyright: "Bản quyền",
   },
-  copyright: "Copyright 2025 | Cat Speak - language in hand",
+  copyright: "Copyright {year} | Cat Speak",
 }

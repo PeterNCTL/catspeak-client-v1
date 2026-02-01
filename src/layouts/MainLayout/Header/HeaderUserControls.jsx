@@ -14,7 +14,7 @@ import {
   Chip,
 } from "@mui/material"
 import {
-  Notifications as NotificationsIcon,
+  NotificationsOutlined as NotificationsIcon,
   Settings as SettingsIcon,
   Logout as LogoutIcon,
 } from "@mui/icons-material"
@@ -53,29 +53,31 @@ const HeaderUserControls = () => {
   return (
     <Stack direction="row" alignItems="center" spacing={1}>
       {/* Notification Bell */}
-      <IconButton color="inherit">
+      <IconButton color="inherit" sx={{ maxWidth: 40, maxHeight: 40 }}>
         <NotificationsIcon />
       </IconButton>
 
       {/* Avatar / Profile Trigger */}
-      <IconButton
-        onClick={handleMenuOpen}
-        aria-controls={open ? "account-menu" : undefined}
-        aria-haspopup="true"
-        aria-expanded={open ? "true" : undefined}
-      >
-        {isLoading ? (
-          <CircularProgress size={32} color="inherit" />
-        ) : (
-          <Avatar
-            src={user?.avatarImageUrl}
-            alt={user?.username}
-            sx={{ width: 32, height: 32 }}
-          >
-            {getInitials(user?.fullName || user?.username)}
-          </Avatar>
-        )}
-      </IconButton>
+      {isLoading ? (
+        <CircularProgress size={40} color="inherit" />
+      ) : (
+        <Avatar
+          src={user?.avatarImageUrl}
+          alt={user?.username}
+          onClick={handleMenuOpen}
+          aria-controls={open ? "account-menu" : undefined}
+          aria-haspopup="true"
+          aria-expanded={open ? "true" : undefined}
+          sx={{
+            cursor: "pointer",
+            "&:hover": {
+              opacity: 0.8,
+            },
+          }}
+        >
+          {getInitials(user?.fullName || user?.username)}
+        </Avatar>
+      )}
 
       <Menu
         anchorEl={anchorEl}

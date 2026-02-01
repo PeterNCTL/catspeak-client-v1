@@ -1,5 +1,5 @@
-import React from "react"
-import { Tabs, ConfigProvider } from "antd"
+import React, { useState } from "react"
+import { Tabs, Tab, Box } from "@mui/material"
 import { FiMessageCircle, FiMonitor, FiUsers, FiLayers } from "react-icons/fi"
 import { useSearchParams } from "react-router-dom"
 import FiltersSidebar from "@/components/rooms/FiltersSidebar"
@@ -85,15 +85,16 @@ const RoomsPage = () => {
 
   return (
     <div className="w-full">
-      <div className="mx-auto flex max-w-screen-xl flex-col gap-10 px-6 py-12 md:flex-row md:items-start">
-        {/* Left column */}
-        <div className="w-full md:w-1/2">
+      {/* Hero Section - Improved mobile spacing */}
+      <div className="mx-auto flex max-w-screen-xl flex-col gap-6 px-4 py-6 sm:px-6 sm:py-8 md:gap-10 md:py-12 lg:flex-row lg:items-start">
+        {/* Left column - Welcome Section */}
+        <div className="w-full lg:w-1/2">
           <WelcomeSection
             allowConnect={allowConnect}
             setAllowConnect={setAllowConnect}
           />
 
-          {/* Session Creation Buttons (Moved from WelcomeSection) */}
+          {/* Session Creation Buttons */}
           <SessionActionButtons
             handleCreateOneOnOneSession={handleCreateOneOnOneSession}
             handleCreateStudyGroupSession={handleCreateStudyGroupSession}
@@ -102,83 +103,116 @@ const RoomsPage = () => {
           />
         </div>
 
-        {/* Right column */}
-        <div className="w-full md:w-1/2">
+        {/* Right column - Hero Carousel */}
+        <div className="w-full lg:w-1/2">
           <HeroCarousel slides={slides} />
         </div>
       </div>
 
-      {/* Lower section with content & sidebar - SWAPPED to Sidebar Left */}
-      <div className="mx-auto grid max-w-screen-xl gap-6 px-6 pb-12 md:grid-cols-[360px_1fr]">
-        {/* Sidebar - NOW ON LEFT */}
-        {tab === "class" ? <ClassSidebar /> : <FiltersSidebar />}
+      {/* Lower section with content & sidebar */}
+      <div className="mx-auto max-w-screen-xl px-4 pb-6 sm:px-6 sm:pb-12">
+        <div className="flex flex-col gap-6 lg:grid lg:grid-cols-[300px_1fr] xl:grid-cols-[360px_1fr]">
+          {/* Sidebar - Hidden on mobile by default, shown on tablet+ */}
+          <div className="hidden lg:block">
+            {tab === "class" ? <ClassSidebar /> : <FiltersSidebar />}
+          </div>
 
-        {/* Content area - NOW ON RIGHT */}
-        <div className="flex flex-col">
-          <ConfigProvider
-            theme={{
-              token: {
-                colorPrimary: "#990011",
-              },
-            }}
-          >
-            <Tabs
-              activeKey={tab}
-              onChange={setTab}
-              items={[
-                {
-                  key: "communicate",
-                  label: (
-                    <span className="flex items-center gap-2">
-                      <FiMessageCircle className="h-4 w-4" />
-                      {t.rooms.tabs.communicate}
+          {/* Content area */}
+          <div className="flex flex-col min-w-0">
+            <Box sx={{ width: "100%" }}>
+              <Tabs
+                value={tab}
+                onChange={(event, newValue) => setTab(newValue)}
+                variant="scrollable"
+                scrollButtons
+                allowScrollButtonsMobile
+                aria-label="room tabs"
+                sx={{
+                  "& .MuiTabs-indicator": {
+                    backgroundColor: "#990011",
+                  },
+                  "& .MuiTab-root": {
+                    color: "#666",
+                    textTransform: "none",
+                    minHeight: "48px",
+                    fontSize: { xs: "0.75rem", sm: "0.875rem" },
+                    "&.Mui-selected": {
+                      color: "#990011",
+                    },
+                  },
+                  "& .MuiTabs-scrollButtons": {
+                    color: "#990011",
+                    "&.Mui-disabled": {
+                      opacity: 0.3,
+                    },
+                  },
+                }}
+              >
+                <Tab
+                  value="communicate"
+                  label={
+                    <span className="flex items-center gap-1.5 sm:gap-2">
+                      <FiMessageCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                      <span className="text-xs sm:text-sm">
+                        {t.rooms.tabs.communicate}
+                      </span>
                     </span>
-                  ),
-                  children: (
-                    <CommunicateTab
-                      rooms={rooms}
-                      selectedCategories={categories}
-                      page={page}
-                      totalPages={totalPages}
-                      setPage={setPage}
-                      languageType={languageType}
-                      requiredLevels={requiredLevelsArg}
-                    />
-                  ),
-                },
-                {
-                  key: "teaching",
-                  label: (
-                    <span className="flex items-center gap-2">
-                      <FiMonitor className="h-4 w-4" />
-                      {t.rooms.tabs.teaching}
+                  }
+                />
+                <Tab
+                  value="teaching"
+                  label={
+                    <span className="flex items-center gap-1.5 sm:gap-2">
+                      <FiMonitor className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                      <span className="text-xs sm:text-sm">
+                        {t.rooms.tabs.teaching}
+                      </span>
                     </span>
-                  ),
-                  children: <TeachingTab />,
-                },
-                {
-                  key: "group",
-                  label: (
-                    <span className="flex items-center gap-2">
-                      <FiUsers className="h-4 w-4" />
-                      {t.rooms.tabs.group}
+                  }
+                />
+                <Tab
+                  value="group"
+                  label={
+                    <span className="flex items-center gap-1.5 sm:gap-2">
+                      <FiUsers className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                      <span className="text-xs sm:text-sm">
+                        {t.rooms.tabs.group}
+                      </span>
                     </span>
-                  ),
-                  children: <GroupTab />,
-                },
-                {
-                  key: "class",
-                  label: (
-                    <span className="flex items-center gap-2">
-                      <FiLayers className="h-4 w-4" />
-                      {t.rooms.tabs.class}
+                  }
+                />
+                <Tab
+                  value="class"
+                  label={
+                    <span className="flex items-center gap-1.5 sm:gap-2">
+                      <FiLayers className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                      <span className="text-xs sm:text-sm">
+                        {t.rooms.tabs.class}
+                      </span>
                     </span>
-                  ),
-                  children: <ClassTab />,
-                },
-              ]}
-            />
-          </ConfigProvider>
+                  }
+                />
+              </Tabs>
+
+              {/* Tab Panels */}
+              <Box sx={{ mt: 2 }}>
+                {tab === "communicate" && (
+                  <CommunicateTab
+                    rooms={rooms}
+                    selectedCategories={categories}
+                    page={page}
+                    totalPages={totalPages}
+                    setPage={setPage}
+                    languageType={languageType}
+                    requiredLevels={requiredLevelsArg}
+                  />
+                )}
+                {tab === "teaching" && <TeachingTab />}
+                {tab === "group" && <GroupTab />}
+                {tab === "class" && <ClassTab />}
+              </Box>
+            </Box>
+          </div>
         </div>
       </div>
       <CreateRoomModal

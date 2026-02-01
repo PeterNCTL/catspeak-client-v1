@@ -15,13 +15,13 @@ const SessionActionButtons = ({
   const [isDevelopmentModalOpen, setIsDevelopmentModalOpen] = useState(false)
 
   return (
-    <div className="relative mt-6 pl-6">
+    <div className="relative mt-4 sm:mt-6 pl-4 sm:pl-6">
       <InDevelopmentModal
         open={isDevelopmentModalOpen}
         onCancel={() => setIsDevelopmentModalOpen(false)}
       />
       {/* Line removed as requested */}
-      <div className="relative flex flex-wrap gap-3">
+      <div className="relative flex flex-wrap gap-2 sm:gap-3">
         {badges.map((b) => {
           const Icon = b.icon
           const isOneOnOne = b.id === "connect_1_1"
@@ -51,7 +51,7 @@ const SessionActionButtons = ({
           return (
             <motion.div
               key={b.id}
-              className={`text-sm font-semibold flex items-center transform transition-colors duration-200 ease-out`}
+              className={`text-xs sm:text-sm font-semibold flex items-center transform transition-colors duration-200 ease-out`}
               onClick={isActionable ? handleClick : undefined}
             >
               <BubblePillMessage
@@ -59,9 +59,9 @@ const SessionActionButtons = ({
                 disabled={!isActionable || isLoadingThis}
               >
                 {isActionable && isLoadingThis ? (
-                  <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                  <span className="mr-1.5 sm:mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
                 ) : (
-                  <Icon className="mr-2 h-4 w-4" />
+                  <Icon className="mr-1.5 sm:mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4" />
                 )}
                 {label}
               </BubblePillMessage>

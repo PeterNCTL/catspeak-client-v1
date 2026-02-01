@@ -5,6 +5,7 @@ import FormTextField from "../../forms/FormTextField"
 import FormSelectField from "../../forms/FormSelectField"
 import FormDatePicker from "../../forms/FormDatePicker"
 import AgreementCheckbox from "../../forms/AgreementCheckbox"
+import PolicyModal from "../PolicyModal"
 
 const RegisterFormFields = ({
   authText,
@@ -14,6 +15,16 @@ const RegisterFormFields = ({
   setErrors,
 }) => {
   const [showPassword, setShowPassword] = useState(false)
+  const [policyModal, setPolicyModal] = useState({ open: false, title: "" })
+
+  const handleOpenPolicy = (title) => (e) => {
+    e.preventDefault()
+    setPolicyModal({ open: true, title })
+  }
+
+  const handleClosePolicy = () => {
+    setPolicyModal({ open: false, title: "" })
+  }
 
   const languageOptions = [
     { value: "english", label: "English" },
@@ -152,6 +163,7 @@ const RegisterFormFields = ({
           <button
             type="button"
             className="font-semibold text-[#8f0d15] hover:underline"
+            onClick={handleOpenPolicy(authText.serviceTerms)}
           >
             {authText.serviceTerms}
           </button>{" "}
@@ -159,6 +171,7 @@ const RegisterFormFields = ({
           <button
             type="button"
             className="font-semibold text-[#8f0d15] hover:underline"
+            onClick={handleOpenPolicy(authText.privacyPolicy)}
           >
             {authText.privacyPolicy}
           </button>{" "}
@@ -174,6 +187,7 @@ const RegisterFormFields = ({
           <button
             type="button"
             className="font-semibold text-[#8f0d15] hover:underline"
+            onClick={handleOpenPolicy(authText.paymentPolicy)}
           >
             {authText.paymentPolicy}
           </button>{" "}
@@ -181,12 +195,20 @@ const RegisterFormFields = ({
           <button
             type="button"
             className="font-semibold text-[#8f0d15] hover:underline"
+            onClick={handleOpenPolicy(authText.ipPolicy)}
           >
             {authText.ipPolicy}
           </button>{" "}
           {authText.companySuffix}
         </AgreementCheckbox>
       </Box>
+
+      {/* Policy Modal */}
+      <PolicyModal
+        open={policyModal.open}
+        onClose={handleClosePolicy}
+        title={policyModal.title}
+      />
     </>
   )
 }

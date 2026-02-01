@@ -1,6 +1,11 @@
 import { useState, useEffect } from "react"
 import { Layout, theme } from "antd"
-import { Outlet, useLocation, useSearchParams } from "react-router-dom"
+import {
+  Outlet,
+  useLocation,
+  useSearchParams,
+  ScrollRestoration,
+} from "react-router-dom"
 import HeaderBar from "./HeaderBar"
 import Footer from "./Footer"
 import Auth from "@components/Auth"
@@ -75,6 +80,8 @@ const MainLayout = () => {
 
         {/* Floating message bubble, hiển thị trên mọi trang */}
         <MessageWidget />
+
+        <ScrollRestoration />
       </Layout>
     </AuthModalContext.Provider>
   )

@@ -18,5 +18,5 @@ export default {
     payment: "支付和退款政策",
     copyright: "版权",
   },
-  copyright: "Copyright 2025 | Cat Speak - language in hand",
+  copyright: "Copyright {year} | Cat Speak",
 }

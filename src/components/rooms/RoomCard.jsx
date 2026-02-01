@@ -9,6 +9,11 @@ import {
   useJoinVideoSessionMutation,
   useCreateVideoSessionMutation,
 } from "@/store/api/videoSessionsApi"
+import {
+  formatDate,
+  formatTimeRange,
+  calculateEndDate,
+} from "@/utils/dateFormatter"
 
 const RoomCard = ({ room }) => {
   const navigate = useNavigate()
@@ -80,23 +85,15 @@ const RoomCard = ({ room }) => {
     }
   }
 
-  // Date formatting
+  // Date and time formatting using locale-aware utilities
   const createDate = new Date(room.createDate)
-  const dateStr = createDate.toLocaleDateString("vi-VN")
+  const dateStr = formatDate(createDate)
 
-  // Calculate duration based on roomType
-  // roomType 1 (1:1) -> 15 mins
-  // roomType 2 (Group) -> 20 mins
-  const durationMinutes = room.roomType === 1 ? 15 : 20
-  const endDate = new Date(createDate.getTime() + durationMinutes * 60000)
+  // Use duration from the room response (in minutes)
+  const durationMinutes = room.duration || 20 // fallback to 20 if not provided
+  const endDate = calculateEndDate(createDate, durationMinutes)
 
-  const formatTime = (date) =>
-    date.toLocaleTimeString("vi-VN", {
-      hour: "2-digit",
-      minute: "2-digit",
-    })
-
-  const timeStr = `${formatTime(createDate)} - ${formatTime(endDate)}`
+  const timeStr = formatTimeRange(createDate, endDate)
 
   // Placeholder code simulation
   const roomCode = `room-${room.roomId}`.toLowerCase()

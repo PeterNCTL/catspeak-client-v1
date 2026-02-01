@@ -4,7 +4,7 @@ import { Tower, Mountain, FooterBG } from "@assets/images/home/footer"
 import { IconLogo } from "@/assets/icons/logo"
 import { useLanguage } from "@context/LanguageContext.jsx"
 
-import { FaFacebookF, FaYoutube } from "react-icons/fa"
+import { Facebook, YouTube } from "@mui/icons-material"
 import { SiZalo } from "react-icons/si"
 
 import CommunitySection from "./components/CommunitySection"
@@ -66,7 +66,7 @@ const Footer = () => {
               rel="noopener noreferrer"
               className="flex h-14 w-14 items-center justify-center rounded-full bg-white text-[#910B09] shadow-lg transition-all duration-300 hover:bg-[#910B09] hover:text-white"
             >
-              <FaFacebookF size={32} />
+              <Facebook sx={{ fontSize: 32 }} />
             </a>
 
             <a

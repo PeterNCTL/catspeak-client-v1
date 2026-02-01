@@ -6,6 +6,7 @@ import { Typography } from "@mui/material"
 const FooterBottom = () => {
   const { t } = useLanguage()
   const footerText = t.footer
+  const currentYear = new Date().getFullYear()
 
   return (
     <div className="w-full px-4 lg:px-12 lg:absolute lg:bottom-0 lg:left-0 lg:right-0">
@@ -27,7 +28,7 @@ const FooterBottom = () => {
         {/* Center copyright */}
         <div className="text-gray-400 uppercase text-center flex-shrink-0 mx-4 order-3 lg:order-2">
           <Typography variant="caption" className="text-xs">
-            {footerText.copyright}
+            {footerText.copyright.replace("{year}", currentYear)}
           </Typography>
         </div>
 

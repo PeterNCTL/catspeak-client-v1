@@ -1,6 +1,4 @@
 import { useState } from "react"
-import { createPortal } from "react-dom"
-import { AnimatePresence } from "framer-motion"
 import LoginPopup from "@/components/Auth/popups/LoginPopup/index.jsx"
 import RegisterPopup from "@/components/Auth/popups/RegisterPopup/index.jsx"
 import HeroSection from "@/components/landing/HeroSection"
@@ -32,34 +30,20 @@ const LandingPage = () => {
   const renderAuthPopup = () => {
     if (!authModal.isOpen) return null
 
-    const popup =
-      authModal.mode === "register" ? (
-        <RegisterPopup
-          key="register"
-          onClose={closeAuthModal}
-          onSwitchMode={switchAuthMode}
-        />
-      ) : (
-        <LoginPopup
-          key="login"
-          onClose={closeAuthModal}
-          onSwitchMode={switchAuthMode}
-        />
-      )
-
-    return createPortal(
-      <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 px-4 py-8">
-        <div
-          className="absolute inset-0"
-          role="button"
-          aria-label="Close authentication modal"
-          onClick={closeAuthModal}
-        />
-        <div className="relative z-10 w-full max-w-xl">
-          <AnimatePresence mode="wait">{popup}</AnimatePresence>
-        </div>
-      </div>,
-      document.body,
+    return authModal.mode === "register" ? (
+      <RegisterPopup
+        key="register"
+        open={true}
+        onClose={closeAuthModal}
+        onSwitchMode={switchAuthMode}
+      />
+    ) : (
+      <LoginPopup
+        key="login"
+        open={true}
+        onClose={closeAuthModal}
+        onSwitchMode={switchAuthMode}
+      />
     )
   }
 

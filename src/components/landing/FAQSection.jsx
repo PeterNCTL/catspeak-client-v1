@@ -30,24 +30,24 @@ const FAQSection = () => {
   }
 
   return (
-    <div className="w-full px-4 md:px-8 py-24">
+    <div className="w-full px-4 sm:px-6 md:px-8 py-12 sm:py-16 md:py-20 lg:py-24">
       <div className="relative mx-auto max-w-screen-xl">
         {/* Background Ticket Image */}
-        <div className="relative rounded-3xl overflow-hidden min-h-[600px]">
+        <div className="relative rounded-3xl overflow-hidden min-h-[400px] sm:min-h-[500px] md:min-h-[600px]">
           <img
             src={BGTicket}
             alt="FAQ Background"
             className="absolute inset-0 w-full h-full object-cover z-0"
           />
 
-          {/* Decorative Frames */}
-          <div className="pointer-events-none absolute -top-12 -right-12 z-0 h-[240px] w-[240px] rounded-[40px] border-2 border-white" />
-          <div className="pointer-events-none absolute bottom-24 -left-24 z-0 h-[100px] w-[900px] rounded-[50px] border-2 border-white" />
+          {/* Decorative Frames - Hidden on mobile */}
+          <div className="pointer-events-none absolute -top-12 -right-12 z-0 h-[240px] w-[240px] rounded-[40px] border-2 border-white hidden md:block" />
+          <div className="pointer-events-none absolute bottom-24 -left-24 z-0 h-[100px] w-[900px] rounded-[50px] border-2 border-white hidden lg:block" />
 
           {/* Content Overlay */}
-          <div className="relative z-10 p-6 md:p-12 lg:p-16 flex flex-col h-full">
+          <div className="relative z-10 p-4 sm:p-6 md:p-10 lg:p-12 xl:p-16 flex flex-col h-full">
             {/* Header Section */}
-            <div className="flex flex-col md:flex-row md:items-start md:justify-between mb-8 md:mb-10">
+            <div className="flex flex-col md:flex-row md:items-start md:justify-between mb-6 sm:mb-8 md:mb-10">
               <div className="flex-1 mb-6 md:mb-0">
                 {/* Corner Label with underline */}
                 <div className="relative inline-block mb-3">
@@ -66,6 +66,14 @@ const FAQSection = () => {
                 <Typography
                   variant="h2"
                   className="text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight"
+                  sx={{
+                    fontSize: {
+                      xs: "1.875rem",
+                      sm: "2.25rem",
+                      md: "2.5rem",
+                      lg: "3rem",
+                    },
+                  }}
                 >
                   {t.faq.title}
                 </Typography>
@@ -87,7 +95,7 @@ const FAQSection = () => {
             </div>
 
             {/* FAQ Questions Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-y-1 gap-x-4 md:gap-x-6 flex-1 p-4 items-start">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-y-0.5 sm:gap-y-1 gap-x-4 md:gap-x-6 flex-1 p-2 sm:p-3 md:p-4 items-start">
               {t.faq.questions.map((item, originalIndex) => {
                 // Check if question matches search query
                 const matchesSearch =
@@ -133,9 +141,9 @@ const FAQSection = () => {
                     <AccordionSummary
                       aria-controls={`panel${originalIndex}-content`}
                       id={`panel${originalIndex}-header`}
-                      className="w-full p-4 md:p-5"
+                      className="w-full p-3 sm:p-4 md:p-5"
                       sx={{
-                        padding: { xs: 2, md: 2.5 },
+                        padding: { xs: 1.5, sm: 2, md: 2.5 },
                         minHeight: "unset",
                         "& .MuiAccordionSummary-content": {
                           margin: 0,
@@ -152,7 +160,7 @@ const FAQSection = () => {
                       >
                         {item.question}
                       </Typography>
-                      <div className="ml-2 flex-shrink-0 flex items-center justify-center w-7 h-7 rounded-full bg-white/20">
+                      <div className="ml-2 flex-shrink-0 flex items-center justify-center w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-white/20">
                         {isExpanded ? (
                           <RemoveIcon className="w-5 h-5 text-cath-red-800" />
                         ) : (

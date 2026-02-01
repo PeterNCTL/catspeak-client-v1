@@ -49,17 +49,17 @@ const FiltersSidebar = () => {
       }}
     >
       <aside
-        className="rounded-3xl border bg-white shadow-sm overflow-hidden"
+        className="rounded-2xl sm:rounded-3xl border bg-white shadow-sm overflow-hidden"
         style={{ borderColor: colors.border }}
       >
         {/* Search Header */}
         <div
-          className="border-b px-4 py-4"
+          className="border-b px-3 py-3 sm:px-4 sm:py-4"
           style={{ borderColor: colors.border }}
         >
           <Input
             placeholder={filtersText.searchPlaceholder}
-            className="rounded-full px-4 py-2 hover:bg-gray-50 focus:bg-white border transition-all text-sm md:text-base"
+            className="rounded-full px-3 py-1.5 sm:px-4 sm:py-2 hover:bg-gray-50 focus:bg-white border transition-all text-xs sm:text-sm md:text-base"
             style={{
               borderColor: colors.border,
             }}
@@ -69,13 +69,13 @@ const FiltersSidebar = () => {
             suffix={
               <button
                 type="button"
-                className="flex items-center justify-center w-8 h-8 rounded-md hover:bg-red-50 transition-colors"
+                className="flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-md hover:bg-red-50 transition-colors"
                 onClick={() => {
                   // Add search functionality here
                   console.log("Search clicked")
                 }}
               >
-                <FiSearch className="text-[#990011] text-lg" />
+                <FiSearch className="text-[#990011] text-base sm:text-lg" />
               </button>
             }
           />
@@ -83,9 +83,9 @@ const FiltersSidebar = () => {
 
         {/* Filters Content - Only show for languages with levels */}
         {currentLevels && (
-          <div className="max-h-[520px] overflow-y-auto px-6 py-6 scrollbar-thin scrollbar-thumb-[#990011] scrollbar-track-gray-200">
-            <div className="space-y-4">
-              <h3 className="text-base font-bold text-gray-800 uppercase tracking-wide">
+          <div className="max-h-[400px] sm:max-h-[520px] overflow-y-auto px-4 py-4 sm:px-6 sm:py-6 scrollbar-thin scrollbar-thumb-[#990011] scrollbar-track-gray-200">
+            <div className="space-y-3 sm:space-y-4">
+              <h3 className="text-sm sm:text-base font-bold text-gray-800 uppercase tracking-wide">
                 {filtersText.levelsHeading}
               </h3>
 

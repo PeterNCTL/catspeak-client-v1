@@ -1,41 +1,42 @@
 export default {
-  heroTitle: "A unique approach to learning languages online",
+  heroTitle: "Multilingual Community Communication Platform",
   heroSubtitle:
-    "Learn according to your interests and needs, learn anywhere, anytime you are ready!",
+    "Where anyone can freely communicate, share experiences, exchange cultures and make friends from all over!",
   countries: {
     vietnam: "Vietnam",
     china: "China",
     usa: "English",
   },
   whyChooseUs: "Why choose us?",
-  valuesTitle: "Values of Cat Speak",
+  valuesTitle: "CORE VALUES CAT SPEAK BRINGS",
   values: {
-    tech: {
-      title: "Documents and technology",
-      description:
-        "Experience learning with AI and a specialized language platform community.",
+    practice: {
+      title: "Practice-first",
+      description: "Practice first, perfect later.",
     },
-    global: {
-      title: "Global connection",
+    community: {
+      title: "Community-driven",
       description:
-        "Students from all over the world. Unlimited speaking practice opportunities, connecting with classmates, teachers...",
+        "Practice communication with a dynamic, multicultural community.",
     },
-    personal: {
-      title: "Personalized experience",
-      description:
-        "Games and connection systems according to different levels and learning needs to suit individuals.",
+    networking: {
+      title: "Expand Networking",
+      description: "Expand connections with communities from all directions.",
+    },
+    reallife: {
+      title: "Real-life communication",
+      description: "Confidently communicate in learning, work & life.",
     },
   },
   aiSection: {
     header: "BEST LANGUAGE LEARNING COMMUNITY",
-    title: "AI Technology",
-    mainHeading: "Learn, practice and apply with language with AI",
+    mainHeading: "LEARN AND PRACTICE SPEAKING WITH AI",
     description:
       "CONFIDENTLY COMMUNICATE WITH NATIVE SPEAKERS AND OTHER LEARNERS. TOGETHER, IMMERSE YOURSELVES IN A REAL LANGUAGE ENVIRONMENT AND IMPROVE YOUR SPEAKING SKILLS THROUGH COMMUNICATION BETWEEN PEOPLE AND WITH AI.",
     features: [
-      "Conversation simulation with diverse topics and levels",
-      "Chatbot, AI hosting and personalized learning progress tracking/reporting with AI",
-      "Improvement suggestions, grammar and pronunciation correction by Cat Speak.",
+      "Diverse conversations across topics and levels",
+      "Native speakers and experts personalize learning paths with Chatbox and AI support.",
+      "Improve grammar and pronunciation",
     ],
     learnMore: "learn more",
     greeting: "Hello ^^",
