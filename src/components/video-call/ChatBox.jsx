@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react"
-import { FiSend } from "react-icons/fi"
+import { Send as SendIcon } from "@mui/icons-material"
+import { Typography, Box, IconButton, InputBase, Paper } from "@mui/material"
 
 const ChatBox = ({
   messages,
@@ -35,34 +36,52 @@ const ChatBox = ({
       className={`flex h-full flex-col border-l border-gray-200 bg-white ${className}`}
     >
       <div className="border-b border-gray-200 px-4 py-3">
-        <h3 className="text-sm font-semibold text-headingColor">
+        <Typography
+          variant="subtitle2"
+          className="text-headingColor"
+          fontWeight="bold"
+        >
           Room Message
-        </h3>
+        </Typography>
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent">
         {messages.length === 0 ? (
-          <div className="text-center text-gray-400 mt-10">No messages yet</div>
+          <Typography
+            variant="body2"
+            className="text-center text-gray-400 mt-10"
+          >
+            No messages yet
+          </Typography>
         ) : (
           messages.map((msg) => {
             if (msg.type === "system") {
               return (
-                <div
+                <Typography
                   key={msg.id}
-                  className="text-xs text-center text-gray-400 italic my-2"
+                  variant="caption"
+                  display="block"
+                  className="text-center text-gray-400 italic my-2"
                 >
                   {msg.content}
-                </div>
+                </Typography>
               )
             }
 
-            const isMe = String(msg.senderId) === String(currentUser?.id)
             const sender = allParticipants.find(
-              (p) => p.accountId === msg.senderId,
+              (p) =>
+                String(p.accountId) === String(msg.senderId) ||
+                String(p.id) === String(msg.senderId),
             )
+
+            const isMe =
+              String(msg.senderId) === String(currentUser?.accountId) ||
+              String(msg.senderId) === String(currentUser?.id) ||
+              (sender &&
+                String(sender.accountId) === String(currentUser?.accountId))
             const senderName = isMe
               ? "You"
-              : sender?.username || `User ${msg.senderId}`
+              : sender?.username || sender?.name || `User ${msg.senderId}`
 
             return (
               <div
@@ -72,24 +91,32 @@ const ChatBox = ({
                 }`}
               >
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="text-xs font-bold text-gray-500">
+                  <Typography
+                    variant="caption"
+                    fontWeight="bold"
+                    color="text.secondary"
+                  >
                     {senderName}
-                  </span>
-                  <span className="text-[10px] text-gray-400">
+                  </Typography>
+                  <Typography
+                    variant="caption"
+                    color="text.disabled"
+                    sx={{ fontSize: "0.65rem" }}
+                  >
                     {new Date(msg.timestamp).toLocaleTimeString([], {
                       hour: "2-digit",
                       minute: "2-digit",
                     })}
-                  </span>
+                  </Typography>
                 </div>
                 <div
-                  className={`px-3 py-2 rounded-lg text-sm max-w-[85%] break-words shadow-sm ${
+                  className={`px-3 py-2 rounded-lg max-w-[85%] break-words shadow-sm ${
                     isMe
                       ? "bg-cath-orange-500 text-white"
                       : "bg-gray-100 text-textColor border border-gray-100"
                   }`}
                 >
-                  {msg.content}
+                  <Typography variant="body2">{msg.content}</Typography>
                 </div>
               </div>
             )
@@ -100,24 +127,42 @@ const ChatBox = ({
       </div>
 
       <div className="border-t border-gray-200 p-4">
-        <div className="flex items-center gap-2">
-          <input
-            type="text"
+        <Paper
+          component="div"
+          className="flex items-center gap-2 p-1 border border-gray-200 rounded-lg focus-within:ring-1 focus-within:ring-cath-orange-500 focus-within:border-cath-orange-500"
+          elevation={0}
+        >
+          <InputBase
             disabled={!isConnected}
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder={isConnected ? "Type Something..." : "Connecting..."}
-            className="flex-1 rounded-lg border border-gray-200  px-3 py-2 text-sm text-headingColor placeholder:text-gray-400 focus:border-cath-orange-500 focus:outline-none focus:ring-1 focus:ring-cath-orange-500 disabled:opacity-50"
+            className="flex-1 text-sm text-headingColor placeholder:text-gray-400"
+            sx={{ ml: 1, flex: 1, fontSize: "0.875rem" }}
           />
-          <button
+          <IconButton
             onClick={handleSend}
             disabled={!isConnected || !message.trim()}
-            className="flex h-9 w-9 items-center justify-center rounded-lg bg-cath-orange-500 text-white transition hover:bg-cath-orange-600 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+            size="small"
+            sx={{
+              bgcolor: "var(--cath-primary)",
+              color: "white",
+              "&:hover": {
+                bgcolor: "#c98a0c", // Darker shade of cath-orange/primary roughly
+              },
+              "&.Mui-disabled": {
+                bgcolor: "rgba(0, 0, 0, 0.12)",
+                color: "rgba(0, 0, 0, 0.26)",
+              },
+              width: 32,
+              height: 32,
+              borderRadius: 2,
+            }}
           >
-            <FiSend className="h-4 w-4" />
-          </button>
-        </div>
+            <SendIcon fontSize="small" />
+          </IconButton>
+        </Paper>
       </div>
     </div>
   )

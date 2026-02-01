@@ -1,4 +1,5 @@
 import React from "react"
+import { Typography } from "@mui/material"
 import { Tower, Mountain, FooterBG } from "@assets/images/home/footer"
 import { IconLogo } from "@/assets/icons/logo"
 import { useLanguage } from "@context/LanguageContext.jsx"
@@ -22,10 +23,17 @@ const Footer = () => {
   ]
 
   return (
-    <footer className="relative overflow-hidden bg-white">
+    <footer className="relative overflow-hidden bg-white pt-24">
       {/* Title */}
-      <div className="w-full flex items-center justify-center text-2xl uppercase text-black font-bold">
-        {footerText.title}
+      <div className="flex flex-col items-center justify-center gap-3">
+        <Typography
+          variant="h4"
+          component="div"
+          className="uppercase text-black font-black tracking-[0.2em] text-center"
+        >
+          {footerText.title}
+        </Typography>
+        <div className="h-1.5 w-24 bg-gradient-to-r from-cath-red-600 to-orange-400 rounded-full" />
       </div>
 
       {/* Tower & Mountain images */}
@@ -54,6 +62,8 @@ const Footer = () => {
           <div className="relative z-30 flex justify-center lg:absolute lg:-top-7 lg:right-[10%] mb-8 lg:mb-0 gap-6 mt-[-28px] lg:mt-0">
             <a
               href="https://www.facebook.com/share/1DzTNUSEAN/"
+              target="_blank"
+              rel="noopener noreferrer"
               className="flex h-14 w-14 items-center justify-center rounded-full bg-white text-[#910B09] shadow-lg transition-all duration-300 hover:bg-[#910B09] hover:text-white"
             >
               <FaFacebookF size={32} />
@@ -61,6 +71,8 @@ const Footer = () => {
 
             <a
               href="https://zalo.me/g/gffkqu214"
+              target="_blank"
+              rel="noopener noreferrer"
               className="flex h-14 w-14 items-center justify-center rounded-full bg-white text-[#910B09] shadow-lg transition-all duration-300 hover:bg-[#910B09] hover:text-white"
             >
               <SiZalo size={32} />

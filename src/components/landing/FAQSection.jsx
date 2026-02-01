@@ -1,5 +1,13 @@
 import { useState } from "react"
-import { FiPlus, FiMinus } from "react-icons/fi"
+import {
+  Typography,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+} from "@mui/material"
+import AddIcon from "@mui/icons-material/Add"
+import RemoveIcon from "@mui/icons-material/Remove"
+import SearchIcon from "@mui/icons-material/Search"
 import { BGTicket } from "@assets/images/home"
 import { useLanguage } from "@context/LanguageContext.jsx"
 
@@ -22,7 +30,7 @@ const FAQSection = () => {
   }
 
   return (
-    <div className="mt-12 md:mt-24 w-full px-4 md:px-8 pb-16">
+    <div className="w-full px-4 md:px-8 py-24">
       <div className="relative mx-auto max-w-screen-xl">
         {/* Background Ticket Image */}
         <div className="relative rounded-3xl overflow-hidden min-h-[600px]">
@@ -32,6 +40,10 @@ const FAQSection = () => {
             className="absolute inset-0 w-full h-full object-cover z-0"
           />
 
+          {/* Decorative Frames */}
+          <div className="pointer-events-none absolute -top-12 -right-12 z-0 h-[240px] w-[240px] rounded-[40px] border-2 border-white" />
+          <div className="pointer-events-none absolute bottom-24 -left-24 z-0 h-[100px] w-[900px] rounded-[50px] border-2 border-white" />
+
           {/* Content Overlay */}
           <div className="relative z-10 p-6 md:p-12 lg:p-16 flex flex-col h-full">
             {/* Header Section */}
@@ -39,36 +51,30 @@ const FAQSection = () => {
               <div className="flex-1 mb-6 md:mb-0">
                 {/* Corner Label with underline */}
                 <div className="relative inline-block mb-3">
-                  <div className="text-sm md:text-base uppercase tracking-[0.15em] text-cath-yellow-400 font-bold">
+                  <Typography
+                    variant="caption"
+                    className="text-sm md:text-base uppercase tracking-[0.15em] text-cath-yellow-400 font-bold"
+                  >
                     {t.faq.corner}
-                  </div>
+                  </Typography>
                   <div
                     className="absolute bottom-0 left-0 h-0.5 bg-cath-yellow-400"
                     style={{ width: "50%" }}
                   />
                 </div>
                 {/* Main Title */}
-                <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight">
+                <Typography
+                  variant="h2"
+                  className="text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight"
+                >
                   {t.faq.title}
-                </h2>
+                </Typography>
               </div>
 
               {/* Search Bar - Positioned to overlap */}
-              <div className="md:absolute md:top-8 md:right-8 lg:top-12 lg:right-12">
+              <div className="md:absolute md:top-8 md:right-8 lg:top-12 lg:right-12 hidden">
                 <div className="relative border-2 border-cath-red-800 rounded-xl px-5 py-3.5 shadow-search flex items-center gap-3 min-w-[240px] md:min-w-[280px] transition-all hover:border-cath-red-900 hover:shadow-lg">
-                  <svg
-                    className="w-5 h-5 text-gray-300 flex-shrink-0"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2.5}
-                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                    />
-                  </svg>
+                  <SearchIcon className="w-5 h-5 text-gray-300 flex-shrink-0" />
                   <input
                     type="text"
                     placeholder={t.faq.searchPlaceholder}
@@ -95,50 +101,76 @@ const FAQSection = () => {
                 const isExpanded = expandedQuestions.has(originalIndex)
 
                 return (
-                  <div
+                  <Accordion
                     key={originalIndex}
-                    className={`rounded-xl border transition-all duration-300 ease-in-out ${
-                      isExpanded
-                        ? "bg-gradient-to-br from-orange-500/50 to-red-600/50 border-white/70 shadow-faq-card-expanded backdrop-blur-sm"
-                        : "bg-white/10 border-white/40 hover:bg-white/15 hover:border-white/50 shadow-faq-card backdrop-blur-sm"
-                    }`}
+                    expanded={isExpanded}
+                    onChange={() => toggleQuestion(originalIndex)}
+                    disableGutters
+                    elevation={0}
+                    className="border border-white bg-transparent"
+                    sx={{
+                      borderRadius: "24px !important",
+                      "&:before": { display: "none" }, // Remove default MUI Accordion divider
+                      transition: "all 0.3s ease-in-out",
+                      backgroundColor: isExpanded
+                        ? "transparent"
+                        : "rgba(255, 255, 255, 0.1)",
+                      backgroundImage: isExpanded
+                        ? "linear-gradient(to bottom right, rgba(249, 115, 22, 0.5), rgba(220, 38, 38, 0.5))"
+                        : "none",
+                      borderColor: "white",
+                      marginBottom: "8px",
+                      overflow: "hidden",
+                      "& .MuiAccordionSummary-root": {
+                        borderRadius: "24px",
+                      },
+                      boxShadow: isExpanded
+                        ? "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)"
+                        : "none",
+                      backdropFilter: "blur(4px)",
+                    }}
                   >
-                    <button
-                      onClick={() => toggleQuestion(originalIndex)}
-                      className="w-full p-4 md:p-5 flex items-center justify-between text-left group"
+                    <AccordionSummary
+                      aria-controls={`panel${originalIndex}-content`}
+                      id={`panel${originalIndex}-header`}
+                      className="w-full p-4 md:p-5"
+                      sx={{
+                        padding: { xs: 2, md: 2.5 },
+                        minHeight: "unset",
+                        "& .MuiAccordionSummary-content": {
+                          margin: 0,
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                        },
+                      }}
                     >
-                      <span
-                        className={`flex-1 text-base md:text-lg font-bold leading-snug pr-4 ${
-                          isExpanded
-                            ? "text-white"
-                            : "text-white group-hover:text-white/90"
-                        }`}
+                      <Typography
+                        variant="h6"
+                        component="span"
+                        className="flex-1 text-base md:text-lg font-bold leading-snug pr-4 transition-colors duration-200"
+                        sx={{ color: "#FFFFFF" }}
                       >
                         {item.question}
-                      </span>
+                      </Typography>
                       <div className="ml-2 flex-shrink-0 flex items-center justify-center w-7 h-7 rounded-full bg-white/20">
                         {isExpanded ? (
-                          <FiMinus
-                            className="w-5 h-5 text-cath-red-800"
-                            aria-hidden
-                          />
+                          <RemoveIcon className="w-5 h-5 text-cath-red-800" />
                         ) : (
-                          <FiPlus
-                            className="w-5 h-5 text-cath-yellow-400"
-                            aria-hidden
-                          />
+                          <AddIcon className="w-5 h-5 text-cath-yellow-400" />
                         )}
                       </div>
-                    </button>
-                    {isExpanded && (
-                      <div className="px-4 md:px-5 pb-4 md:pb-5 pt-0">
-                        <div className="h-px bg-white/20 mb-4"></div>
-                        <p className="text-white/95 text-sm md:text-base leading-relaxed">
-                          {item.answer}
-                        </p>
-                      </div>
-                    )}
-                  </div>
+                    </AccordionSummary>
+                    <AccordionDetails className="px-4 md:px-5 pb-4 md:pb-5 pt-0">
+                      <div className="h-px bg-white mb-4"></div>
+                      <Typography
+                        variant="body1"
+                        className="text-sm md:text-base leading-relaxed"
+                        sx={{ color: "#FFFFFF" }}
+                      >
+                        {item.answer}
+                      </Typography>
+                    </AccordionDetails>
+                  </Accordion>
                 )
               })}
             </div>

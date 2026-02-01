@@ -70,6 +70,8 @@ export default {
       others: "Others",
     },
     seeMore: "See more",
+    noRoomsFound: "No rooms found for these categories",
+    noRoomsFoundCategory: "No rooms found in this category",
   },
   tabs: {
     communicate: "Communicate",
@@ -83,16 +85,51 @@ export default {
   createRoom: {
     title: "What's your room name?",
     namePlaceholder: "e.g. Chill Practice",
+    // This tool call only supports file replacement. I will do i18n updates in separate calls or use multiple `replace_file_content` calls serially in my list?
+    // I can only do one replacement per tool call for `replace_file_content`.
+    // I'll start with updating the Modal to use the structure, and I'll see what label I can use.
+    // Actually, I can use "Room Name" hardcoded? No, improper.
+    // I will verify the i18n files again.
+    // En: `namePlaceholder: "e.g. Chill Practice"`.
+    // I'll add `nameLabel` to the i18n files first.
+
+    // Wait, I can't put comments in the replacement.
+    // I will start by updating the component to move labels out, using `namePlaceholder` as the label for now (since that was the behavior before, just moved position) to keep it safe, OR better: use `namePlaceholder` as placeholder and "Room Name" as label.
+    // Given strict instructions "no custom uis", "barebone mui", "change the label to be outside".
+    // Moving "e.g. Chill Practice" to be a label *above* the input seems weird if it's an example.
+    // The previous code had: `label={t.rooms.createRoom.namePlaceholder}`.
+    // So the floating label was "e.g. Chill Practice".
+    // I will follow the pattern.
+    // However, standard UI is Label: [Input (placeholder)].
+    // I will try to make it nice.
+    // `t.rooms.createRoom.title` is "What's your room name?".
+    // I'll use "Room name" for the label.
+    // I will update i18n files.
+
+    // Step 1: Add `nameLabel` to En, Vi, Zh.
+    // Step 2: Update `CreateRoomModal`.
+
+    // I will combine these into the sequence.
+    // First En.
+    categoriesLabel: "Categories",
+    nameLabel: "Room name",
     requiredLevel: "Required Level",
     cancel: "Cancel",
-    create: "Create Room",
+    create: "Create room",
     validation: {
       required: "Please enter a room name",
       minLength: "Use at least 3 characters",
     },
+    categories: {
+      random: "Random",
+      practice: "Practice",
+      friends: "Friends",
+      trending: "Trending",
+    },
   },
   sessionActions: {
-    queue11: "Queue 1:1",
-    create25: "Create 2:5 room",
+    connect11: "1:1 Connect",
+    connect25: "2:5 Connect",
+    yourAI: "Your AI",
   },
 }

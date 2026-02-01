@@ -1,5 +1,6 @@
 import React from "react"
 import { Pagination } from "antd"
+import { Typography } from "@mui/material"
 import { useSearchParams } from "react-router-dom"
 import { FiArrowLeft } from "react-icons/fi"
 import RoomCard from "@/components/rooms/RoomCard"
@@ -80,7 +81,9 @@ const CommunicateTab = ({
           </div>
         ) : (
           <div className="flex h-64 w-full flex-col items-center justify-center rounded-2xl border border-dashed border-gray-200 bg-gray-50 text-gray-400">
-            <p>No rooms found for these categories</p>
+            <Typography variant="body1" color="textSecondary">
+              {t.rooms.filters.noRoomsFound}
+            </Typography>
           </div>
         )}
       </div>

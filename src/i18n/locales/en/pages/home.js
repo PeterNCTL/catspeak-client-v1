@@ -9,6 +9,23 @@ export default {
   },
   whyChooseUs: "Why choose us?",
   valuesTitle: "Values of Cat Speak",
+  values: {
+    tech: {
+      title: "Documents and technology",
+      description:
+        "Experience learning with AI and a specialized language platform community.",
+    },
+    global: {
+      title: "Global connection",
+      description:
+        "Students from all over the world. Unlimited speaking practice opportunities, connecting with classmates, teachers...",
+    },
+    personal: {
+      title: "Personalized experience",
+      description:
+        "Games and connection systems according to different levels and learning needs to suit individuals.",
+    },
+  },
   aiSection: {
     header: "BEST LANGUAGE LEARNING COMMUNITY",
     title: "AI Technology",
@@ -21,5 +38,6 @@ export default {
       "Improvement suggestions, grammar and pronunciation correction by Cat Speak.",
     ],
     learnMore: "learn more",
+    greeting: "Hello ^^",
   },
 }

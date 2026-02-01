@@ -1,12 +1,26 @@
-import React from "react"
+import React, { useState } from "react"
 import { useLanguage } from "@/context/LanguageContext"
 import { useGetProfileQuery } from "@/store/api/authApi"
+import InDevelopmentModal from "@/components/common/InDevelopmentModal"
+import { Typography, Switch, Box } from "@mui/material"
 
 const WelcomeSection = ({ allowConnect, setAllowConnect }) => {
+  const [isDevModalOpen, setIsDevModalOpen] = useState(false)
   const { t } = useLanguage()
   const { welcome } = t.rooms
   const { data: userData } = useGetProfileQuery()
   const user = userData?.data
+
+  const handleSwitchChange = (event) => {
+    const checked = event.target.checked
+    if (checked) {
+      // Trying to turn ON
+      setIsDevModalOpen(true)
+    } else {
+      // Turning OFF
+      setAllowConnect(false)
+    }
+  }
 
   return (
     <div className="relative pl-6 h-full">
@@ -14,46 +28,70 @@ const WelcomeSection = ({ allowConnect, setAllowConnect }) => {
       <div className="absolute left-2 top-4 h-0.5 w-20 bg-[#990011] rounded-r-full" />
       <div className="absolute left-2 top-4 h-[220px] w-0.5 bg-[#990011] rounded-b-full" />
 
-      <p className="text-3xl font-bold mb-1 ml-20">
+      <Typography variant="h4" sx={{ fontWeight: "bold", mb: 0.5, ml: 10 }}>
         {welcome.greeting.replace("{{name}}", user?.username || "Friend")}
-      </p>
-      <h2 className="text-3xl font-bold text-[#990011] drop-shadow-[0_2px_6px_rgba(0,0,0,0.15)]">
-        {welcome.title}
-      </h2>
-      <p className="mt-4 text-sm leading-relaxed text-gray-800">
-        {welcome.description.part1}
-        <span className="font-semibold text-[#990011]">
-          {welcome.description.highlight1}
-        </span>{" "}
-        {welcome.description.part2}
-        <span className="font-semibold text-[#990011]">
-          {welcome.description.highlight2}
-        </span>{" "}
-        {welcome.description.part3}
-      </p>
-      <p className="mt-3 text-sm italic text-gray-600">
-        {welcome.trickOrTreat}
-      </p>
+      </Typography>
+
+      {/* dynamic content starts here */}
+      <Typography
+        variant="h4"
+        sx={{
+          fontWeight: "bold",
+          color: "#990011",
+          textShadow: "0 2px 6px rgba(0,0,0,0.15)",
+        }}
+      >
+        Chúc Mừng Năm Mới
+      </Typography>
+      <Typography
+        variant="body2"
+        sx={{ mt: 2, color: "text.secondary", lineHeight: 1.6 }}
+      >
+        Tết Nguyên Đán là{" "}
+        <Box component="span" sx={{ fontWeight: 600, color: "#990011" }}>
+          lễ hội truyền thống
+        </Box>{" "}
+        lớn nhất của người Việt Nam. Đây là dịp để gia đình sum họp, tưởng nhớ
+        tổ tiên và cùng nhau đón chào một{" "}
+        <Box component="span" sx={{ fontWeight: 600, color: "#990011" }}>
+          năm mới bình an
+        </Box>{" "}
+        và hạnh phúc.
+      </Typography>
+      <Typography
+        variant="body2"
+        sx={{ mt: 1.5, fontStyle: "italic", color: "text.secondary" }}
+      >
+        Cung Chúc Tân Xuân
+      </Typography>
+      {/* dynamic content ends here */}
 
       <div className="mt-8 inline-flex items-center gap-3 rounded-full  px-4 py-2 text-sm text-[#990011] shadow">
-        <button
-          type="button"
-          onClick={() => setAllowConnect((v) => !v)}
-          className={[
-            "relative inline-flex h-6 w-11 items-center rounded-full transition",
-            allowConnect ? "bg-yellow-500" : "bg-gray-300",
-          ].join(" ")}
-          aria-pressed={allowConnect}
-        >
-          <span
-            className={[
-              "h-5 w-5 transform rounded-full bg-white shadow transition",
-              allowConnect ? "translate-x-5" : "translate-x-1",
-            ].join(" ")}
-          />
-        </button>
+        <Switch
+          checked={allowConnect}
+          onChange={handleSwitchChange}
+          color="warning"
+          sx={{
+            "& .MuiSwitch-switchBase.Mui-checked": {
+              color: "#eab308", // yellow-500
+              "&:hover": {
+                backgroundColor: "rgba(234, 179, 8, 0.08)",
+              },
+            },
+            "& .MuiSwitch-track": {
+              backgroundColor: "#d1d5db", // gray-300
+            },
+            "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
+              backgroundColor: "#eab308",
+            },
+          }}
+        />
         {welcome.allowConnect}
       </div>
+      <InDevelopmentModal
+        open={isDevModalOpen}
+        onCancel={() => setIsDevModalOpen(false)}
+      />
     </div>
   )
 }

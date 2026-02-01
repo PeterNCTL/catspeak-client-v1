@@ -10,12 +10,12 @@ const BubblePillMessage = ({ className = "", children, asChild, ...rest }) => {
     <button
       type="button"
       className={[
-        "inline-flex items-center justify-center px-6 py-3 rounded-full",
+        "inline-flex items-center justify-center px-5 py-2 rounded-full",
         "bg-[#990011] text-white font-semibold border-2 border-transparent",
-        "hover:bg-white hover:text-[#990011] hover:border-[#990011] transition-all duration-200",
+        "hover:bg-[#ad0013] transition-all duration-200",
         "disabled:opacity-60 disabled:grayscale disabled:cursor-not-allowed",
         "disabled:hover:bg-[#990011] disabled:hover:text-white disabled:hover:border-transparent",
-        "whitespace-nowrap min-w-[140px]",
+        "whitespace-nowrap min-w-[120px]",
         className,
       ].join(" ")}
       {...rest}

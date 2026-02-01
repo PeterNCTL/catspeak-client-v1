@@ -1,5 +1,6 @@
 import React from "react"
 import { useLanguage } from "@context/LanguageContext.jsx"
+import { Typography } from "@mui/material"
 
 const CommunitySection = ({ languages }) => {
   const { t } = useLanguage()
@@ -7,13 +8,18 @@ const CommunitySection = ({ languages }) => {
 
   return (
     <div className="flex-1 text-center lg:text-left">
-      <div className="font-bold text-lg uppercase tracking-wide">
+      <Typography
+        variant="subtitle1"
+        className="font-bold uppercase tracking-wide"
+      >
         {footerText.ourCommunity}
-      </div>
-      <ul className="space-y-2 text-base pt-6 text-white/85 flex flex-col items-center lg:items-start">
+      </Typography>
+      <ul className="space-y-2 pt-6 text-white/85 flex flex-col items-center lg:items-start">
         {languages.map((lang) => (
-          <li key={lang} className="text-white font-bold drop-shadow-md">
-            <span>{lang}</span>
+          <li key={lang} className="drop-shadow-md">
+            <Typography variant="body1" className="text-white font-bold">
+              {lang}
+            </Typography>
           </li>
         ))}
       </ul>

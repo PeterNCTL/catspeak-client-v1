@@ -1,13 +1,32 @@
 import React from "react"
-import colors from "@/utils/colors"
+import { FiClock } from "react-icons/fi"
+import { useLanguage } from "@/context/LanguageContext"
 
 const GroupTab = () => {
+  const { t } = useLanguage()
+
   return (
-    <div
-      className="rounded-3xl border bg-white p-10 text-center text-gray-500"
-      style={{ borderColor: colors.border }}
-    >
-      Nội dung cho tab "group" sẽ được cập nhật.
+    <div className="flex min-h-[400px] w-full items-center justify-center rounded-3xl bg-white px-4 py-16 shadow-sm">
+      <div className="w-full max-w-md text-center">
+        {/* Icon */}
+        <div className="mb-6 flex justify-center">
+          <div className="rounded-full bg-gradient-to-br from-[#f5c34a] to-[#c2131a] p-6 shadow-lg">
+            <FiClock className="h-12 w-12 text-white" />
+          </div>
+        </div>
+
+        {/* Title */}
+        <h1 className="mb-3 text-3xl font-bold text-gray-900">
+          {t.rooms.tabs.group}
+        </h1>
+
+        {/* Message */}
+        <p className="mb-6 text-lg text-gray-600">{t.comingSoon.title}</p>
+
+        <p className="text-sm italic text-gray-500">
+          {t.comingSoon.description}
+        </p>
+      </div>
     </div>
   )
 }

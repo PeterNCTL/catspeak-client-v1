@@ -17,6 +17,7 @@ import {
   ClassTab,
 } from "@/components/rooms/tabs"
 import CreateRoomModal from "@/components/rooms/CreateRoomModal"
+import { PageNotFound } from "@/pages/ErrorPage"
 
 const RoomsPage = () => {
   const { t } = useLanguage()
@@ -40,6 +41,11 @@ const RoomsPage = () => {
         .map((l) => l.trim().replace(/^\w/, (c) => c.toUpperCase()))
         .filter(Boolean)
     : undefined
+
+  // Force 404 for Vietnamese language
+  if (languageType?.includes("Vietnamese")) {
+    return <PageNotFound />
+  }
 
   const requiredLevelsParam = searchParams.get("requiredLevels")
   const requiredLevels = requiredLevelsParam

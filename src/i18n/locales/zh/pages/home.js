@@ -9,6 +9,21 @@ export default {
   },
   whyChooseUs: "为什么选择我们？",
   valuesTitle: "Cat Speak 的价值",
+  values: {
+    tech: {
+      title: "文档和技术",
+      description: "体验 AI 学习和专业的语言平台社区。",
+    },
+    global: {
+      title: "全球连接",
+      description:
+        "来自世界各地的学生。无限的口语练习机会，与同学、老师联系......",
+    },
+    personal: {
+      title: "个性化体验",
+      description: "根据不同级别和学习需求的游戏和连接系统，以适合个人。",
+    },
+  },
   aiSection: {
     header: "最佳语言学习社区",
     title: "AI 技术",
@@ -21,5 +36,6 @@ export default {
       "由 Cat Speak 提供的即时语法和发音改进建议。",
     ],
     learnMore: "了解更多",
+    greeting: "你好 ^^",
   },
 }

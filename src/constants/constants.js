@@ -1,4 +1,5 @@
-import { FiUser, FiUsers, FiCpu } from "react-icons/fi"
+import { FiCpu } from "react-icons/fi"
+import { FaUser, FaUsers } from "react-icons/fa"
 
 export const slides = [
   {
@@ -22,9 +23,9 @@ export const slides = [
 ]
 
 export const badges = [
-  { label: "Queue 1:1", desc: "Kèm riêng", icon: FiUser },
-  { label: "Create 2:5 room", desc: "Nhóm nhỏ", icon: FiUsers },
-  { label: "AI", desc: "Giáo viên AI", icon: FiCpu },
+  { id: "connect_1_1", label: "Queue 1:1", icon: FaUser },
+  { id: "connect_2_5", label: "Create 2:5 room", icon: FaUsers },
+  { id: "your_ai", label: "AI", icon: FiCpu },
 ]
 
 export const roomFilters = [

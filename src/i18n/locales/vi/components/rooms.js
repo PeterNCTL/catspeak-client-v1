@@ -71,6 +71,8 @@ export default {
       others: "Khác",
     },
     seeMore: "Xem thêm",
+    noRoomsFound: "Không tìm thấy phòng nào cho các danh mục này",
+    noRoomsFoundCategory: "Không tìm thấy phòng nào trong danh mục này",
   },
   tabs: {
     communicate: "Giao tiếp",
@@ -84,6 +86,8 @@ export default {
   createRoom: {
     title: "Tên phòng của bạn là gì?",
     namePlaceholder: "ví dụ: Luyện tập vui vẻ",
+    categoriesLabel: "Danh mục",
+    nameLabel: "Tên phòng",
     requiredLevel: "Trình độ yêu cầu",
     cancel: "Hủy",
     create: "Tạo phòng",
@@ -91,9 +95,16 @@ export default {
       required: "Vui lòng nhập tên phòng",
       minLength: "Sử dụng ít nhất 3 ký tự",
     },
+    categories: {
+      random: "Ngẫu nhiên",
+      practice: "Luyện tập",
+      friends: "Kết bạn",
+      trending: "Thịnh hành",
+    },
   },
   sessionActions: {
-    queue11: "Ghép 1:1",
-    create25: "Tạo phòng 2:5",
+    connect11: "Kết nối 1:1",
+    connect25: "Kết nối 2:5",
+    yourAI: "AI của bạn",
   },
 }

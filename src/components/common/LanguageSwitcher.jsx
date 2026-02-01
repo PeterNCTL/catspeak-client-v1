@@ -1,88 +1,170 @@
 import React, { useState } from "react"
-import { Dropdown } from "antd"
-import { FiChevronDown } from "react-icons/fi"
+import { Menu, MenuItem, Typography, Box } from "@mui/material"
+import { ExpandMore } from "@mui/icons-material"
 import { useLanguage } from "@/context/LanguageContext"
-
 import colors from "@/utils/colors"
 
 const LanguageSwitcher = ({ className = "" }) => {
-  const { language, setLanguage } = useLanguage()
-  const [isOpen, setIsOpen] = useState(false)
+  const { language, setLanguage, t } = useLanguage()
+  const [anchorEl, setAnchorEl] = useState(null)
+  const open = Boolean(anchorEl)
 
-  const getItemStyle = (key) => ({
-    backgroundColor: language === key ? colors.primary2 : "transparent",
-    borderRadius: "8px",
-  })
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget)
+  }
 
-  const items = [
-    {
-      key: "vi",
-      style: getItemStyle("vi"),
-      label: (
-        <span className="text-sm font-semibold text-gray-700">
-          Tiếng Việt (Quốc Ngữ)
-        </span>
-      ),
-      onClick: () => setLanguage("vi"),
-    },
-    {
-      key: "vi-nom",
-      label: (
-        <span className="text-sm font-semibold text-gray-400 cursor-not-allowed">
-          Tiếng Việt (Nôm) - Sắp ra mắt
-        </span>
-      ),
-      disabled: true,
-    },
-    {
-      key: "zh",
-      style: getItemStyle("zh"),
-      label: (
-        <span className="text-sm font-semibold text-gray-700">Tiếng Trung</span>
-      ),
-      onClick: () => setLanguage("zh"),
-    },
-    {
-      key: "en",
-      style: getItemStyle("en"),
-      label: (
-        <span className="text-sm font-semibold text-gray-700">Tiếng Anh</span>
-      ),
-      onClick: () => setLanguage("en"),
-    },
-  ]
+  const handleClose = () => {
+    setAnchorEl(null)
+  }
+
+  const handleLanguageSelect = (lang) => {
+    setLanguage(lang)
+    handleClose()
+  }
 
   const getDisplayLabel = () => {
     switch (language) {
       case "vi":
-        return "Tiếng Việt (Quốc Ngữ)"
+        return t.header?.languages?.vi || "Vietnamese"
       case "zh":
-        return "Tiếng Trung"
+        return t.header?.languages?.zh || "Chinese"
       case "en":
-        return "Tiếng Anh"
+        return t.header?.languages?.en || "English"
       default:
-        return "Tiếng Việt"
+        return t.header?.languages?.en || "English"
     }
   }
 
   return (
-    <Dropdown
-      menu={{ items }}
-      trigger={["hover"]}
-      placement="bottomRight"
-      onOpenChange={setIsOpen}
-    >
-      <div className={`flex items-center gap-2 cursor-pointer ${className}`}>
-        <span className="font-bold text-[#FFB400] text-lg">
+    <div className={className}>
+      <Box
+        onClick={handleClick}
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          gap: 1,
+          cursor: "pointer",
+        }}
+      >
+        <Typography
+          variant="h6" // Approximate text-lg
+          sx={{
+            fontWeight: "bold",
+            color: "#FFB400",
+            fontSize: "1.125rem", // text-lg
+            lineHeight: "1.75rem",
+            minWidth: "200px",
+            whiteSpace: "nowrap",
+            textAlign: "right",
+          }}
+        >
           {getDisplayLabel()}
-        </span>
-        <FiChevronDown
-          className={`text-[#FFB400] text-xl transition-transform duration-200 ${
-            isOpen ? "rotate-180" : "rotate-0"
-          }`}
+        </Typography>
+        <ExpandMore
+          sx={{
+            color: "#FFB400",
+            fontSize: "1.25rem", // text-xl
+            transition: "transform 0.2s",
+            transform: open ? "rotate(180deg)" : "rotate(0deg)",
+          }}
         />
-      </div>
-    </Dropdown>
+      </Box>
+
+      <Menu
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+        disableScrollLock
+        MenuListProps={{
+          "aria-labelledby": "language-button",
+        }}
+        PaperProps={{
+          elevation: 3,
+          sx: {
+            borderRadius: 2,
+            mt: 1,
+            minWidth: 300,
+          },
+        }}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "right",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+      >
+        <MenuItem
+          onClick={() => handleLanguageSelect("vi")}
+          sx={{
+            height: 40,
+            backgroundColor:
+              language === "vi" ? colors.primary2 : "transparent",
+            borderRadius: 1,
+            "&:hover": {
+              backgroundColor: "rgba(0, 0, 0, 0.04)",
+            },
+          }}
+        >
+          <Typography variant="body2">
+            {t.header?.languages?.vi || "Vietnamese"}
+          </Typography>
+        </MenuItem>
+        <MenuItem
+          disabled
+          sx={{
+            height: 40,
+            borderRadius: 1,
+          }}
+        >
+          <Typography
+            variant="body2"
+            sx={{ color: "text.disabled" }} // Removed fontWeight: 600
+          >
+            {t.header?.languages?.viNom || "Vietnamese (Nom) - Coming soon"}
+          </Typography>
+        </MenuItem>
+        <MenuItem
+          onClick={() => handleLanguageSelect("zh")}
+          sx={{
+            height: 40,
+            backgroundColor:
+              language === "zh" ? colors.primary2 : "transparent",
+            borderRadius: 1,
+            "&:hover": {
+              backgroundColor: "rgba(0, 0, 0, 0.04)",
+            },
+          }}
+        >
+          <Typography
+            variant="body2"
+            sx={{ color: "text.primary" }} // Removed fontWeight: 600
+          >
+            {t.header?.languages?.zh || "Chinese"}
+          </Typography>
+        </MenuItem>
+        <MenuItem
+          onClick={() => handleLanguageSelect("en")}
+          sx={{
+            height: 40,
+            backgroundColor:
+              language === "en" ? colors.primary2 : "transparent",
+            borderRadius: 1,
+            "&:hover": {
+              backgroundColor: "rgba(0, 0, 0, 0.04)",
+            },
+          }}
+        >
+          <Typography
+            variant="body2"
+            sx={{ color: "text.primary" }} // Removed fontWeight: 600
+          >
+            {t.header?.languages?.en || "English"}
+          </Typography>
+        </MenuItem>
+      </Menu>
+    </div>
   )
 }
 

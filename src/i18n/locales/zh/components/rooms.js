@@ -69,6 +69,8 @@ export default {
       others: "其他",
     },
     seeMore: "查看更多",
+    noRoomsFound: "未找到这些类别的房间",
+    noRoomsFoundCategory: "在此类别中未找到房间",
   },
   tabs: {
     communicate: "交流",
@@ -82,6 +84,8 @@ export default {
   createRoom: {
     title: "你的房间叫什么名字？",
     namePlaceholder: "例如：轻松练习",
+    categoriesLabel: "分类",
+    nameLabel: "房间名称",
     requiredLevel: "所需等级",
     cancel: "取消",
     create: "创建房间",
@@ -89,9 +93,16 @@ export default {
       required: "请输入房间名称",
       minLength: "请至少使用3个字符",
     },
+    categories: {
+      random: "随机",
+      practice: "练习",
+      friends: "交友",
+      trending: "热门",
+    },
   },
   sessionActions: {
-    queue11: "排队 1:1",
-    create25: "创建 2:5 房间",
+    connect11: "1:1 连接",
+    connect25: "2:5 连接",
+    yourAI: "你的 AI",
   },
 }

@@ -1,4 +1,5 @@
 import React from "react"
+import { Typography } from "@mui/material"
 import { useGetRoomsQuery } from "@/store/api/roomsApi"
 import RoomCard from "@/components/rooms/RoomCard"
 import colors from "@/utils/colors"
@@ -30,21 +31,25 @@ const CategoryRoomSection = ({
     return (
       <div className="flex flex-col gap-4">
         <div className="flex h-8 items-center justify-between">
-          <h3
-            className="text-xl font-bold uppercase tracking-wide"
-            style={{ color: colors.headingColor }}
-          >
-            {title}
-          </h3>
-          <button
-            onClick={() => onSeeMore(categoryKey)}
-            className="text-sm font-medium text-gray-500 hover:text-gray-900"
-          >
-            {t.rooms.filters.seeMore}
-          </button>
+          <div className="flex items-end gap-3">
+            <h3
+              className="mb-0 text-xl font-bold uppercase tracking-wide"
+              style={{ color: colors.headingColor }}
+            >
+              {title}
+            </h3>
+            <button
+              onClick={() => onSeeMore(categoryKey)}
+              className="text-sm font-medium text-gray-500 hover:text-gray-900 mb-[2px]"
+            >
+              {t.rooms.filters.seeMore}
+            </button>
+          </div>
         </div>
         <div className="flex h-32 w-full flex-col items-center justify-center rounded-2xl border border-dashed border-gray-200 bg-gray-50 text-gray-400">
-          <p>No rooms found in this category</p>
+          <Typography variant="body1" color="textSecondary">
+            {t.rooms.filters.noRoomsFoundCategory}
+          </Typography>
         </div>
       </div>
     )

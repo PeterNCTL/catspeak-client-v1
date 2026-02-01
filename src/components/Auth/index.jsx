@@ -15,6 +15,7 @@ const Auth = ({ isOpen, mode = "login", onClose, onSwitchMode }) => {
         return (
           <RegisterPopup
             key="register"
+            open={isOpen}
             onClose={onClose}
             onSwitchMode={onSwitchMode}
           />
@@ -40,6 +41,7 @@ const Auth = ({ isOpen, mode = "login", onClose, onSwitchMode }) => {
         return (
           <LoginPopup
             key="login"
+            open={isOpen}
             onClose={onClose}
             onSwitchMode={onSwitchMode}
           />
@@ -47,6 +49,12 @@ const Auth = ({ isOpen, mode = "login", onClose, onSwitchMode }) => {
     }
   }
 
+  // LoginPopup and RegisterPopup use MUI Dialog which handles its own portal and backdrop
+  if (mode === "login" || mode === "register") {
+    return renderPopup()
+  }
+
+  // Other popups still use the portal wrapper
   return createPortal(
     <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 px-4 py-8">
       <div

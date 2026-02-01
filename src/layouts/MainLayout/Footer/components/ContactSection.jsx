@@ -1,6 +1,7 @@
 import { Input } from "antd"
 import { FiSend } from "react-icons/fi"
 import { useLanguage } from "@context/LanguageContext.jsx"
+import { Typography } from "@mui/material"
 
 const ContactSection = () => {
   const { t } = useLanguage()
@@ -8,9 +9,12 @@ const ContactSection = () => {
 
   return (
     <div className="flex-1 w-full flex flex-col items-center lg:items-end">
-      <div className="font-bold text-lg uppercase text-center tracking-wide mb-4 w-full max-w-md">
+      <Typography
+        variant="subtitle1"
+        className="font-bold uppercase text-center tracking-wide mb-4 w-full max-w-md"
+      >
         {footerText.contactUs}
-      </div>
+      </Typography>
       <div className="px-0 w-full max-w-md">
         <form className="flex flex-col gap-5">
           <Input
@@ -23,10 +27,18 @@ const ContactSection = () => {
           />
         </form>
         <div className="mt-4 flex items-center justify-between text-sm text-white/90">
-          <p className="flex-1 pr-4 italic">
-            <span className="font-bold text-base">Cat Speak </span>
-            {footerText.contactMessage}
-          </p>
+          <div className="flex-1 pr-4 italic text-white/90">
+            <Typography
+              variant="body2"
+              component="span"
+              className="font-bold text-base"
+            >
+              Cat Speak{" "}
+            </Typography>
+            <Typography variant="body2" component="span" className="text-sm">
+              {footerText.contactMessage}
+            </Typography>
+          </div>
           <button
             type="button"
             className="flex h-10 w-10 items-center justify-center rounded-full bg-yellow-300 text-[#bc1e46] shadow-lg transition hover:scale-105"

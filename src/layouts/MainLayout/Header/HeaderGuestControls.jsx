@@ -1,5 +1,6 @@
 import React from "react"
 import { useLanguage } from "../../../context/LanguageContext"
+import PillButton from "@/components/ui/PillButton"
 
 const HeaderGuestControls = ({ onGetStarted }) => {
   const { t } = useLanguage()
@@ -12,12 +13,7 @@ const HeaderGuestControls = ({ onGetStarted }) => {
 
   return (
     <>
-      <button
-        className="rounded-full bg-cath-red-700 px-6 py-2 text-sm font-semibold text-white transition hover:bg-cath-red-800 whitespace-nowrap"
-        onClick={handleLogin}
-      >
-        {t.auth.loginButton}
-      </button>
+      <PillButton onClick={handleLogin}>{t.auth.loginButton}</PillButton>
     </>
   )
 }

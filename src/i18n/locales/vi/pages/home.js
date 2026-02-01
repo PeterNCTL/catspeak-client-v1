@@ -9,6 +9,23 @@ export default {
   },
   whyChooseUs: "Tại sao chọn chúng tôi ?",
   valuesTitle: "Giá trị của Cat Speak",
+  values: {
+    tech: {
+      title: "Tài liệu và công nghệ",
+      description:
+        "Trải nghiệm học với AI và cộng đồng platform ngôn ngữ chuyên biệt.",
+    },
+    global: {
+      title: "Kết nối toàn cầu",
+      description:
+        "Học viên từ khắp nơi trên thế giới. Cơ hội luyện nói không giới hạn, kết nối với bạn học, giáo viên,...",
+    },
+    personal: {
+      title: "Cá nhân hóa trải nghiệm",
+      description:
+        "Game và hệ thống kết nối theo từng cấp độ và nhu cầu học tập khác nhau để phù hợp với cá nhân.",
+    },
+  },
   aiSection: {
     header: "CỘNG ĐỒNG HỌC NGÔN NGỮ TỐT NHẤT",
     title: "Công nghệ AI",
@@ -21,5 +38,6 @@ export default {
       "Đề xuất cải thiện, điều chỉnh ngữ pháp và phát âm từ thời bởi Cat Speak.",
     ],
     learnMore: "tìm hiểu thêm",
+    greeting: "Xin chào ^^",
   },
 }

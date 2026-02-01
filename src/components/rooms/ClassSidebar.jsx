@@ -1,89 +1,30 @@
-import React, { useState } from "react";
+import React from "react"
+import { FiClock } from "react-icons/fi"
+import { useLanguage } from "@/context/LanguageContext"
 
 const ClassSidebar = () => {
-  const [activeMenu, setActiveMenu] = useState("phong");
-  const [activeSubMenu, setActiveSubMenu] = useState("lop-hoc");
-
-  const menuItems = [
-    {
-      key: "phong",
-      label: "Phòng",
-      subItems: [
-        { key: "da-luu", label: "Đã lưu", count: 1 },
-        { key: "lop-hoc", label: "Lớp học", count: 2 },
-        { key: "loi-moi", label: "Lời mời", count: 5 },
-      ],
-    },
-    {
-      key: "letters",
-      label: "Letters",
-    },
-    {
-      key: "tai-lieu",
-      label: "Tài liệu",
-      subItems: [
-        { key: "cua-ban", label: "Của bạn", count: 5 },
-        { key: "record", label: "Record", count: 1 },
-        { key: "chia-se", label: "Chia sẻ", count: 5 },
-      ],
-    },
-  ];
+  const { t } = useLanguage()
 
   return (
-    <aside className="rounded-3xl border border-gray-200 bg-white shadow-sm">
-      {/* Breadcrumb */}
-      <div className="border-b px-4 py-3">
-        <nav className="text-sm">
-          <span className="text-gray-600">Phòng</span>
-          <span className="mx-2 text-gray-400">{" >> "}</span>
-          <span className="text-gray-600">Lớp học</span>
-          <span className="mx-2 text-gray-400">{" >> "}</span>
-          <span className="font-semibold text-[#990011]">Mã lớp học</span>
-        </nav>
-      </div>
-
-      {/* Navigation Menu */}
-      <div className="px-4 py-4">
-        <div className="space-y-2">
-          {menuItems.map((item) => (
-            <div key={item.key}>
-              <button
-                onClick={() => setActiveMenu(item.key)}
-                className={[
-                  "w-full rounded-lg px-4 py-2.5 text-left text-sm font-semibold transition",
-                  activeMenu === item.key
-                    ? "bg-[#990011] text-white"
-                    : "bg-gray-100 text-gray-700 hover:bg-gray-200",
-                ].join(" ")}
-              >
-                {item.label}
-              </button>
-
-              {item.subItems && activeMenu === item.key && (
-                <div className="mt-2 space-y-1 pl-4">
-                  {item.subItems.map((subItem) => (
-                    <button
-                      key={subItem.key}
-                      onClick={() => setActiveSubMenu(subItem.key)}
-                      className={[
-                        "w-full rounded px-3 py-1.5 text-left text-sm transition",
-                        activeSubMenu === subItem.key
-                          ? "font-bold text-[#990011]"
-                          : "text-gray-700 hover:text-[#990011]",
-                      ].join(" ")}
-                    >
-                      {subItem.label} {subItem.count}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          ))}
+    <aside className="min-h-[300px] w-full max-w-[360px] rounded-3xl border border-gray-200 bg-white p-8 text-center shadow-sm">
+      <div className="flex flex-col items-center justify-center h-full">
+        {/* Icon */}
+        <div className="mb-4">
+          <div className="rounded-full bg-gray-100 p-4">
+            <FiClock className="h-8 w-8 text-gray-400" />
+          </div>
         </div>
+
+        {/* Title */}
+        <h3 className="mb-2 text-lg font-bold text-gray-800">
+          {t.comingSoon.title}
+        </h3>
+
+        {/* Message */}
+        <p className="text-sm text-gray-500">{t.comingSoon.description}</p>
       </div>
     </aside>
-  );
-};
+  )
+}
 
-export default ClassSidebar;
-
+export default ClassSidebar

@@ -1,0 +1,11 @@
+export default {
+  settings: "Settings",
+  logout: "Log out",
+  soon: "Soon",
+  languages: {
+    vi: "Vietnamese (Quoc Ngu)",
+    viNom: "Vietnamese (Nom) - Coming soon",
+    zh: "Chinese",
+    en: "English",
+  },
+}

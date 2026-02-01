@@ -11,7 +11,7 @@ export const useRoomsPageLogic = () => {
   const slides = t?.rooms?.heroCarousel?.slides || []
 
   const [active, setActive] = useState(0)
-  const [allowConnect, setAllowConnect] = useState(true)
+  const [allowConnect, setAllowConnect] = useState(false)
   const [page, setPage] = useState(1)
   const [tab, setTab] = useState("communicate")
   const [liveInput, setLiveInput] = useState("")

@@ -1,8 +1,20 @@
-import FormInput from "../../ui/FormInput"
-import FormSelect from "../../ui/FormSelect"
-import AgreementCheckbox from "../../ui/AgreementCheckbox"
+import { useState } from "react"
+import { Box, IconButton, InputAdornment } from "@mui/material"
+import { Visibility, VisibilityOff } from "@mui/icons-material"
+import FormTextField from "../../forms/FormTextField"
+import FormSelectField from "../../forms/FormSelectField"
+import FormDatePicker from "../../forms/FormDatePicker"
+import AgreementCheckbox from "../../forms/AgreementCheckbox"
 
-const RegisterFormFields = ({ authText }) => {
+const RegisterFormFields = ({
+  authText,
+  formData,
+  setFormData,
+  errors,
+  setErrors,
+}) => {
+  const [showPassword, setShowPassword] = useState(false)
+
   const languageOptions = [
     { value: "english", label: "English" },
     { value: "vietnamese", label: "Tiếng Việt" },
@@ -15,89 +27,126 @@ const RegisterFormFields = ({ authText }) => {
     { value: "china", label: "China" },
   ]
 
+  const handleChange = (field) => (e) => {
+    const value =
+      e.target.type === "checkbox" ? e.target.checked : e.target.value
+    setFormData({ ...formData, [field]: value })
+    if (errors[field]) {
+      setErrors({ ...errors, [field]: "" })
+    }
+  }
+
   return (
     <>
-      {/* Username */}
-      <FormInput
-        name="username"
-        label={authText.fullNameLabel}
-        placeholder={authText.fullNamePlaceholder}
-        rules={[
-          { required: true, message: authText.validationUsernameRequired },
-        ]}
-      />
-
-      {/* Email */}
-      <FormInput
-        name="email"
-        label={authText.emailLabel}
-        placeholder={authText.emailPlaceholder}
-        rules={[
-          { required: true, message: authText.validationEmailRequired },
-          { type: "email", message: authText.validationEmailInvalid },
-        ]}
-      />
-
-      {/* Date of Birth and Preferred Language - Side by Side */}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <FormInput
-          name="dateOfBirth"
-          label={authText.dateOfBirthLabel}
-          placeholder={authText.dateOfBirthPlaceholder}
-          rules={[{ required: true, message: authText.validationDobRequired }]}
+      {/* Form Fields Group */}
+      <Box sx={{ display: "flex", flexDirection: "column", gap: 4 }}>
+        {/* Username */}
+        <FormTextField
+          label={authText.fullNameLabel}
+          placeholder={authText.fullNamePlaceholder}
+          value={formData.username}
+          onChange={handleChange("username")}
+          error={!!errors.username}
+          helperText={errors.username}
         />
 
-        <FormSelect
-          name="preferredLanguage"
-          label={authText.languageLabel}
-          placeholder={authText.languagePlaceholder}
-          rules={[
-            {
-              required: true,
-              message: authText.validationLanguageRequired,
-            },
-          ]}
-          options={languageOptions}
-        />
-      </div>
-
-      {/* Password and Country - Side by Side */}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <FormInput
-          name="password"
-          label={authText.passwordLabel}
-          placeholder={authText.passwordPlaceholder}
-          type="password"
-          rules={[
-            { required: true, message: authText.validationPasswordRequired },
-            { min: 6, message: authText.validationPasswordMin },
-          ]}
+        {/* Email */}
+        <FormTextField
+          label={authText.emailLabel}
+          placeholder={authText.emailPlaceholder}
+          value={formData.email}
+          onChange={handleChange("email")}
+          error={!!errors.email}
+          helperText={errors.email}
+          type="email"
         />
 
-        <FormSelect
-          name="country"
-          label={authText.countryLabel}
-          placeholder={authText.countryPlaceholder}
-          rules={[
-            { required: true, message: authText.validationCountryRequired },
-          ]}
-          options={countryOptions}
-        />
-      </div>
+        {/* Date of Birth and Language - Side by Side */}
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: { xs: "column", sm: "row" },
+            gap: 2,
+          }}
+        >
+          {/* Date of Birth */}
+          <Box sx={{ flex: 1 }}>
+            <FormDatePicker
+              label={authText.dateOfBirthLabel}
+              placeholder={authText.dateOfBirthPlaceholder}
+              value={formData.dateOfBirth}
+              onChange={handleChange("dateOfBirth")}
+              error={!!errors.dateOfBirth}
+              helperText={errors.dateOfBirth}
+            />
+          </Box>
 
-      <div>
+          {/* Preferred Language */}
+          <FormSelectField
+            label={authText.languageLabel}
+            placeholder={authText.languagePlaceholder}
+            value={formData.preferredLanguage}
+            onChange={handleChange("preferredLanguage")}
+            error={!!errors.preferredLanguage}
+            errorText={errors.preferredLanguage}
+            options={languageOptions}
+          />
+        </Box>
+
+        {/* Password and Country - Side by Side */}
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: { xs: "column", sm: "row" },
+            gap: 2,
+          }}
+        >
+          {/* Password */}
+          <Box sx={{ flex: 1 }}>
+            <FormTextField
+              label={authText.passwordLabel}
+              placeholder={authText.passwordPlaceholder}
+              value={formData.password}
+              onChange={handleChange("password")}
+              error={!!errors.password}
+              helperText={errors.password}
+              type={showPassword ? "text" : "password"}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="toggle password visibility"
+                      onClick={() => setShowPassword(!showPassword)}
+                      onMouseDown={(e) => e.preventDefault()}
+                      edge="end"
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+            />
+          </Box>
+
+          {/* Country */}
+          <FormSelectField
+            label={authText.countryLabel}
+            placeholder={authText.countryPlaceholder}
+            value={formData.country}
+            onChange={handleChange("country")}
+            error={!!errors.country}
+            errorText={errors.country}
+            options={countryOptions}
+          />
+        </Box>
+      </Box>
+
+      {/* Checkboxes Group */}
+      <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
         {/* First Agreement Checkbox - Terms and Privacy */}
         <AgreementCheckbox
-          name="termsAgreement"
-          style={{ marginBottom: 8 }}
-          rules={[
-            {
-              validator: (_, value) =>
-                value
-                  ? Promise.resolve()
-                  : Promise.reject(new Error(authText.validationTermsRequired)),
-            },
-          ]}
+          checked={formData.termsAgreement}
+          onChange={handleChange("termsAgreement")}
         >
           {authText.agreePrefix}{" "}
           <button
@@ -118,18 +167,8 @@ const RegisterFormFields = ({ authText }) => {
 
         {/* Second Agreement Checkbox - Payment and IP */}
         <AgreementCheckbox
-          name="policyAgreement"
-          style={{ marginBottom: 12 }}
-          rules={[
-            {
-              validator: (_, value) =>
-                value
-                  ? Promise.resolve()
-                  : Promise.reject(
-                      new Error(authText.validationPolicyRequired),
-                    ),
-            },
-          ]}
+          checked={formData.policyAgreement}
+          onChange={handleChange("policyAgreement")}
         >
           {authText.agreePrefix}{" "}
           <button
@@ -147,7 +186,7 @@ const RegisterFormFields = ({ authText }) => {
           </button>{" "}
           {authText.companySuffix}
         </AgreementCheckbox>
-      </div>
+      </Box>
     </>
   )
 }
