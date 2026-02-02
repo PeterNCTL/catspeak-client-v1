@@ -30,28 +30,21 @@ const FAQSection = () => {
   }
 
   return (
-    <div className="w-full px-4 sm:px-6 md:px-8 py-12 sm:py-16 md:py-20 lg:py-24">
+    <div className="w-full px-4 sm:px-6 md:px-8 py-12 sm:py-16 md:py-20 lg:py-24 overflow-x-hidden">
       <div className="relative mx-auto max-w-screen-xl">
         {/* Background Ticket Image */}
-        <div className="relative rounded-3xl min-h-[400px] sm:min-h-[500px] md:min-h-[600px] bg-gradient-to-b from-cath-red-500 via-cath-red-700 to-[#f08d1d] min-[1440px]:bg-none overflow-hidden min-[1440px]:overflow-visible">
-          {/* Layer 1: Main Background */}
-          <img
-            src={FAQBackground}
-            alt="FAQ Background"
-            className="hidden min-[1440px]:block absolute top-0 left-0 w-full h-auto z-0"
-          />
-
+        <div className="relative rounded-3xl min-h-[400px] sm:min-h-[500px] md:min-h-[600px] bg-gradient-to-b from-cath-red-500 via-cath-red-700 to-[#f08d1d] overflow-visible">
           {/* Layer 2: Top Right Decorations (New) */}
           {/* Layer 2: Top Right Decorations (New) - Manually Positioned */}
-          <div className="hidden min-[1440px]:block absolute inset-0 z-10 pointer-events-none overflow-visible">
+          <div className="absolute inset-0 z-10 pointer-events-none overflow-visible">
             <img
               src={FAQDecorations}
               alt="FAQ Decorations"
-              className="absolute w-[150px] md:w-[200px] h-auto object-contain"
+              className="absolute w-[200px] md:w-[300px] h-auto object-contain"
               style={{
                 // Adjust these values to manually position the decorations
-                top: "-5%",
-                right: "0%",
+                top: "-80px", // Fixed px value to prevent shifting when accordion expands
+                right: "-5%",
               }}
             />
           </div>
@@ -59,8 +52,7 @@ const FAQSection = () => {
           {/* Old Decorative Frames - Hidden on larger screens where new decoration exists, visible on mobile/tablet if desired? 
              User said: "only show [decorative frames] on smaller screens"
           */}
-          <div className="pointer-events-none absolute -top-12 -right-12 z-0 h-[240px] w-[240px] rounded-[40px] border-2 border-white block min-[1440px]:hidden" />
-          <div className="pointer-events-none absolute bottom-24 -left-24 z-0 h-[100px] w-[900px] rounded-[50px] border-2 border-white block min-[1440px]:hidden" />
+          {/* Old Decorative Frames - Removed as we use FAQDecorations everywhere now */}
 
           {/* Content Overlay - Layer 3 (Top) */}
           <div className="relative z-20 p-4 sm:p-6 md:p-10 lg:p-12 xl:p-16 flex flex-col h-full">
