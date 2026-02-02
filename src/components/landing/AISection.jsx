@@ -3,69 +3,50 @@ import LiquidGlassButton from "@components/LiquidGlassButton"
 import { Typography } from "@mui/material"
 import CheckIcon from "@mui/icons-material/Check"
 import { colors } from "../../utils/colors"
+import { AIImages, AIBubble } from "@assets/images/home"
 
 const AISection = () => {
   const { t } = useLanguage()
 
   return (
     <div className="w-full px-4 sm:px-6 md:px-8 py-8 sm:py-12 md:py-16 lg:py-24 flex items-center">
-      <div className="mx-auto grid max-w-screen-xl grid-cols-1 gap-6 sm:gap-8 md:gap-10 lg:gap-12 lg:items-center">
+      <div className="mx-auto grid max-w-screen-xl grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 md:gap-10 lg:gap-12 lg:items-center">
         {/* Left Side - 3 Image Layout */}
-        <div className="relative order-2 mx-auto h-[400px] sm:h-[450px] md:h-[500px] lg:h-[600px] w-full max-w-[500px] lg:order-1 lg:max-w-[600px]">
-          {/* Decorative Dots Top Right */}
-          <div className="absolute -top-4 -right-4 flex gap-2">
-            <div className="h-2 w-2 sm:h-3 sm:w-3 rounded-full bg-red-400"></div>
-            <div className="h-2 w-2 sm:h-3 sm:w-3 rounded-full bg-red-400"></div>
-            <div className="h-2 w-2 sm:h-3 sm:w-3 rounded-full bg-red-400"></div>
-          </div>
+        {/* Left Side - Image Composition */}
+        <div className="relative order-1 w-full max-w-[500px] lg:max-w-[600px] mx-auto">
+          {/* Main Image */}
+          <img
+            src={AIImages}
+            alt="AI Features"
+            className="w-full h-auto object-contain"
+          />
 
-          {/* Image 1: Group (Top Left) */}
-          <div className="absolute left-0 top-0 z-10 w-[70%] sm:w-[65%] overflow-hidden rounded-[24px] sm:rounded-[32px] md:rounded-[40px] border-2 border-amber-400 shadow-xl">
-            <img
-              src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=600&q=80"
-              alt="Community"
-              className="h-full w-full object-cover aspect-[4/5]"
-            />
-          </div>
-
-          {/* Image 2: Laptop (Bottom Right) */}
-          <div className="absolute bottom-0 right-0 z-20 w-[70%] sm:w-[65%] overflow-hidden rounded-[24px] sm:rounded-[32px] md:rounded-[40px] border-2 border-amber-400 shadow-xl">
-            <img
-              src="https://images.unsplash.com/photo-1515378960530-7c0da6231fb1?auto=format&fit=crop&w=600&q=80"
-              alt="AI Learning"
-              className="h-full w-full object-cover aspect-[4/5]"
-            />
-          </div>
-
-          {/* Image 3: Phone (Bottom Left) */}
-          <div className="absolute bottom-12 left-4 z-30 w-[40%] sm:w-[35%] overflow-hidden rounded-[20px] sm:rounded-[24px] md:rounded-[30px] border-2 border-amber-400 shadow-2xl">
-            <img
-              src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=400&q=80"
-              alt="Mobile Learning"
-              className="h-full w-full object-cover aspect-square"
-            />
-          </div>
-
-          {/* Speech Bubble */}
-          <div className="absolute top-8 right-0 z-30 animate-bounce">
-            <div className="relative rounded-[30px] sm:rounded-[40px] md:rounded-[50px] rounded-bl-none bg-gradient-to-r from-orange-400 to-amber-500 px-4 py-2 sm:px-6 sm:py-3 md:px-8 md:py-4 shadow-xl">
+          {/* Bubble Group - Top Right */}
+          <div className="absolute top-0 right-0 w-40 sm:w-52 md:w-64 z-10">
+            <div className="relative w-full h-full flex items-center justify-center">
+              <img
+                src={AIBubble}
+                alt="Greeting Bubble"
+                className="w-full h-auto object-contain drop-shadow-lg"
+              />
+              {/* Centered Text in Bubble */}
               <Typography
-                variant="h5"
-                component="h3"
-                className="font-bold text-white"
+                variant="h6"
+                className="absolute inset-0 flex items-center justify-center font-bold text-white text-center p-4 leading-tight"
                 sx={{
                   fontSize: { xs: "1rem", sm: "1.25rem", md: "1.5rem" },
+                  textShadow: "0px 2px 4px rgba(0,0,0,0.1)",
                 }}
               >
                 {t.home.aiSection.greeting}
               </Typography>
-              <div className="absolute -bottom-2 left-0 h-6 w-6 bg-gradient-to-r from-orange-400 to-amber-500 [clip-path:polygon(0_0,100%_0,0_100%)]"></div>
             </div>
           </div>
         </div>
 
         {/* Right Side - Content */}
-        <div className="order-1 flex flex-col justify-center space-y-4 sm:space-y-5 md:space-y-6 lg:order-2">
+        {/* Right Side - Content */}
+        <div className="order-2 flex flex-col justify-center space-y-4 sm:space-y-5 md:space-y-6">
           {/* Header */}
           <div className="relative inline-block pb-2">
             <Typography
@@ -87,11 +68,12 @@ const AISection = () => {
             className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-800 leading-tight"
             sx={{
               fontSize: {
-                xs: "1.25rem",
-                sm: "1.5rem",
-                md: "1.875rem",
-                lg: "2.25rem",
+                xs: "1.5rem",
+                sm: "2rem",
+                md: "2.5rem",
+                lg: "3rem",
               },
+              fontWeight: "bold",
             }}
           >
             {t.home.aiSection.mainHeading}
@@ -115,7 +97,7 @@ const AISection = () => {
                 <Typography
                   variant="body1"
                   component="span"
-                  className="text-base md:text-lg text-gray-700 flex-1"
+                  className="text-lg md:text-xl text-gray-700 flex-1"
                 >
                   {feature}
                 </Typography>

@@ -1,4 +1,4 @@
-import { HoGuomBaner } from "@assets/images/home"
+import { HeroImage } from "@assets/images/home"
 import { useLanguage } from "@context/LanguageContext.jsx"
 import LiquidGlassButton from "@components/LiquidGlassButton"
 import useAuth from "@/hooks/useAuth"
@@ -15,13 +15,12 @@ const HeroSection = ({ openAuthModal }) => {
           {/* Left Side - Banner Image */}
           <div className="relative order-2 lg:order-1">
             {/* Decorative white frame at bottom left (similar to design) - Moved behind image */}
-            <div className="pointer-events-none absolute -left-4 -bottom-4 sm:-left-6 sm:-bottom-6 h-16 w-24 sm:h-20 sm:w-28 rounded-[16px] sm:rounded-[20px] border-2 border-white hidden sm:block" />
 
             {/* Image Card */}
             <div className="relative aspect-video overflow-hidden rounded-[20px] sm:rounded-[28px]">
               {/* Main Image */}
               <img
-                src={HoGuomBaner}
+                src={HeroImage}
                 alt="Hoàn Kiếm Lake"
                 className="w-full h-full object-cover"
               />
@@ -49,8 +48,8 @@ const HeroSection = ({ openAuthModal }) => {
           </div>
 
           {/* Right Side - Text Content */}
-          <div className="flex items-center h-full order-1 lg:order-2">
-            <div className="flex w-full flex-col justify-center gap-4 sm:gap-6 rounded-[20px] sm:rounded-[24px] border-2 border-white/30 bg-white/10 p-6 sm:p-8 lg:p-10 xl:p-12 backdrop-blur-sm">
+          <div className="flex h-full order-1 lg:order-2">
+            <div className="flex w-full flex-col justify-center gap-4 sm:gap-6 rounded-[20px] sm:rounded-[24px] border-2 border-white p-6 sm:p-8 lg:p-10 xl:p-12 backdrop-blur-sm">
               <Typography
                 variant="h3"
                 component="h1"
@@ -62,6 +61,7 @@ const HeroSection = ({ openAuthModal }) => {
                     lg: "2.25rem",
                     xl: "3rem",
                   },
+                  fontWeight: "bold",
                 }}
               >
                 {t.home.heroTitle}

@@ -8,7 +8,7 @@ import {
 import AddIcon from "@mui/icons-material/Add"
 import RemoveIcon from "@mui/icons-material/Remove"
 import SearchIcon from "@mui/icons-material/Search"
-import { BGTicket } from "@assets/images/home"
+import { FAQBackground, FAQDecorations } from "@assets/images/home"
 import { useLanguage } from "@context/LanguageContext.jsx"
 
 const FAQSection = () => {
@@ -33,19 +33,37 @@ const FAQSection = () => {
     <div className="w-full px-4 sm:px-6 md:px-8 py-12 sm:py-16 md:py-20 lg:py-24">
       <div className="relative mx-auto max-w-screen-xl">
         {/* Background Ticket Image */}
-        <div className="relative rounded-3xl overflow-hidden min-h-[400px] sm:min-h-[500px] md:min-h-[600px]">
+        <div className="relative rounded-3xl min-h-[400px] sm:min-h-[500px] md:min-h-[600px] bg-gradient-to-b from-cath-red-500 via-cath-red-700 to-[#f08d1d] min-[1440px]:bg-none overflow-hidden min-[1440px]:overflow-visible">
+          {/* Layer 1: Main Background */}
           <img
-            src={BGTicket}
+            src={FAQBackground}
             alt="FAQ Background"
-            className="absolute inset-0 w-full h-full object-cover z-0"
+            className="hidden min-[1440px]:block absolute top-0 left-0 w-full h-auto z-0"
           />
 
-          {/* Decorative Frames - Hidden on mobile */}
-          <div className="pointer-events-none absolute -top-12 -right-12 z-0 h-[240px] w-[240px] rounded-[40px] border-2 border-white hidden md:block" />
-          <div className="pointer-events-none absolute bottom-24 -left-24 z-0 h-[100px] w-[900px] rounded-[50px] border-2 border-white hidden lg:block" />
+          {/* Layer 2: Top Right Decorations (New) */}
+          {/* Layer 2: Top Right Decorations (New) - Manually Positioned */}
+          <div className="hidden min-[1440px]:block absolute inset-0 z-10 pointer-events-none overflow-visible">
+            <img
+              src={FAQDecorations}
+              alt="FAQ Decorations"
+              className="absolute w-[150px] md:w-[200px] h-auto object-contain"
+              style={{
+                // Adjust these values to manually position the decorations
+                top: "-5%",
+                right: "0%",
+              }}
+            />
+          </div>
 
-          {/* Content Overlay */}
-          <div className="relative z-10 p-4 sm:p-6 md:p-10 lg:p-12 xl:p-16 flex flex-col h-full">
+          {/* Old Decorative Frames - Hidden on larger screens where new decoration exists, visible on mobile/tablet if desired? 
+             User said: "only show [decorative frames] on smaller screens"
+          */}
+          <div className="pointer-events-none absolute -top-12 -right-12 z-0 h-[240px] w-[240px] rounded-[40px] border-2 border-white block min-[1440px]:hidden" />
+          <div className="pointer-events-none absolute bottom-24 -left-24 z-0 h-[100px] w-[900px] rounded-[50px] border-2 border-white block min-[1440px]:hidden" />
+
+          {/* Content Overlay - Layer 3 (Top) */}
+          <div className="relative z-20 p-4 sm:p-6 md:p-10 lg:p-12 xl:p-16 flex flex-col h-full">
             {/* Header Section */}
             <div className="flex flex-col md:flex-row md:items-start md:justify-between mb-6 sm:mb-8 md:mb-10">
               <div className="flex-1 mb-6 md:mb-0">
@@ -53,7 +71,10 @@ const FAQSection = () => {
                 <div className="relative inline-block mb-3">
                   <Typography
                     variant="caption"
-                    className="text-sm md:text-base uppercase tracking-[0.15em] text-cath-yellow-400 font-bold"
+                    className="uppercase tracking-[0.15em] text-cath-yellow-400 font-bold"
+                    sx={{
+                      fontSize: { xs: "0.75rem", sm: "0.875rem", md: "1rem" },
+                    }}
                   >
                     {t.faq.corner}
                   </Typography>
@@ -68,9 +89,9 @@ const FAQSection = () => {
                   className="text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight"
                   sx={{
                     fontSize: {
-                      xs: "1.875rem",
-                      sm: "2.25rem",
-                      md: "2.5rem",
+                      xs: "1.5rem",
+                      sm: "1.875rem",
+                      md: "2.25rem",
                       lg: "3rem",
                     },
                   }}
@@ -120,9 +141,7 @@ const FAQSection = () => {
                       borderRadius: "24px !important",
                       "&:before": { display: "none" }, // Remove default MUI Accordion divider
                       transition: "all 0.3s ease-in-out",
-                      backgroundColor: isExpanded
-                        ? "transparent"
-                        : "rgba(255, 255, 255, 0.1)",
+                      backgroundColor: "transparent",
                       backgroundImage: isExpanded
                         ? "linear-gradient(to bottom right, rgba(249, 115, 22, 0.5), rgba(220, 38, 38, 0.5))"
                         : "none",

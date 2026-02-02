@@ -1,4 +1,9 @@
 import { useLanguage } from "@context/LanguageContext.jsx"
+import {
+  ValuesBackground,
+  ValuesCircle,
+  ValuesImage,
+} from "@assets/images/home"
 import { Typography } from "@mui/material"
 import ValueCard from "./Values/ValueCard"
 import PlayArrowIcon from "@mui/icons-material/PlayArrow"
@@ -8,11 +13,9 @@ import ChatIcon from "@mui/icons-material/Chat"
 
 const ValuesSection = () => {
   const { t } = useLanguage()
-  const BannerAI =
-    "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80"
 
   return (
-    <div className="w-full py-12 sm:py-16 md:py-20 lg:py-24 lg:pt-32 px-4 sm:px-6 md:px-8">
+    <div className="w-full py-12 sm:py-16 md:py-20 lg:py-24 px-4 sm:px-6 md:px-8">
       <div className="mx-auto">
         {/* Header */}
         <div className="mb-8 sm:mb-10 md:mb-12 flex flex-col items-center justify-center space-y-2 sm:space-y-3 md:space-y-4">
@@ -36,6 +39,7 @@ const ValuesSection = () => {
                 md: "2.25rem",
                 lg: "3rem",
               },
+              fontWeight: "bold",
             }}
           >
             {t.home.valuesTitle}
@@ -43,68 +47,83 @@ const ValuesSection = () => {
         </div>
 
         {/* Main Content Area - Orange Background */}
-        <div className="relative mx-auto flex w-full flex-col justify-center overflow-hidden rounded-[24px] sm:rounded-[32px] md:rounded-[40px] bg-gradient-to-r from-cath-red-600 via-orange-400 to-amber-300 p-4 sm:p-6 md:p-8 lg:p-12 shadow-2xl">
-          {/* Decorative Frames - Z-0 to stay behind - Hidden on mobile */}
-          <div className="pointer-events-none absolute -top-12 -left-12 z-0 h-[300px] w-[300px] rounded-[40px] border-2 border-white hidden lg:block" />
-          <div className="pointer-events-none absolute -bottom-8 left-1/2 z-0 h-24 w-[600px] -translate-x-1/2 rounded-[30px] border-2 border-white hidden md:block" />
-          <div className="pointer-events-none absolute top-12 -right-12 z-0 h-40 w-40 rotate-12 rounded-[24px] border-2 border-white hidden lg:block" />
+        <div className="relative w-full drop-shadow-[0_20px_30px_rgba(0,0,0,0.15)]">
+          {/* Layer 1: Background - Bottom (Desktop Only) */}
+          <img
+            src={ValuesBackground}
+            alt="Values Background"
+            className="hidden min-[1440px]:block w-full h-auto object-contain relative z-0"
+          />
 
-          {/* Content Grid - Z-10 to stay on top */}
-          <div className="relative z-10 grid grid-cols-1 gap-6 sm:gap-8 lg:grid-cols-2">
-            {/* Left Side - Cards Area */}
-            <div className="flex items-center justify-center">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          {/* Layer 2: Circle - Middle - Manually Positioned (Desktop Only) */}
+          <div className="hidden min-[1440px]:block absolute inset-0 z-[5] pointer-events-none overflow-visible">
+            <img
+              src={ValuesCircle}
+              alt="Decorative Circle"
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[120%] w-auto object-contain opacity-90"
+              style={{
+                // Adjust these values to manually position the circle
+                top: "70%",
+                left: "65%",
+                // transform: "translate(-50%, -50%)"
+              }}
+            />
+          </div>
+
+          {/* Layer 3: Content - Top (Responsive Wrapper) */}
+          <div className="relative z-10 min-[1440px]:absolute min-[1440px]:inset-0 grid grid-cols-1 min-[1440px]:grid-cols-2 content-center items-center bg-gradient-to-b from-cath-red-500 via-cath-red-700 to-[#f08d1d] min-[1440px]:bg-none rounded-[24px] sm:rounded-[32px] min-[1440px]:rounded-none p-6 sm:p-8 min-[1440px]:p-0 overflow-hidden min-[1440px]:overflow-visible">
+            {/* Decorative Frames (Mobile/Tablets only) */}
+            <div className="absolute -top-10 -left-10 w-48 h-48 border-2 border-white rounded-[40px] rotate-12 min-[1440px]:hidden pointer-events-none" />
+            <div className="absolute top-1/2 -right-12 w-64 h-64 border-2 border-white rounded-full -translate-y-1/2 min-[1440px]:hidden pointer-events-none" />
+            <div className="absolute -bottom-8 left-1/4 w-32 h-32 border-2 border-white rounded-[30px] -rotate-6 min-[1440px]:hidden pointer-events-none" />
+
+            {/* Left Side - Cards Area - 2 Column Grid */}
+            <div className="relative z-10 flex justify-center h-full items-center min-[1440px]:p-12">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-6 w-full max-w-2xl">
                 {/* Card 1: Practice-first */}
                 <ValueCard
-                  icon={
-                    <PlayArrowIcon
-                      fontSize="large"
-                      className="text-purple-500"
-                    />
-                  }
+                  icon={<PlayArrowIcon fontSize="large" />}
                   title={t.home.values.practice.title}
                   description={t.home.values.practice.description}
+                  color="purple"
                   className="shadow-purple-500/20"
                 />
 
                 {/* Card 2: Community-driven */}
                 <ValueCard
-                  icon={
-                    <GroupsIcon fontSize="large" className="text-blue-400" />
-                  }
+                  icon={<GroupsIcon fontSize="large" />}
                   title={t.home.values.community.title}
                   description={t.home.values.community.description}
+                  color="blue"
                   className="shadow-blue-400/20"
                 />
 
                 {/* Card 3: Expand Networking */}
                 <ValueCard
-                  icon={
-                    <HubIcon fontSize="large" className="text-orange-400" />
-                  }
+                  icon={<HubIcon fontSize="large" />}
                   title={t.home.values.networking.title}
                   description={t.home.values.networking.description}
+                  color="orange"
                   className="shadow-orange-400/20"
                 />
 
                 {/* Card 4: Real-life communication */}
                 <ValueCard
-                  icon={
-                    <ChatIcon fontSize="large" className="text-green-500" />
-                  }
+                  icon={<ChatIcon fontSize="large" />}
                   title={t.home.values.reallife.title}
                   description={t.home.values.reallife.description}
+                  color="green"
                   className="shadow-green-500/20"
                 />
               </div>
             </div>
 
-            {/* Right Side - Dashboard Image */}
-            <div className="flex items-center justify-center">
+            {/* Right Side - Image */}
+            <div className="relative z-10 flex justify-center items-center h-full p-2 sm:p-8 min-[1440px]:p-8 order-last">
               <img
-                src={BannerAI}
-                alt="CatSpeak Dashboard"
-                className="h-auto max-h-[300px] sm:max-h-[400px] md:max-h-[500px] w-full rounded-xl sm:rounded-2xl object-cover shadow-2xl"
+                src={ValuesImage}
+                alt="Values Illustration"
+                className="w-full max-w-xl min-[1440px]:max-w-2xl h-auto object-contain drop-shadow-xl min-[1440px]:-translate-x-12"
               />
             </div>
           </div>
