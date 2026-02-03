@@ -1,28 +1,46 @@
-import React from "react"
-import { Link } from "react-router-dom"
+import { useState } from "react"
 import { useLanguage } from "@context/LanguageContext.jsx"
 import { Typography } from "@mui/material"
+import PolicyModal from "@/components/Auth/popups/PolicyModal"
 
 const FooterBottom = () => {
   const { t } = useLanguage()
   const footerText = t.footer
   const currentYear = new Date().getFullYear()
 
+  const [policyModal, setPolicyModal] = useState({ open: false, title: "" })
+
+  const handleOpenPolicy = (title) => () => {
+    setPolicyModal({ open: true, title })
+  }
+
+  const handleClosePolicy = () => {
+    setPolicyModal({ open: false, title: "" })
+  }
+
   return (
     <div className="w-full px-4 lg:px-12 lg:absolute lg:bottom-0 lg:left-0 lg:right-0">
       <div className="flex flex-col lg:flex-row items-center justify-between py-4 gap-4 lg:gap-0">
         {/* Left policies */}
-        <div className="flex flex-col lg:flex-row gap-2 lg:gap-8 text-yellow-300 text-center lg:text-left order-2 lg:order-1">
-          <Link className="hover:text-yellow-400 transition">
-            <Typography variant="caption" className="text-sm">
+        <div className="flex flex-wrap justify-center lg:justify-start gap-4 lg:gap-8 text-yellow-300 text-center lg:text-left order-2 lg:order-1 px-4 lg:px-0">
+          <button
+            type="button"
+            className="hover:text-yellow-400 transition"
+            onClick={handleOpenPolicy(footerText.policies.privacy)}
+          >
+            <Typography variant="caption" className="text-sm whitespace-nowrap">
               {footerText.policies.privacy}
             </Typography>
-          </Link>
-          <Link className="hover:text-yellow-400 transition">
-            <Typography variant="caption" className="text-sm">
+          </button>
+          <button
+            type="button"
+            className="hover:text-yellow-400 transition"
+            onClick={handleOpenPolicy(footerText.policies.terms)}
+          >
+            <Typography variant="caption" className="text-sm whitespace-nowrap">
               {footerText.policies.terms}
             </Typography>
-          </Link>
+          </button>
         </div>
 
         {/* Center copyright */}
@@ -33,19 +51,33 @@ const FooterBottom = () => {
         </div>
 
         {/* Right policies */}
-        <div className="flex flex-col lg:flex-row gap-2 lg:gap-8 text-yellow-300 text-center lg:text-right order-1 lg:order-3">
-          <Link className="hover:text-yellow-400 transition">
-            <Typography variant="caption" className="text-sm">
+        <div className="flex flex-wrap justify-center lg:justify-end gap-4 lg:gap-8 text-yellow-300 text-center lg:text-right order-1 lg:order-3 px-4 lg:px-0">
+          <button
+            type="button"
+            className="hover:text-yellow-400 transition"
+            onClick={handleOpenPolicy(footerText.policies.payment)}
+          >
+            <Typography variant="caption" className="text-sm whitespace-nowrap">
               {footerText.policies.payment}
             </Typography>
-          </Link>
-          <Link className="hover:text-yellow-400 transition">
-            <Typography variant="caption" className="text-sm">
+          </button>
+          <button
+            type="button"
+            className="hover:text-yellow-400 transition"
+            onClick={handleOpenPolicy(footerText.policies.copyright)}
+          >
+            <Typography variant="caption" className="text-sm whitespace-nowrap">
               {footerText.policies.copyright}
             </Typography>
-          </Link>
+          </button>
         </div>
       </div>
+
+      <PolicyModal
+        open={policyModal.open}
+        onClose={handleClosePolicy}
+        title={policyModal.title}
+      />
     </div>
   )
 }

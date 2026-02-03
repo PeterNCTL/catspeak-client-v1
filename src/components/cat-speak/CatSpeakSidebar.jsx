@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react"
-import { Drawer, Button } from "antd"
+import { Drawer, Button, Box, Typography, IconButton } from "@mui/material"
 import { useNavigate, useLocation } from "react-router-dom"
 import {
   FiMenu,
+  FiX,
   FiLayout,
   FiGlobe,
   FiVideo,
@@ -12,9 +13,13 @@ import {
   FiHelpCircle,
   FiMessageSquare,
 } from "react-icons/fi"
+import { useLanguage } from "@/context/LanguageContext"
+import InDevelopmentModal from "@/components/common/InDevelopmentModal"
 
 const CatSpeakSidebar = () => {
+  const { t } = useLanguage()
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [devModalOpen, setDevModalOpen] = useState(false)
   const navigate = useNavigate()
   const location = useLocation()
 
@@ -32,25 +37,36 @@ const CatSpeakSidebar = () => {
   }, [location.pathname])
 
   const menuItems = [
-    { key: "news", label: "Bản tin của Cat", icon: FiLayout },
-    { key: "discover", label: "Khám phá thế giới", icon: FiGlobe },
-    { key: "video", label: "Video", icon: FiVideo },
-    { key: "mail", label: "Thư", icon: FiMail },
+    { key: "news", label: t.catSpeak.sidebar.news, icon: FiLayout },
+    { key: "discover", label: t.catSpeak.sidebar.discover, icon: FiGlobe },
+    { key: "video", label: t.catSpeak.sidebar.video, icon: FiVideo },
+    { key: "mail", label: t.catSpeak.sidebar.mail, icon: FiMail },
   ]
 
   const bottomItems = [
     {
       key: "settings",
-      label: "Cài đặt",
+      label: t.catSpeak.sidebar.settings,
       icon: FiSettings,
-      path: "/app/setting",
-    }, // Example external path
-    { key: "report", label: "Nhật ký báo cáo", icon: FiFlag },
-    { key: "help", label: "Trợ giúp", icon: FiHelpCircle },
-    { key: "feedback", label: "Gửi ý kiến phản hồi", icon: FiMessageSquare },
+    },
+    { key: "report", label: t.catSpeak.sidebar.report, icon: FiFlag },
+    { key: "help", label: t.catSpeak.sidebar.help, icon: FiHelpCircle },
+    {
+      key: "feedback",
+      label: t.catSpeak.sidebar.feedback,
+      icon: FiMessageSquare,
+    },
   ]
 
   const handleItemClick = (item) => {
+    // Check if item belongs to bottomItems
+    const isBottomItem = bottomItems.find((i) => i.key === item.key)
+    if (isBottomItem) {
+      setDevModalOpen(true)
+      setMobileOpen(false)
+      return
+    }
+
     if (item.path) {
       navigate(item.path)
     } else if (menuItems.find((i) => i.key === item.key)) {
@@ -116,25 +132,59 @@ const CatSpeakSidebar = () => {
       {/* Mobile Trigger */}
       <div className="lg:hidden mb-4">
         <Button
-          icon={<FiMenu />}
+          startIcon={<FiMenu />}
           onClick={() => setMobileOpen(true)}
-          className="flex items-center gap-2"
+          variant="outlined"
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 1,
+            textTransform: "none",
+            borderRadius: "8px",
+            borderColor: "#d9d9d9",
+            color: "inherit",
+            "&:hover": {
+              borderColor: "#990011",
+              color: "#990011",
+            },
+          }}
         >
-          Menu
+          {t.catSpeak.sidebar.menu}
         </Button>
       </div>
 
       {/* Mobile Drawer */}
       <Drawer
-        title="Menu"
-        placement="left"
-        onClose={() => setMobileOpen(false)}
+        anchor="left"
         open={mobileOpen}
-        width={280}
-        styles={{ body: { padding: "10px" } }}
+        onClose={() => setMobileOpen(false)}
+        PaperProps={{
+          sx: { width: 280, padding: "10px", borderRadius: "0 16px 16px 0" },
+        }}
       >
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mb: 2,
+            px: 1,
+          }}
+        >
+          <Typography variant="h6" fontWeight="bold">
+            {t.catSpeak.sidebar.menu}
+          </Typography>
+          <IconButton onClick={() => setMobileOpen(false)}>
+            <FiX />
+          </IconButton>
+        </Box>
         <SidebarContent />
       </Drawer>
+
+      <InDevelopmentModal
+        open={devModalOpen}
+        onCancel={() => setDevModalOpen(false)}
+      />
     </>
   )
 }

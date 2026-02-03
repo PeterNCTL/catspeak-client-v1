@@ -1,88 +1,34 @@
-import React, { useState } from "react"
-import { useNavigate } from "react-router-dom"
-import { FiClock, FiUsers, FiLink } from "react-icons/fi"
-import { FaBookmark } from "react-icons/fa"
-import { Spin } from "antd" // Import Spin for loading state
+import React from "react"
+import { useNavigate, useSearchParams } from "react-router-dom"
+import { Typography, Box } from "@mui/material"
+import AccessTimeIcon from "@mui/icons-material/AccessTime"
+import PeopleIcon from "@mui/icons-material/People"
+import LinkIcon from "@mui/icons-material/Link"
+import BookmarkIcon from "@mui/icons-material/Bookmark"
 import colors from "@/utils/colors"
-import {
-  useGetActiveVideoSessionsQuery,
-  useJoinVideoSessionMutation,
-  useCreateVideoSessionMutation,
-} from "@/store/api/videoSessionsApi"
+import { useLanguage } from "@context/LanguageContext"
 import {
   formatDate,
   formatTimeRange,
   calculateEndDate,
 } from "@/utils/dateFormatter"
+import InDevelopmentModal from "@/components/common/InDevelopmentModal"
 
 const RoomCard = ({ room }) => {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const { language } = useLanguage()
 
-  // API Hooks
-  const { data: activeSessions, refetch: refetchActiveSessions } =
-    useGetActiveVideoSessionsQuery()
-  const [joinVideoSession, { isLoading: isJoining }] =
-    useJoinVideoSessionMutation()
-  const [createVideoSession, { isLoading: isCreating }] =
-    useCreateVideoSessionMutation()
-
-  const isLoading = isJoining || isCreating
-
-  const handleJoinRoom = async (e) => {
+  const handleJoinRoom = (e) => {
     e.stopPropagation()
-    if (isLoading) return
 
-    try {
-      const roomId = room.roomId
-      const activeSession = activeSessions?.find(
-        (s) => s.roomId === parseInt(roomId),
-      )
-      let sessionId
+    // Update searchParams with the current language
+    const newSearchParams = new URLSearchParams(searchParams)
 
-      if (activeSession) {
-        // Session exists → join existing session
-        sessionId = activeSession.sessionId
-        try {
-          await joinVideoSession(sessionId).unwrap()
-        } catch (err) {
-          console.warn(
-            "Join session API failed or already in session. Proceeding...",
-            err,
-          )
-        }
-      } else {
-        // No session → create new session
-        try {
-          const newSession = await createVideoSession({
-            roomId: parseInt(roomId),
-          }).unwrap()
-          sessionId = newSession.sessionId
-        } catch (err) {
-          console.warn(
-            "Create session failed, checking for active session...",
-            err,
-          )
-          // Retry logic
-          const { data: refreshedSessions } = await refetchActiveSessions()
-          const retrySession = refreshedSessions?.find(
-            (s) => s.roomId === parseInt(roomId),
-          )
-
-          if (retrySession) {
-            sessionId = retrySession.sessionId
-            await joinVideoSession(sessionId).unwrap()
-          } else {
-            console.error("Failed to create or join session:", err)
-            // You might want to use message.error only if context allows or just verify silently
-            return
-          }
-        }
-      }
-
-      navigate(`/meet/${sessionId}`)
-    } catch (err) {
-      console.error("Failed to join/create session:", err)
-    }
+    navigate({
+      pathname: `/room/${room.roomId}`,
+      search: newSearchParams.toString(),
+    })
   }
 
   // Date and time formatting using locale-aware utilities
@@ -98,94 +44,127 @@ const RoomCard = ({ room }) => {
   // Placeholder code simulation
   const roomCode = `room-${room.roomId}`.toLowerCase()
 
+  const [showDevModal, setShowDevModal] = React.useState(false)
+
+  const handleBookmarkClick = (e) => {
+    e.stopPropagation()
+    setShowDevModal(true)
+  }
+
   return (
-    <div
-      onClick={handleJoinRoom}
-      className={`group relative flex w-full flex-col overflow-hidden rounded-[32px] border bg-white shadow-sm transition-all duration-300 hover:shadow-xl ${
-        isLoading ? "cursor-wait opacity-70" : "cursor-pointer"
-      }`}
-      style={{
-        fontFamily: "'Inter', sans-serif",
-        borderColor: colors.border,
-      }}
-    >
-      {/* Loading Overlay */}
-      {isLoading && (
-        <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/50">
-          <Spin />
-        </div>
-      )}
+    <>
+      <Box
+        onClick={handleJoinRoom}
+        className="group relative flex w-full flex-col overflow-hidden rounded-[20px] bg-white shadow-sm transition-all duration-300 hover:shadow-xl cursor-pointer"
+        sx={{
+          fontFamily: "'Inter', sans-serif",
+          border: 1,
+          borderColor: "divider",
+        }}
+      >
+        {/* Cover Image Section */}
+        <div className="relative h-48 w-full overflow-hidden">
+          <img
+            src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80"
+            alt="Room Cover"
+            className="h-full w-full object-cover transition-transform duration-500"
+          />
 
-      {/* Cover Image Section */}
-      <div className="relative h-48 w-full overflow-hidden">
-        <img
-          src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80"
-          alt="Room Cover"
-          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
-        />
-
-        {/* Top Overlay: Tags & Bookmark */}
-        <div className="absolute left-4 top-4 flex gap-2">
-          {room.requiredLevel && (
-            <span className="rounded-full bg-[#990011] px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white">
-              {room.requiredLevel}
-            </span>
-          )}
-        </div>
-
-        <div className="absolute right-4 top-0">
-          <div className="relative">
-            <FaBookmark className="h-8 w-6 text-[#990011] drop-shadow-md" />
-          </div>
-        </div>
-      </div>
-
-      {/* Content Section */}
-      <div className="flex flex-1 flex-col p-5">
-        {/* Title */}
-        <h3 className="mb-2 text-xl font-bold text-gray-900 line-clamp-1">
-          {room.name}
-        </h3>
-
-        {/* Room Link/Code */}
-        <div className="mb-4 flex items-center gap-2">
-          <FiLink className="text-xl text-yellow-500" />
-          <span className="h-4 w-[1px] bg-gray-300"></span>
-          <span className="text-sm font-medium text-yellow-500">
-            {roomCode}
-          </span>
-        </div>
-
-        {/* Divider */}
-        <div className="mb-4 h-px w-full bg-gray-100"></div>
-
-        {/* Footer Info */}
-        <div className="flex items-center justify-between">
-          {/* Participants */}
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full border border-red-100 bg-white shadow-sm">
-              <FiUsers className="text-lg text-[#990011]" />
-            </div>
-            <span className="text-lg font-bold text-gray-600">
-              {room.currentParticipantCount || 0}/{room.maxParticipants}
-            </span>
-          </div>
-
-          {/* Date/Time */}
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full border border-red-100 bg-white shadow-sm">
-              <FiClock className="text-lg text-[#990011]" />
-            </div>
-            <div className="flex flex-col text-right">
-              <span className="text-xs font-bold text-gray-600">{dateStr}</span>
-              <span className="text-[10px] font-medium text-gray-400">
-                {timeStr}
+          {/* Top Overlay: Tags & Bookmark */}
+          <div className="absolute left-4 top-4 flex gap-2">
+            {room.requiredLevel && (
+              <span className="rounded-full bg-[#990011] px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white">
+                {room.requiredLevel}
               </span>
+            )}
+          </div>
+
+          <div className="absolute right-4 -top-1">
+            <div
+              onClick={handleBookmarkClick}
+              className="cursor-pointer transition-transform duration-200 origin-top hover:scale-y-125 active:scale-y-95"
+            >
+              <BookmarkIcon
+                sx={{
+                  fontSize: 32,
+                  color: "#990011",
+                  filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.3))",
+                }}
+              />
             </div>
           </div>
         </div>
-      </div>
-    </div>
+
+        {/* Content Section */}
+        <div className="flex flex-1 flex-col p-5">
+          {/* Title */}
+          <Typography
+            variant="h6"
+            className="mb-2 font-bold text-gray-900 line-clamp-1"
+          >
+            {room.name}
+          </Typography>
+
+          {/* Room Link/Code */}
+          <div className="mb-4 flex items-center gap-2">
+            <LinkIcon sx={{ fontSize: 20, color: "#eab308" }} />
+            <span className="h-4 w-[1px] bg-gray-300"></span>
+            <Typography variant="body2" className="font-medium text-yellow-500">
+              {roomCode}
+            </Typography>
+          </div>
+
+          {/* Divider */}
+          <Box
+            sx={{
+              height: "1px",
+              width: "100%",
+              backgroundColor: "divider",
+              mb: 2,
+            }}
+          />
+
+          {/* Footer Info */}
+          <div className="flex items-center justify-between">
+            {/* Participants */}
+            <div className="flex items-center gap-3">
+              <Box
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-sm"
+                sx={{ border: 1, borderColor: "divider" }}
+              >
+                <PeopleIcon sx={{ color: "#990011" }} />
+              </Box>
+              <Typography variant="body1" fontWeight="bold">
+                {room.currentParticipantCount || 0}/{room.maxParticipants}
+              </Typography>
+            </div>
+
+            {/* Date/Time */}
+            <div className="flex items-center gap-3">
+              <Box
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-sm"
+                sx={{ border: 1, borderColor: "divider" }}
+              >
+                <AccessTimeIcon sx={{ color: "#990011" }} />
+              </Box>
+              <div className="flex flex-col text-left">
+                <Typography variant="body2" fontWeight="bold">
+                  {dateStr}
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                  {timeStr}
+                </Typography>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Box>
+
+      <InDevelopmentModal
+        open={showDevModal}
+        onCancel={() => setShowDevModal(false)}
+      />
+    </>
   )
 }
 

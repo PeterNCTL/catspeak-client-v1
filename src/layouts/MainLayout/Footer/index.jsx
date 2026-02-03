@@ -40,21 +40,22 @@ const Footer = () => {
       <img
         src={Tower}
         alt="Tower"
-        className="absolute bottom-0 left-0 z-0 w-[1100px]"
+        className="hidden lg:block absolute bottom-0 left-0 z-0 w-[1100px]"
       />
 
       <img
         src={Mountain}
         alt="Mountain"
-        className="absolute bottom-0 right-0 z-0 w-[350px]"
+        className="hidden lg:block absolute bottom-0 right-0 z-0 w-[350px]"
       />
 
       {/* Content Area */}
-      <div className="relative flex w-full justify-center px-4 lg:px-8 pt-12 pb-4">
-        <div className="relative w-full max-w-screen-xl min-h-[800px] lg:min-h-0 lg:aspect-[1788/434] justify-center flex flex-col lg:block">
-          {/* Background FooterBG */}
+      <div className="relative flex w-full justify-center px-4 lg:px-8 pt-6 lg:pt-12 pb-4">
+        {/* Mobile: Gradient BG, Desktop: Transparent (uses FooterBG image inside) */}
+        <div className="relative w-full max-w-screen-xl min-h-0 lg:aspect-[1788/434] justify-center flex flex-col lg:block bg-gradient-to-b from-cath-red-500 via-cath-red-700 to-[#f08d1d] lg:from-transparent lg:to-transparent rounded-[32px] lg:rounded-none p-6 lg:p-0">
+          {/* Background FooterBG - Desktop Only */}
           <div
-            className="absolute inset-0 bg-cover bg-center lg:bg-contain bg-no-repeat z-10 rounded-[32px] lg:rounded-none"
+            className="hidden lg:block absolute inset-0 bg-cover bg-center lg:bg-contain bg-no-repeat z-10"
             style={{ backgroundImage: `url(${FooterBG})` }}
           />
 

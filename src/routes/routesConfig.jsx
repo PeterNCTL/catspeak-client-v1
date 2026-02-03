@@ -74,10 +74,7 @@ const routesConfig = [
           },
         ],
       },
-      {
-        path: "room/:id",
-        element: <RoomDetailPage />,
-      },
+
       {
         path: "reset-password",
         element: <HomePage />,
@@ -102,6 +99,10 @@ const routesConfig = [
         ),
       },
     ],
+  },
+  {
+    path: "/room/:id",
+    element: <RoomDetailPage />,
   },
   {
     path: "/policy",

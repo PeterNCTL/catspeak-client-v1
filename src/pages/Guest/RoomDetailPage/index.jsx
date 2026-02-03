@@ -1,23 +1,22 @@
-import React from "react"
-import { useParams, useNavigate } from "react-router-dom"
+import React, { useState, useEffect, useRef } from "react"
+import { useParams, useNavigate, useSearchParams } from "react-router-dom"
 import { useGetRoomByIdQuery } from "@/store/api/roomsApi"
 import {
   useGetActiveVideoSessionsQuery,
   useJoinVideoSessionMutation,
   useCreateVideoSessionMutation,
 } from "@/store/api/videoSessionsApi"
-import LiquidGlassButton from "@components/LiquidGlassButton"
-import {
-  FiCalendar,
-  FiClock,
-  FiUsers,
-  FiShare2,
-  FiMonitor,
-} from "react-icons/fi"
+import useAuth from "@/hooks/useAuth"
+import WaitingScreen from "@/components/video-call/WaitingScreen"
+import toast from "react-hot-toast"
 
 const RoomDetailPage = () => {
   const { id } = useParams()
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+
+  // Auth & Room Data
+  const { user } = useAuth()
   const {
     data: room,
     isLoading: isLoadingRoom,
@@ -29,6 +28,7 @@ const RoomDetailPage = () => {
     isLoading: isLoadingSessions,
     refetch: refetchActiveSessions,
   } = useGetActiveVideoSessionsQuery()
+
   const [joinVideoSession, { isLoading: isJoining }] =
     useJoinVideoSessionMutation()
   const [createVideoSession, { isLoading: isCreating }] =
@@ -36,192 +36,182 @@ const RoomDetailPage = () => {
 
   const activeSession = activeSessions?.find((s) => s.roomId === parseInt(id))
 
-  if (isLoadingRoom || isLoadingSessions)
-    return (
-      <div className="flex h-screen items-center justify-center">
-        Loading...
-      </div>
-    )
+  // -- Media Preview State --
+  const [micOn, setMicOn] = useState(true)
+  const [cameraOn, setCameraOn] = useState(true)
 
-  if (error || !room)
-    return (
-      <div className="flex h-screen items-center justify-center">
-        Room not found
-      </div>
-    )
+  const [videoTrack, setVideoTrack] = useState(null)
+  const [audioTrack, setAudioTrack] = useState(null)
+  const [localStream, setLocalStream] = useState(null)
 
-  const createDate = new Date(room.createDate)
-  const dateStr = createDate.toLocaleDateString("vi-VN")
-  const timeStr = createDate.toLocaleTimeString("vi-VN", {
-    hour: "2-digit",
-    minute: "2-digit",
-  })
+  // -- Media Effects (Copied/Adapted from VideoCallContext logic) --
+  useEffect(() => {
+    let active = true
+    let newTrack = null
 
-  const handleJoinRoom = async () => {
+    const updateVideo = async () => {
+      if (cameraOn) {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({
+            video: true,
+          })
+          newTrack = stream.getVideoTracks()[0]
+          if (active) setVideoTrack(newTrack)
+          else newTrack.stop()
+        } catch (err) {
+          console.error("Error getting video:", err)
+        }
+      } else {
+        setVideoTrack(null)
+      }
+    }
+
+    updateVideo()
+
+    return () => {
+      active = false
+      if (newTrack) newTrack.stop()
+      setVideoTrack((prev) => {
+        if (prev) prev.stop()
+        return null
+      })
+    }
+  }, [cameraOn])
+
+  useEffect(() => {
+    let active = true
+    let newTrack = null
+
+    const updateAudio = async () => {
+      if (micOn) {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({
+            audio: true,
+          })
+          newTrack = stream.getAudioTracks()[0]
+          if (active) setAudioTrack(newTrack)
+          else newTrack.stop()
+        } catch (err) {
+          console.error("Error getting audio:", err)
+        }
+      } else {
+        setAudioTrack(null)
+      }
+    }
+
+    updateAudio()
+
+    return () => {
+      active = false
+      if (newTrack) newTrack.stop()
+      setAudioTrack((prev) => {
+        if (prev) prev.stop()
+        return null
+      })
+    }
+  }, [micOn])
+
+  useEffect(() => {
+    const tracks = []
+    if (videoTrack) tracks.push(videoTrack)
+    if (audioTrack) tracks.push(audioTrack)
+
+    if (tracks.length > 0) {
+      setLocalStream(new MediaStream(tracks))
+    } else {
+      setLocalStream(null)
+    }
+  }, [videoTrack, audioTrack])
+
+  // -- Handlers --
+
+  const handleJoin = async () => {
     try {
       let sessionId
 
       if (activeSession) {
-        // Session exists → join existing session
+        // Session exists
         sessionId = activeSession.sessionId
-        try {
-          await joinVideoSession(sessionId).unwrap()
-        } catch (err) {
-          console.warn(
-            "Join session API failed (user might already be in session). Proceeding to room.",
-            err
-          )
-        }
+        // Verify joined status or pre-join logic if needed
       } else {
-        // No session → create new session for this persistent room
+        // No session → create new session
         try {
           const newSession = await createVideoSession({
             roomId: parseInt(id),
           }).unwrap()
           sessionId = newSession.sessionId
         } catch (err) {
-          // Handle race condition: another user might have created session simultaneously
-          console.warn("Create session failed, checking for active session...", err)
-
-          // Retry: refetch active sessions and try to join
+          console.warn(
+            "Create session failed, checking for active session...",
+            err,
+          )
           const { data: refreshedSessions } = await refetchActiveSessions()
-          const retrySession = refreshedSessions?.find((s) => s.roomId === parseInt(id))
+          const retrySession = refreshedSessions?.find(
+            (s) => s.roomId === parseInt(id),
+          )
 
           if (retrySession) {
             sessionId = retrySession.sessionId
-            await joinVideoSession(sessionId).unwrap()
           } else {
-            // If still no session, show error
             console.error("Failed to create or join session:", err)
-            alert("Không thể tham gia phòng. Vui lòng thử lại.")
+            toast.error("Failed to create session. Please try again.")
             return
           }
         }
       }
 
-      // Navigate to video call room
-      navigate(`/meet/${sessionId}`)
+      // Preserve language param
+      const search = searchParams.toString()
+      const searchStr = search ? `?${search}` : ""
+
+      navigate({
+        pathname: `/meet/${sessionId}`,
+        search: searchStr,
+      })
     } catch (err) {
-      console.error("Failed to join/create session:", err)
-      alert("Đã xảy ra lỗi. Vui lòng thử lại.")
+      console.error("Failed to process join:", err)
+      toast.error("Something went wrong joining the room.")
     }
   }
 
-  const image =
-    "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1200&q=80"
+  // -- Render --
+
+  if (isLoadingRoom || isLoadingSessions) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-white text-gray-500">
+        Loading...
+      </div>
+    )
+  }
+
+  if (error || !room) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-white text-red-500">
+        Room not found
+      </div>
+    )
+  }
+
+  // We pass the "Room" object as "session" to WaitingScreen for title/name?
+  // WaitingScreen expects session.name or session.roomName.
+  // We can construct a mock session object if activeSession is missing so UI looks good.
+  const displaySession = activeSession || {
+    name: room.name,
+    roomName: room.name,
+    participants: [],
+  }
 
   return (
-    <div className="mx-auto max-w-screen-xl px-6 py-12">
-      <div className="grid gap-12 md:grid-cols-[2fr_1fr]">
-        {/* Left Column: Image & Description */}
-        <div>
-          <div className="relative overflow-hidden rounded-[32px] shadow-lg">
-            <img
-              src={image}
-              alt={room.name}
-              className="aspect-video w-full object-cover"
-            />
-            <div
-              className={`absolute left-6 top-6 rounded-full px-4 py-1 text-sm font-bold uppercase text-white shadow ${room.status === 1 ? "bg-[#990011]" : "bg-gray-500"
-                }`}
-            >
-              {room.status === 1 ? "Đang diễn ra" : "Đã kết thúc"}
-            </div>
-          </div>
-
-          <h1 className="mt-8 text-4xl font-black text-[#990011]">
-            {room.name}
-          </h1>
-
-          <div className="mt-6 space-y-4 text-gray-700 leading-relaxed">
-            <p>
-              Tham gia phòng học này để luyện tập kỹ năng Speaking của bạn. Hãy
-              chuẩn bị microphone và camera để có trải nghiệm tốt nhất.
-            </p>
-            {/* Add more description or details if available in the API response */}
-          </div>
-        </div>
-
-        {/* Right Column: Info Card */}
-        <div className="h-fit rounded-[32px] bg-white p-8 shadow-[0_10px_40px_rgba(0,0,0,0.08)] border border-gray-100">
-          <h3 className="mb-6 text-xl font-bold text-gray-900">
-            Thông tin phòng
-          </h3>
-
-          <div className="space-y-6">
-            <div className="flex items-center gap-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#fdf2f2] text-[#990011]">
-                <FiCalendar className="text-xl" />
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-gray-500">Ngày tạo</p>
-                <p className="font-bold text-gray-900">{dateStr}</p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#fdf2f2] text-[#990011]">
-                <FiClock className="text-xl" />
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-gray-500">Thời gian</p>
-                <p className="font-bold text-gray-900">{timeStr}</p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#fdf2f2] text-[#990011]">
-                <FiUsers className="text-xl" />
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-gray-500">Người tạo</p>
-                <p className="font-bold text-gray-900">
-                  User #{room.creatorId}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#fdf2f2] text-[#990011]">
-                <FiMonitor className="text-xl" />
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-gray-500">Mã phòng</p>
-                <p className="font-bold text-gray-900">{room.roomId}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-8 flex flex-col gap-3">
-            <LiquidGlassButton
-              type="button"
-              variant="gradient"
-              className="w-full rounded-2xl py-4 text-lg font-bold uppercase tracking-wide text-white disabled:opacity-50 disabled:cursor-not-allowed"
-              onClick={handleJoinRoom}
-              disabled={isJoining || isCreating}
-            >
-              {isJoining
-                ? "Đang tham gia..."
-                : isCreating
-                  ? "Đang tạo phòng..."
-                  : "Tham gia ngay"}
-            </LiquidGlassButton>
-
-            <button
-              onClick={() => {
-                const url = `${window.location.origin}/meet/${id}`
-                navigator.clipboard.writeText(url)
-                alert("Link copied to clipboard!")
-              }}
-              className="flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-gray-200 py-3 font-bold text-gray-600 transition hover:border-gray-300 hover:bg-gray-50"
-            >
-              <FiShare2 />
-              Chia sẻ
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+    <WaitingScreen
+      session={displaySession}
+      localStream={localStream}
+      micOn={micOn}
+      cameraOn={cameraOn}
+      user={user}
+      onToggleMic={() => setMicOn(!micOn)}
+      onToggleCam={() => setCameraOn(!cameraOn)}
+      onJoin={handleJoin}
+    />
   )
 }
 

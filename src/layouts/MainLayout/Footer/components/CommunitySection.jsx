@@ -14,7 +14,7 @@ const CommunitySection = ({ languages }) => {
       >
         {footerText.ourCommunity}
       </Typography>
-      <ul className="space-y-2 pt-6 text-white/85 flex flex-col items-center lg:items-start">
+      <ul className="pt-6 text-white/85 flex flex-row flex-wrap justify-center lg:flex-col lg:justify-start lg:items-start gap-4 lg:gap-2">
         {languages.map((lang) => (
           <li key={lang} className="drop-shadow-md">
             <Typography variant="body1" className="text-white font-bold">

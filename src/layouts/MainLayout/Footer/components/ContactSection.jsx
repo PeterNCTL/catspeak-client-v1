@@ -79,8 +79,8 @@ const ContactSection = () => {
           />
         </form>
 
-        <div className="mt-4 flex items-center justify-between text-sm text-white/90">
-          <div className="flex-1 pr-4 italic text-white/90">
+        <div className="mt-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-white/90">
+          <div className="flex-1 text-center sm:text-left sm:pr-4 italic text-white/90">
             <Typography
               variant="body2"
               component="span"
@@ -96,7 +96,7 @@ const ContactSection = () => {
 
           <button
             type="button"
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-yellow-300 text-[#bc1e46] shadow-lg transition hover:scale-105"
+            className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-yellow-300 text-[#bc1e46] shadow-lg transition hover:scale-105"
             aria-label={footerText.sendContact}
           >
             <Send sx={{ fontSize: 20 }} />

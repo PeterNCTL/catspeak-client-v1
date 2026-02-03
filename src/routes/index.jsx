@@ -1,5 +1,5 @@
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-import routesConfig from './routesConfig'
+import { createBrowserRouter, RouterProvider } from "react-router-dom"
+import routesConfig from "./routesConfig"
 
 const router = createBrowserRouter(routesConfig)
 
@@ -8,4 +8,3 @@ const AppRouter = () => {
 }
 
 export default AppRouter
-

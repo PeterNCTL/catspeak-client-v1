@@ -2,6 +2,7 @@ import React from "react"
 import { Typography } from "@mui/material"
 import { useGetRoomsQuery } from "@/store/api/roomsApi"
 import RoomCard from "@/components/rooms/RoomCard"
+import EmptyRoomState from "@/components/rooms/EmptyRoomState"
 import colors from "@/utils/colors"
 import { useLanguage } from "@/context/LanguageContext"
 
@@ -23,70 +24,68 @@ const CategoryRoomSection = ({
     categories: [categoryKey],
   })
 
-  // Process data
   const rooms = responseData?.data ?? []
-  const additionalData = responseData?.additionalData ?? {}
+
+  // Header section component
+  const renderHeader = () => (
+    <div className="flex h-8 items-center justify-between">
+      <div className="flex items-end gap-3">
+        <Typography
+          variant="h6"
+          sx={{
+            mb: 0,
+            fontWeight: "bold",
+            textTransform: "uppercase",
+            letterSpacing: "0.05em",
+            color: colors.headingColor,
+          }}
+        >
+          {title}
+        </Typography>
+        <Typography
+          component="button"
+          variant="body2"
+          onClick={() => onSeeMore(categoryKey)}
+          sx={{
+            mb: "2px",
+            cursor: "pointer",
+            border: 0,
+            backgroundColor: "transparent",
+            fontWeight: 500,
+            color: "text.secondary",
+            textDecoration: "none",
+            "&:hover": {
+              color: "text.primary",
+            },
+          }}
+        >
+          {t.rooms.filters.seeMore}
+        </Typography>
+      </div>
+    </div>
+  )
 
   if (!isLoading && rooms.length === 0) {
     return (
       <div className="flex flex-col gap-4">
-        <div className="flex h-8 items-center justify-between">
-          <div className="flex items-end gap-3">
-            <h3
-              className="mb-0 text-xl font-bold uppercase tracking-wide"
-              style={{ color: colors.headingColor }}
-            >
-              {title}
-            </h3>
-            <button
-              onClick={() => onSeeMore(categoryKey)}
-              className="text-sm font-medium text-gray-500 hover:text-gray-900 mb-[2px]"
-            >
-              {t.rooms.filters.seeMore}
-            </button>
-          </div>
-        </div>
-        <div className="flex h-32 w-full flex-col items-center justify-center rounded-2xl border border-dashed border-gray-200 bg-gray-50 text-gray-400">
-          <Typography variant="body1" color="textSecondary">
-            {t.rooms.filters.noRoomsFoundCategory}
-          </Typography>
-        </div>
+        {renderHeader()}
+        <EmptyRoomState message={t.rooms.filters.noRoomsFoundCategory} />
       </div>
     )
   }
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex h-8 items-center justify-between">
-        <div className="flex items-end gap-3">
-          <h3
-            className="mb-0 text-xl font-bold uppercase tracking-wide"
-            style={{ color: colors.headingColor }}
-          >
-            {title}
-          </h3>
-          <button
-            onClick={() => onSeeMore(categoryKey)}
-            className="text-sm font-medium text-gray-500 hover:text-gray-900 mb-[2px]"
-          >
-            {t.rooms.filters.seeMore}
-          </button>
-        </div>
-      </div>
-
+      {renderHeader()}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {isLoading
           ? Array.from({ length: 4 }).map((_, idx) => (
               <div
                 key={idx}
                 className="h-[300px] w-full animate-pulse rounded-2xl bg-gray-200"
-              ></div>
+              />
             ))
-          : rooms.map((room) => (
-              <div key={room.roomId} className="w-full">
-                <RoomCard room={room} />
-              </div>
-            ))}
+          : rooms.map((room) => <RoomCard key={room.roomId} room={room} />)}
       </div>
     </div>
   )

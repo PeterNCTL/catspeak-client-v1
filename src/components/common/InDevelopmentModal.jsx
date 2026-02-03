@@ -1,6 +1,5 @@
 import React from "react"
-import { Modal } from "antd"
-import { Button, Typography, Box } from "@mui/material"
+import { Button, Typography, Dialog } from "@mui/material"
 import { useNavigate } from "react-router-dom"
 import { useLanguage } from "@/context/LanguageContext"
 import colors from "@/utils/colors"
@@ -13,13 +12,16 @@ const InDevelopmentModal = ({ open, onCancel }) => {
   const comingSoon = t?.comingSoon || {}
 
   return (
-    <Modal
+    <Dialog
       open={open}
-      onCancel={onCancel}
-      footer={null}
-      centered
-      className="in-development-modal"
-      width={400}
+      onClose={onCancel}
+      PaperProps={{
+        sx: {
+          borderRadius: "24px",
+          width: "100%",
+          maxWidth: 400,
+        },
+      }}
     >
       <div className="flex flex-col items-center justify-center p-6 text-center">
         {/* You can add an illustration here if desired from constants or assets */}
@@ -61,7 +63,7 @@ const InDevelopmentModal = ({ open, onCancel }) => {
           {comingSoon.backToHome || "Close"}
         </Button>
       </div>
-    </Modal>
+    </Dialog>
   )
 }
 

@@ -1,6 +1,6 @@
 import React from "react"
 import { Outlet } from "react-router-dom"
-import CatSpeakSidebar from "@/components/features/catspeak/CatSpeakSidebar"
+import CatSpeakSidebar from "@/components/cat-speak/CatSpeakSidebar"
 
 const CatSpeakLayout = () => {
   return (

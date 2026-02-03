@@ -10,4 +10,34 @@ export default {
   confirm: "确认",
   cancel: "取消",
   alreadyInteracted: "您已经与此故事互动过了。",
+  discover: {
+    title: "探索世界",
+    description: "即将推出：探索来自世界各地的文化、地点和人物。",
+  },
+  news: {
+    title: "新闻",
+    description: "即将推出：随时了解最新消息。",
+  },
+  video: {
+    title: "视频",
+    description: "即将推出：观看精选视频以提高您的听力技巧。",
+  },
+  mail: {
+    placeholderEmpty: "成为第一个打招呼的人...",
+    placeholder: "输入您的故事...",
+    noStories: "还没有故事。开始对话！",
+    yours: "你的",
+    total: "总数",
+  },
+  sidebar: {
+    news: "猫的动态",
+    discover: "探索世界",
+    video: "视频",
+    mail: "信件",
+    settings: "设置",
+    report: "报告日志",
+    help: "帮助",
+    feedback: "发送反馈",
+    menu: "菜单",
+  },
 }

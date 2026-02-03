@@ -1,7 +1,7 @@
 import React from "react"
 import { useLanguage } from "@/context/LanguageContext"
 
-import CatSpeakSidebar from "@/components/features/catspeak/CatSpeakSidebar"
+import CatSpeakSidebar from "@/components/cat-speak/CatSpeakSidebar"
 
 const CatSpeakPage = () => {
   const { t } = useLanguage()

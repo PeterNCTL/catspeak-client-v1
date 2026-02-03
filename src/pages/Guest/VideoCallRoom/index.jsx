@@ -14,7 +14,7 @@ import VideoGrid from "@/components/video-call/VideoGrid"
 import ParticipantList from "@/components/video-call/ParticipantList"
 import ChatBox from "@/components/video-call/ChatBox"
 import MicButton from "@/components/video-call/MicButton"
-import WaitingScreen from "@/components/video-call/WaitingScreen"
+
 import {
   VideoCallProvider,
   useVideoCallContext,
@@ -78,21 +78,6 @@ const VideoCallRoomContent = () => {
   // Let the API handle 401. If we have no user and not loading, it means we failed to auth.
   if (!isLoadingUser && !user) {
     return <Navigate to="/" state={{ from: location }} replace />
-  }
-
-  if (!hasJoined) {
-    return (
-      <WaitingScreen
-        session={session}
-        localStream={localStream}
-        micOn={micOn}
-        cameraOn={cameraOn}
-        user={user}
-        onToggleMic={handleToggleMic}
-        onToggleCam={handleToggleCam}
-        onJoin={() => setHasJoined(true)}
-      />
-    )
   }
 
   return (

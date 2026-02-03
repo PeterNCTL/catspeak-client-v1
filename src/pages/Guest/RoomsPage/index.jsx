@@ -1,6 +1,13 @@
 import React, { useState } from "react"
 import { Tabs, Tab, Box } from "@mui/material"
-import { FiMessageCircle, FiMonitor, FiUsers, FiLayers } from "react-icons/fi"
+import {
+  FiMessageCircle,
+  FiMonitor,
+  FiUsers,
+  FiLayers,
+  FiFilter,
+} from "react-icons/fi"
+import { Drawer } from "antd"
 import { useSearchParams } from "react-router-dom"
 import FiltersSidebar from "@/components/rooms/FiltersSidebar"
 import ClassSidebar from "@/components/rooms/ClassSidebar"
@@ -20,6 +27,7 @@ import CreateRoomModal from "@/components/rooms/CreateRoomModal"
 import { PageNotFound } from "@/pages/ErrorPage"
 
 const RoomsPage = () => {
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
   const { t } = useLanguage()
   const { state, derived, actions } = useRoomsPageLogic()
   const { allowConnect, page, tab } = state
@@ -120,79 +128,113 @@ const RoomsPage = () => {
           {/* Content area */}
           <div className="flex flex-col min-w-0">
             <Box sx={{ width: "100%" }}>
-              <Tabs
-                value={tab}
-                onChange={(event, newValue) => setTab(newValue)}
-                variant="scrollable"
-                scrollButtons
-                allowScrollButtonsMobile
-                aria-label="room tabs"
-                sx={{
-                  "& .MuiTabs-indicator": {
-                    backgroundColor: "#990011",
-                  },
-                  "& .MuiTab-root": {
-                    color: "#666",
-                    textTransform: "none",
-                    minHeight: "48px",
-                    fontSize: { xs: "0.75rem", sm: "0.875rem" },
-                    "&.Mui-selected": {
-                      color: "#990011",
-                    },
-                  },
-                  "& .MuiTabs-scrollButtons": {
-                    color: "#990011",
-                    "&.Mui-disabled": {
-                      opacity: 0.3,
-                    },
-                  },
+              <div className="flex items-start justify-between gap-2 overflow-hidden">
+                <Box sx={{ flex: 1, minWidth: 0 }}>
+                  <Tabs
+                    value={tab}
+                    onChange={(event, newValue) => setTab(newValue)}
+                    variant="scrollable"
+                    scrollButtons
+                    allowScrollButtonsMobile
+                    aria-label="room tabs"
+                    sx={{
+                      "& .MuiTabs-indicator": {
+                        backgroundColor: "#990011",
+                      },
+                      "& .MuiTab-root": {
+                        color: "#666",
+                        textTransform: "none",
+                        minHeight: "48px",
+                        fontSize: { xs: "0.75rem", sm: "0.875rem" },
+                        "&.Mui-selected": {
+                          color: "#990011",
+                        },
+                      },
+                      "& .MuiTabs-scrollButtons": {
+                        color: "#990011",
+                        "&.Mui-disabled": {
+                          opacity: 0.3,
+                        },
+                      },
+                    }}
+                  >
+                    <Tab
+                      value="communicate"
+                      label={
+                        <span className="flex items-center gap-1.5 sm:gap-2">
+                          <FiMessageCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                          <span className="text-xs sm:text-sm">
+                            {t.rooms.tabs.communicate}
+                          </span>
+                        </span>
+                      }
+                    />
+                    <Tab
+                      value="teaching"
+                      label={
+                        <span className="flex items-center gap-1.5 sm:gap-2">
+                          <FiMonitor className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                          <span className="text-xs sm:text-sm">
+                            {t.rooms.tabs.teaching}
+                          </span>
+                        </span>
+                      }
+                    />
+                    <Tab
+                      value="group"
+                      label={
+                        <span className="flex items-center gap-1.5 sm:gap-2">
+                          <FiUsers className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                          <span className="text-xs sm:text-sm">
+                            {t.rooms.tabs.group}
+                          </span>
+                        </span>
+                      }
+                    />
+                    <Tab
+                      value="class"
+                      label={
+                        <span className="flex items-center gap-1.5 sm:gap-2">
+                          <FiLayers className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                          <span className="text-xs sm:text-sm">
+                            {t.rooms.tabs.class}
+                          </span>
+                        </span>
+                      }
+                    />
+                  </Tabs>
+                </Box>
+
+                {/* Mobile Filter Button */}
+                <button
+                  onClick={() => setMobileFiltersOpen(true)}
+                  className="lg:hidden mt-1.5 flex flex-shrink-0 items-center gap-2 rounded-full border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 hover:text-[#990011] transition-colors shadow-sm"
+                >
+                  <FiFilter className="h-3.5 w-3.5" />
+                  <span>{t.rooms?.filters?.title || "Filters"}</span>
+                </button>
+              </div>
+
+              {/* Mobile Sidebar Drawer */}
+              <Drawer
+                title={
+                  tab === "class"
+                    ? t.rooms?.tabs?.class || "Class List"
+                    : t.rooms?.filters?.title || "Filters"
+                }
+                placement="right"
+                onClose={() => setMobileFiltersOpen(false)}
+                open={mobileFiltersOpen}
+                width={320}
+                zIndex={1200}
+                styles={{
+                  body: { padding: 0 },
                 }}
               >
-                <Tab
-                  value="communicate"
-                  label={
-                    <span className="flex items-center gap-1.5 sm:gap-2">
-                      <FiMessageCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                      <span className="text-xs sm:text-sm">
-                        {t.rooms.tabs.communicate}
-                      </span>
-                    </span>
-                  }
-                />
-                <Tab
-                  value="teaching"
-                  label={
-                    <span className="flex items-center gap-1.5 sm:gap-2">
-                      <FiMonitor className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                      <span className="text-xs sm:text-sm">
-                        {t.rooms.tabs.teaching}
-                      </span>
-                    </span>
-                  }
-                />
-                <Tab
-                  value="group"
-                  label={
-                    <span className="flex items-center gap-1.5 sm:gap-2">
-                      <FiUsers className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                      <span className="text-xs sm:text-sm">
-                        {t.rooms.tabs.group}
-                      </span>
-                    </span>
-                  }
-                />
-                <Tab
-                  value="class"
-                  label={
-                    <span className="flex items-center gap-1.5 sm:gap-2">
-                      <FiLayers className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                      <span className="text-xs sm:text-sm">
-                        {t.rooms.tabs.class}
-                      </span>
-                    </span>
-                  }
-                />
-              </Tabs>
+                <div className="p-4">
+                  {tab === "class" ? <ClassSidebar /> : <FiltersSidebar />}
+                </div>
+              </Drawer>
 
               {/* Tab Panels */}
               <Box sx={{ mt: 2 }}>

@@ -11,4 +11,36 @@ export default {
   confirm: "Confirm",
   cancel: "Cancel",
   alreadyInteracted: "You have already interacted with this story.",
+  discover: {
+    title: "Discover the World",
+    description:
+      "Coming soon: Explore cultures, places, and people from around the world.",
+  },
+  news: {
+    title: "News",
+    description: "Coming soon: Stay updated with the latest news.",
+  },
+  video: {
+    title: "Video",
+    description:
+      "Coming soon: Watch curated videos to improve your listening skills.",
+  },
+  mail: {
+    placeholderEmpty: "Be the first to say hello...",
+    placeholder: "Type your story...",
+    noStories: "No stories yet. Start the conversation!",
+    yours: "yours",
+    total: "total",
+  },
+  sidebar: {
+    news: "Cat's News",
+    discover: "Discover World",
+    video: "Video",
+    mail: "Mail",
+    settings: "Settings",
+    report: "Report Log",
+    help: "Help",
+    feedback: "Send Feedback",
+    menu: "Menu",
+  },
 }

@@ -9,11 +9,11 @@ const HeroSection = ({ openAuthModal }) => {
   const { isAuthenticated } = useAuth()
 
   return (
-    <div className="w-full px-4 sm:px-6 md:px-8">
-      <div className="relative mx-auto overflow-visible rounded-[24px] sm:rounded-[32px] bg-gradient-to-b from-cath-red-500 via-cath-red-700 to-[#f08d1d] p-4 sm:p-6 md:p-8 lg:p-12 drop-shadow-[0_20px_30px_rgba(0,0,0,0.15)]">
+    <div className="w-full px-6 sm:px-8 md:px-10">
+      <div className="relative mx-auto overflow-visible rounded-[24px] sm:rounded-[32px] bg-gradient-to-b from-cath-red-500 via-cath-red-700 to-[#f08d1d] p-6 sm:p-8 md:p-10 lg:p-12 drop-shadow-[0_20px_30px_rgba(0,0,0,0.15)]">
         <div className="grid grid-cols-1 gap-6 sm:gap-8 lg:grid-cols-2 lg:gap-12">
           {/* Left Side - Banner Image */}
-          <div className="relative order-2 lg:order-1">
+          <div className="relative">
             {/* Decorative white frame at bottom left (similar to design) - Moved behind image */}
 
             {/* Image Card */}
@@ -48,7 +48,7 @@ const HeroSection = ({ openAuthModal }) => {
           </div>
 
           {/* Right Side - Text Content */}
-          <div className="flex h-full order-1 lg:order-2">
+          <div className="flex h-full">
             <div className="flex w-full flex-col justify-center gap-4 sm:gap-6 rounded-[20px] sm:rounded-[24px] border-2 border-white p-6 sm:p-8 lg:p-10 xl:p-12 backdrop-blur-sm">
               <Typography
                 variant="h3"

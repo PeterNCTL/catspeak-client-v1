@@ -1,6 +1,7 @@
 import React, { useState } from "react"
 import { FiSend, FiCheck, FiX } from "react-icons/fi"
 import PassConfirmationModal from "./PassConfirmationModal"
+import { useLanguage } from "@/context/LanguageContext"
 
 const LiveMessages = ({
   stories = [],
@@ -11,8 +12,20 @@ const LiveMessages = ({
   userLetters = 0,
   totalLetters = 0,
 }) => {
+  const { t } = useLanguage()
   const [storyToPass, setStoryToPass] = useState(null)
   const rows = [0, 1, 2]
+
+  // Prepare marquee items
+  let marqueeItems = []
+  if (stories && stories.length > 0) {
+    marqueeItems = [...stories]
+    while (marqueeItems.length < 15) {
+      marqueeItems = [...marqueeItems, ...stories]
+    }
+    // Double for seamless loop
+    marqueeItems = [...marqueeItems, ...marqueeItems]
+  }
 
   // If no stories, show a placeholder or nothing
   if (!stories || stories.length === 0) {
@@ -25,7 +38,7 @@ const LiveMessages = ({
               value={inputValue}
               onChange={(e) => onChangeInput?.(e.target.value)}
               maxLength={200}
-              placeholder="Be the first to say hello..."
+              placeholder={t.catSpeak.mail.placeholderEmpty}
               className="h-9 w-72 rounded-full border border-[#c38300]/70 px-4 text-sm outline-none focus:border-[#990011]"
             />
             <button
@@ -41,12 +54,14 @@ const LiveMessages = ({
             </span>
           </div>
           <div className="text-xs text-gray-600">
-            <span className="font-semibold">{userLetters}</span> yours |{" "}
-            <span className="font-semibold">{totalLetters}</span> total
+            <span className="font-semibold">{userLetters}</span>{" "}
+            {t.catSpeak.mail.yours} |{" "}
+            <span className="font-semibold">{totalLetters}</span>{" "}
+            {t.catSpeak.mail.total}
           </div>
         </div>
         <div className="mt-4 text-gray-400 italic">
-          No stories yet. Start the conversation!
+          {t.catSpeak.mail.noStories}
         </div>
       </div>
     )
@@ -73,7 +88,7 @@ const LiveMessages = ({
             value={inputValue}
             onChange={(e) => onChangeInput?.(e.target.value)}
             maxLength={200}
-            placeholder="Type your story..."
+            placeholder={t.catSpeak.mail.placeholder}
             className="h-9 w-72 rounded-full border border-[#c38300]/70 px-4 text-sm outline-none focus:border-[#990011]"
           />
           <button
@@ -89,8 +104,10 @@ const LiveMessages = ({
           </span>
         </div>
         <div className="text-xs text-gray-600">
-          <span className="font-semibold">{userLetters}</span> yours |{" "}
-          <span className="font-semibold">{totalLetters}</span> total
+          <span className="font-semibold">{userLetters}</span>{" "}
+          {t.catSpeak.mail.yours} |{" "}
+          <span className="font-semibold">{totalLetters}</span>{" "}
+          {t.catSpeak.mail.total}
         </div>
       </div>
       <style>
@@ -121,40 +138,38 @@ const LiveMessages = ({
             }}
           >
             {/* Repeat messages enough times to fill width and loop smoothly */}
-            {[...stories, ...stories, ...stories, ...stories].map(
-              (story, idx) => (
-                <div
-                  key={`${rowIdx}-${idx}`}
-                  className="group relative inline-block whitespace-nowrap rounded-full bg-[#990011] px-4 py-2 text-xs font-semibold text-white shadow transition-colors"
-                >
-                  <span className="block">{story.storyContent}</span>
+            {marqueeItems.map((story, idx) => (
+              <div
+                key={`${rowIdx}-${idx}`}
+                className="group relative inline-block whitespace-nowrap rounded-full bg-[#990011] px-4 py-2 text-xs font-semibold text-white shadow transition-colors"
+              >
+                <span className="block">{story.storyContent}</span>
 
-                  {/* Hover Overlay */}
-                  <div className="absolute inset-0 hidden items-center justify-center gap-2 rounded-full bg-black/40 backdrop-blur-sm group-hover:flex">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        handleConnect(story)
-                      }}
-                      className="flex h-6 w-6 items-center justify-center rounded-full bg-white text-[#990011] shadow hover:scale-110"
-                      title="Connect"
-                    >
-                      <FiCheck size={14} />
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        setStoryToPass(story)
-                      }}
-                      className="flex h-6 w-6 items-center justify-center rounded-full bg-white text-gray-600 shadow hover:scale-110 hover:text-red-500"
-                      title="Pass"
-                    >
-                      <FiX size={14} />
-                    </button>
-                  </div>
+                {/* Hover Overlay */}
+                <div className="absolute inset-0 hidden items-center justify-center gap-2 rounded-full bg-black/40 backdrop-blur-sm group-hover:flex">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleConnect(story)
+                    }}
+                    className="flex h-6 w-6 items-center justify-center rounded-full bg-white text-[#990011] shadow hover:scale-110"
+                    title={t.catSpeak.connect}
+                  >
+                    <FiCheck size={14} />
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      setStoryToPass(story)
+                    }}
+                    className="flex h-6 w-6 items-center justify-center rounded-full bg-white text-gray-600 shadow hover:scale-110 hover:text-red-500"
+                    title={t.catSpeak.pass}
+                  >
+                    <FiX size={14} />
+                  </button>
                 </div>
-              ),
-            )}
+              </div>
+            ))}
           </div>
         </div>
       ))}

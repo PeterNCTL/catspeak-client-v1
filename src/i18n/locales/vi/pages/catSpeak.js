@@ -11,4 +11,36 @@ export default {
   confirm: "Xác nhận",
   cancel: "Hủy",
   alreadyInteracted: "Bạn đã tương tác với câu chuyện này rồi.",
+  discover: {
+    title: "Khám phá thế giới",
+    description:
+      "Sắp ra mắt: Khám phá văn hóa, địa điểm và con người từ khắp nơi trên thế giới.",
+  },
+  news: {
+    title: "Tin tức",
+    description: "Sắp ra mắt: Cập nhật những tin tức mới nhất.",
+  },
+  video: {
+    title: "Video",
+    description:
+      "Sắp ra mắt: Xem các video tuyển chọn để cải thiện kỹ năng nghe của bạn.",
+  },
+  mail: {
+    placeholderEmpty: "Hãy là người đầu tiên nói xin chào...",
+    placeholder: "Viết câu chuyện của bạn...",
+    noStories: "Chưa có câu chuyện nào. Bắt đầu cuộc trò chuyện!",
+    yours: "của bạn",
+    total: "tổng cộng",
+  },
+  sidebar: {
+    news: "Bản tin của Cat",
+    discover: "Khám phá thế giới",
+    video: "Video",
+    mail: "Thư",
+    settings: "Cài đặt",
+    report: "Nhật ký báo cáo",
+    help: "Trợ giúp",
+    feedback: "Gửi ý kiến phản hồi",
+    menu: "Menu",
+  },
 }

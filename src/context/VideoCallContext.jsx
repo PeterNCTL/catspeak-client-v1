@@ -33,7 +33,7 @@ const VideoCallContent = ({
   const [cameraOn, setCameraOn] = useState(true)
   const [showChat, setShowChat] = useState(false)
   const [showParticipants, setShowParticipants] = useState(false)
-  const [hasJoined, setHasJoined] = useState(false) // Controls the "Join" screen of UI
+  const [hasJoined, setHasJoined] = useState(true) // Always join immediately when on this route
   const [videoTrack, setVideoTrack] = useState(null)
   const [audioTrack, setAudioTrack] = useState(null)
 
@@ -198,12 +198,12 @@ const VideoCallContent = ({
     if (id && token && hasJoined && session && currentUserId) {
       // Check if already in participants list to prevent double-join or unnecessary API calls
       const isAlreadyParticipant = session.participants?.some(
-        (p) => String(p.accountId) === String(currentUserId)
+        (p) => String(p.accountId) === String(currentUserId),
       )
 
       if (isAlreadyParticipant) {
         console.log(
-          "[VideoCallContext] User already in session participants, skipping API join."
+          "[VideoCallContext] User already in session participants, skipping API join.",
         )
         return
       }

@@ -8,7 +8,7 @@ import {
   useCreateStoryMutation,
   useInteractWithStoryMutation,
 } from "@/store/api/storiesApi"
-import LiveMessages from "@/components/features/catspeak/mail/LiveMessages"
+import LiveMessages from "@/components/cat-speak/mail/LiveMessages"
 
 const MailPage = () => {
   const { t } = useLanguage()
