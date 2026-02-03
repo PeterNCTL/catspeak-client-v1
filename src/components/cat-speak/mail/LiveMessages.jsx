@@ -1,12 +1,15 @@
 import React, { useState } from "react"
-import { FiSend, FiCheck, FiX } from "react-icons/fi"
+import { Send, Check, Close } from "@mui/icons-material"
 import PassConfirmationModal from "./PassConfirmationModal"
+import MyStoryModal from "./MyStoryModal"
 import { useLanguage } from "@/context/LanguageContext"
 
 const LiveMessages = ({
   stories = [],
+  myStories = [],
   onSend,
   onInteract,
+  onDeleteStory,
   inputValue = "",
   onChangeInput,
   userLetters = 0,
@@ -14,21 +17,28 @@ const LiveMessages = ({
 }) => {
   const { t } = useLanguage()
   const [storyToPass, setStoryToPass] = useState(null)
+  const [selectedMyStory, setSelectedMyStory] = useState(null)
   const rows = [0, 1, 2]
+
+  // Combine stories and myStories with isOwn flag
+  const combinedStories = [
+    ...stories.map((story) => ({ ...story, isOwn: false })),
+    ...myStories.map((story) => ({ ...story, isOwn: true })),
+  ]
 
   // Prepare marquee items
   let marqueeItems = []
-  if (stories && stories.length > 0) {
-    marqueeItems = [...stories]
+  if (combinedStories && combinedStories.length > 0) {
+    marqueeItems = [...combinedStories]
     while (marqueeItems.length < 15) {
-      marqueeItems = [...marqueeItems, ...stories]
+      marqueeItems = [...marqueeItems, ...combinedStories]
     }
     // Double for seamless loop
     marqueeItems = [...marqueeItems, ...marqueeItems]
   }
 
   // If no stories, show a placeholder or nothing
-  if (!stories || stories.length === 0) {
+  if (!combinedStories || combinedStories.length === 0) {
     return (
       <div className="relative my-6 w-full max-w-full overflow-hidden rounded-3xl bg-white/60 px-2 py-8 text-center">
         {/* Input area same as before */}
@@ -47,7 +57,7 @@ const LiveMessages = ({
               className="text-[#990011] transition hover:scale-105"
               aria-label="Send message"
             >
-              <FiSend className="h-5 w-5" />
+              <Send sx={{ fontSize: 20 }} />
             </button>
             <span className="text-xs text-gray-500">
               {inputValue.length} / 200
@@ -97,7 +107,7 @@ const LiveMessages = ({
             className="text-[#990011] transition hover:scale-105"
             aria-label="Send message"
           >
-            <FiSend className="h-5 w-5" />
+            <Send sx={{ fontSize: 20 }} />
           </button>
           <span className="text-xs text-gray-500">
             {inputValue.length} / 200
@@ -133,7 +143,7 @@ const LiveMessages = ({
           <div
             className="flex items-center gap-3 marquee-content"
             style={{
-              animation: "live-marquee 40s linear infinite", // Slower animation
+              animation: "live-marquee 120s linear infinite", // Slower animation
               animationDelay: `${rowIdx * -5}s`, // Stagger start times with negative delay for immediate fill
             }}
           >
@@ -141,33 +151,44 @@ const LiveMessages = ({
             {marqueeItems.map((story, idx) => (
               <div
                 key={`${rowIdx}-${idx}`}
-                className="group relative inline-block whitespace-nowrap rounded-full bg-[#990011] px-4 py-2 text-xs font-semibold text-white shadow transition-colors"
+                onClick={() => {
+                  if (story.isOwn) {
+                    setSelectedMyStory(story)
+                  }
+                }}
+                className={`group relative inline-block whitespace-nowrap rounded-full px-4 py-2 text-xs font-semibold text-white shadow transition-colors ${
+                  story.isOwn
+                    ? "bg-blue-600 cursor-pointer hover:bg-blue-700"
+                    : "bg-[#990011]"
+                }`}
               >
                 <span className="block">{story.storyContent}</span>
 
-                {/* Hover Overlay */}
-                <div className="absolute inset-0 hidden items-center justify-center gap-2 rounded-full bg-black/40 backdrop-blur-sm group-hover:flex">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      handleConnect(story)
-                    }}
-                    className="flex h-6 w-6 items-center justify-center rounded-full bg-white text-[#990011] shadow hover:scale-110"
-                    title={t.catSpeak.connect}
-                  >
-                    <FiCheck size={14} />
-                  </button>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      setStoryToPass(story)
-                    }}
-                    className="flex h-6 w-6 items-center justify-center rounded-full bg-white text-gray-600 shadow hover:scale-110 hover:text-red-500"
-                    title={t.catSpeak.pass}
-                  >
-                    <FiX size={14} />
-                  </button>
-                </div>
+                {/* Hover Overlay - Only for other people's stories */}
+                {!story.isOwn && (
+                  <div className="absolute inset-0 hidden items-center justify-center gap-2 rounded-full bg-black/40 backdrop-blur-sm group-hover:flex">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        handleConnect(story)
+                      }}
+                      className="flex h-6 w-6 items-center justify-center rounded-full bg-white text-[#990011] shadow hover:scale-110"
+                      title={t.catSpeak.connect}
+                    >
+                      <Check sx={{ fontSize: 14 }} />
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setStoryToPass(story)
+                      }}
+                      className="flex h-6 w-6 items-center justify-center rounded-full bg-white text-gray-600 shadow hover:scale-110 hover:text-red-500"
+                      title={t.catSpeak.pass}
+                    >
+                      <Close sx={{ fontSize: 14 }} />
+                    </button>
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -175,6 +196,12 @@ const LiveMessages = ({
       ))}
 
       <PassConfirmationModal open={!!storyToPass} onResult={handlePassResult} />
+      <MyStoryModal
+        open={!!selectedMyStory}
+        story={selectedMyStory}
+        onClose={() => setSelectedMyStory(null)}
+        onDelete={onDeleteStory}
+      />
     </div>
   )
 }

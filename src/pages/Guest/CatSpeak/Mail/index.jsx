@@ -7,6 +7,7 @@ import {
   useGetMyStoriesQuery,
   useCreateStoryMutation,
   useInteractWithStoryMutation,
+  useDeleteStoryMutation,
 } from "@/store/api/storiesApi"
 import LiveMessages from "@/components/cat-speak/mail/LiveMessages"
 
@@ -20,6 +21,7 @@ const MailPage = () => {
     useGetMyStoriesQuery()
   const [createStory, { isLoading: isCreating }] = useCreateStoryMutation()
   const [interactWithStory] = useInteractWithStoryMutation()
+  const [deleteStory] = useDeleteStoryMutation()
 
   // Safe Data Extraction
   const stories = storiesData?.data ?? []
@@ -65,14 +67,26 @@ const MailPage = () => {
     }
   }
 
+  const handleDelete = async (storyId) => {
+    try {
+      await deleteStory(storyId).unwrap()
+      message.success("Story deleted successfully!")
+    } catch (error) {
+      console.error("Delete failed:", error)
+      message.error("Failed to delete story.")
+    }
+  }
+
   return (
     <div className="w-full">
       <LiveMessages
         stories={stories}
+        myStories={myStories}
         inputValue={inputValue}
         onChangeInput={setInputValue}
         onSend={handleCreate}
         onInteract={handleInteract}
+        onDeleteStory={handleDelete}
         userLetters={myStories.length}
         totalLetters={stories.length}
       />

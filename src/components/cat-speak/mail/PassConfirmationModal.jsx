@@ -1,5 +1,14 @@
 import React, { useState } from "react"
-import { Modal, Button, Radio } from "antd"
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  FormControlLabel,
+  Checkbox,
+  Box,
+} from "@mui/material"
 import { useLanguage } from "@/context/LanguageContext"
 
 const PassConfirmationModal = ({ open, onResult }) => {
@@ -16,45 +25,69 @@ const PassConfirmationModal = ({ open, onResult }) => {
     setReportReason(null)
   }
 
+  const handleReasonToggle = () => {
+    setReportReason(
+      reportReason === "inappropriate_language"
+        ? null
+        : "inappropriate_language",
+    )
+  }
+
   return (
-    <Modal
-      title={t.catSpeak.passConfirmationTitle}
+    <Dialog
       open={open}
-      onCancel={handleCancel}
-      footer={[
-        <Button key="cancel" onClick={handleCancel}>
+      onClose={handleCancel}
+      maxWidth="sm"
+      fullWidth
+      PaperProps={{
+        sx: {
+          borderRadius: 3,
+          padding: 2,
+        },
+      }}
+    >
+      <DialogTitle sx={{ pb: 1, fontWeight: "bold" }}>
+        {t.catSpeak.passConfirmationTitle}
+      </DialogTitle>
+
+      <DialogContent>
+        <Box sx={{ py: 2 }}>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={reportReason === "inappropriate_language"}
+                onChange={handleReasonToggle}
+                sx={{
+                  color: "#990011",
+                  "&.Mui-checked": {
+                    color: "#990011",
+                  },
+                }}
+              />
+            }
+            label={t.catSpeak.inappropriateLanguage}
+          />
+        </Box>
+      </DialogContent>
+
+      <DialogActions sx={{ px: 3, pb: 2 }}>
+        <Button onClick={handleCancel} sx={{ color: "text.secondary" }}>
           {t.catSpeak.cancel}
-        </Button>,
+        </Button>
         <Button
-          key="confirm"
-          type="primary"
-          className="bg-[#990011] hover:!bg-[#7a000d]"
           onClick={handleConfirm}
+          variant="contained"
+          sx={{
+            backgroundColor: "#990011",
+            "&:hover": {
+              backgroundColor: "#7a000d",
+            },
+          }}
         >
           {t.catSpeak.confirm}
-        </Button>,
-      ]}
-      centered
-      destroyOnClose
-    >
-      <div className="py-4">
-        <Radio.Group
-          onChange={(e) => setReportReason(e.target.value)}
-          value={reportReason}
-        >
-          <Radio
-            value="inappropriate_language"
-            onClick={() => {
-              if (reportReason === "inappropriate_language") {
-                setReportReason(null)
-              }
-            }}
-          >
-            {t.catSpeak.inappropriateLanguage}
-          </Radio>
-        </Radio.Group>
-      </div>
-    </Modal>
+        </Button>
+      </DialogActions>
+    </Dialog>
   )
 }
 

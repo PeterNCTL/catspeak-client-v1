@@ -30,6 +30,7 @@ export const formatDate = (date, locale = getUserLocale()) => {
  * @returns {string} Formatted time string (HH:MM)
  */
 export const formatTime = (date, locale = getUserLocale()) => {
+  if (!date) return ""
   const dateObj = typeof date === "string" ? new Date(date) : date
   return dateObj.toLocaleTimeString(locale, {
     hour: "2-digit",

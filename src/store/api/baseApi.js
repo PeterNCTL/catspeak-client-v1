@@ -46,7 +46,7 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
               body: { token, refreshToken },
             },
             api,
-            extraOptions
+            extraOptions,
           )
 
           if (refreshResult.data) {
@@ -55,7 +55,7 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
               setCredentials({
                 ...refreshResult.data,
                 user: refreshResult.data.user || user,
-              })
+              }),
             )
             return true
           }
@@ -84,6 +84,15 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
 export const baseApi = createApi({
   reducerPath: "api",
   baseQuery: baseQueryWithReauth,
-  tagTypes: ["Auth", "User", "VideoSessions", "Rooms", "Stories", "MyStories"], // Define tag types for cache invalidation
+  tagTypes: [
+    "Auth",
+    "User",
+    "VideoSessions",
+    "Rooms",
+    "Stories",
+    "MyStories",
+    "Conversations",
+    "Messages",
+  ], // Define tag types for cache invalidation
   endpoints: () => ({}),
 })
