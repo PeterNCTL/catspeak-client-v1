@@ -1,9 +1,17 @@
-import React, { useState } from "react"
+import React from "react"
+import { useDispatch, useSelector } from "react-redux"
 import {
   useGetConversationsQuery,
   useGetConversationMessagesQuery,
   useSendMessageMutation,
 } from "../../store/api/conversationsApi"
+import {
+  closeWidget,
+  openWidget,
+  setActiveConversation,
+  setView,
+  toggleWidget,
+} from "../../store/slices/messageWidgetSlice"
 import FloatingButton from "./FloatingButton"
 import MessageModal from "./MessageModal"
 import ConversationListHeader from "./headers/ConversationListHeader"
@@ -12,10 +20,11 @@ import ConversationList from "./conversation-list/ConversationList"
 import ConversationDetail from "./conversation-detail/ConversationDetail"
 
 const MessageWidget = () => {
-  const [open, setOpen] = useState(false)
-  const [selected, setSelected] = useState(null)
-  const [input, setInput] = useState("")
-  const [view, setView] = useState("list") // "list" or "detail"
+  const dispatch = useDispatch()
+  const { isOpen, activeConversationId, view } = useSelector(
+    (state) => state.messageWidget,
+  )
+  const [input, setInput] = React.useState("")
 
   // Fetch conversations from API
   const {
@@ -24,13 +33,18 @@ const MessageWidget = () => {
     isError,
   } = useGetConversationsQuery()
 
+  // Find active conversation object
+  const selected = conversations.find(
+    (c) => c.conversationId === activeConversationId,
+  )
+
   // Fetch messages for selected conversation
   const {
     data: messages = [],
     isLoading: messagesLoading,
     refetch: refetchMessages,
-  } = useGetConversationMessagesQuery(selected?.conversationId, {
-    skip: !selected?.conversationId,
+  } = useGetConversationMessagesQuery(activeConversationId, {
+    skip: !activeConversationId,
   })
 
   // Send message mutation
@@ -38,23 +52,22 @@ const MessageWidget = () => {
 
   // Handle conversation selection
   const handleSelectConversation = (conv) => {
-    setSelected(conv)
-    setView("detail")
+    dispatch(setActiveConversation(conv.conversationId))
   }
 
   // Handle back to list
   const handleBackToList = () => {
-    setView("list")
-    setSelected(null)
+    dispatch(setView("list"))
+    dispatch(setActiveConversation(null)) // Optional: clear selection
   }
 
   // Handle send message
   const handleSendMessage = async () => {
-    if (!input.trim() || !selected?.conversationId) return
+    if (!input.trim() || !activeConversationId) return
 
     try {
       await sendMessage({
-        conversationId: selected.conversationId,
+        conversationId: activeConversationId,
         messageData: { content: input },
       }).unwrap()
       setInput("")
@@ -74,17 +87,17 @@ const MessageWidget = () => {
 
   return (
     <div className="fixed bottom-4 right-4 z-[1200] flex flex-col items-end gap-3">
-      <MessageModal isOpen={open}>
+      <MessageModal isOpen={isOpen}>
         {/* Header */}
         {view === "detail" && selected ? (
           <ConversationDetailHeader
             conversation={selected}
             onBack={handleBackToList}
-            onClose={() => setOpen(false)}
+            onClose={() => dispatch(closeWidget())}
           />
         ) : (
           <ConversationListHeader
-            onClose={() => setOpen(false)}
+            onClose={() => dispatch(closeWidget())}
             isLoading={isLoading}
           />
         )}
@@ -111,7 +124,7 @@ const MessageWidget = () => {
         )}
       </MessageModal>
 
-      <FloatingButton onClick={() => setOpen((v) => !v)} />
+      <FloatingButton onClick={() => dispatch(toggleWidget())} />
     </div>
   )
 }

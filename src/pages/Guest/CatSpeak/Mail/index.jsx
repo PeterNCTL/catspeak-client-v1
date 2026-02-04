@@ -9,10 +9,13 @@ import {
   useInteractWithStoryMutation,
   useDeleteStoryMutation,
 } from "@/store/api/storiesApi"
+import { useDispatch } from "react-redux"
+import { setActiveConversation } from "@/store/slices/messageWidgetSlice"
 import LiveMessages from "@/components/cat-speak/mail/LiveMessages"
 
 const MailPage = () => {
   const { t } = useLanguage()
+  const dispatch = useDispatch()
   const [inputValue, setInputValue] = useState("")
 
   // API Hooks
@@ -54,16 +57,25 @@ const MailPage = () => {
   }
 
   const handleInteract = async (storyId, actionType) => {
-    // actionType: 1 = Accept/Interest, 0 = Decline/Ignore
+    // actionType: 1 = Accept/Interest, 0 = Decline/Ignore, 2 = Decline?
+    // Based on user request info: 1 = Accept, 2 = Decline
     try {
-      await interactWithStory({ storyId, action: actionType }).unwrap()
-    } catch (error) {
-      if (error?.status === 409) {
-        message.warning(t.catSpeak.alreadyInteracted)
-      } else {
-        console.error("Interaction failed:", error)
-        message.error(t.catSpeak.interactionFailed)
+      const response = await interactWithStory({
+        storyId,
+        action: actionType,
+      }).unwrap()
+
+      // If accepted provided, open conversation (assuming response structure matches requirements)
+      if (
+        actionType === 1 &&
+        response.success &&
+        response.data?.conversationId
+      ) {
+        dispatch(setActiveConversation(response.data.conversationId))
       }
+    } catch (error) {
+      console.error("Interaction failed:", error)
+      message.error("Failed to interact with story.")
     }
   }
 

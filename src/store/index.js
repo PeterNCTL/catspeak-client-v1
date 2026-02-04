@@ -2,11 +2,13 @@ import { configureStore } from "@reduxjs/toolkit"
 import { setupListeners } from "@reduxjs/toolkit/query"
 import { baseApi } from "./api/baseApi"
 import authReducer from "./slices/authSlice"
+import messageWidgetReducer from "./slices/messageWidgetSlice"
 
 export const store = configureStore({
   reducer: {
     [baseApi.reducerPath]: baseApi.reducer,
     auth: authReducer,
+    messageWidget: messageWidgetReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(baseApi.middleware),
