@@ -4,12 +4,13 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Button,
   FormControlLabel,
   Checkbox,
   Box,
 } from "@mui/material"
 import { useLanguage } from "@/context/LanguageContext"
+
+import PillButton from "@/components/ui/PillButton"
 
 const PassConfirmationModal = ({ open, onResult }) => {
   const { t } = useLanguage()
@@ -70,22 +71,19 @@ const PassConfirmationModal = ({ open, onResult }) => {
         </Box>
       </DialogContent>
 
-      <DialogActions sx={{ px: 3, pb: 2 }}>
-        <Button onClick={handleCancel} sx={{ color: "text.secondary" }}>
+      <DialogActions sx={{ gap: 1 }}>
+        <PillButton
+          onClick={handleCancel}
+          variant="text"
+          color="inherit"
+        >
           {t.catSpeak.cancel}
-        </Button>
-        <Button
+        </PillButton>
+        <PillButton
           onClick={handleConfirm}
-          variant="contained"
-          sx={{
-            backgroundColor: "#990011",
-            "&:hover": {
-              backgroundColor: "#7a000d",
-            },
-          }}
         >
           {t.catSpeak.confirm}
-        </Button>
+        </PillButton>
       </DialogActions>
     </Dialog>
   )

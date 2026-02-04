@@ -5,6 +5,7 @@ export default {
   contactUs: "Contact Us",
   contactPlaceholder: "Enter your contact information",
   emailPlaceholder: "Email",
+  namePlaceholder: "Your name",
   contactMessage: "will contact you as soon as possible^^",
   sendContact: "Send contact information",
   languages: {

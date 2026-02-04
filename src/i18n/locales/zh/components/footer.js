@@ -5,6 +5,7 @@ export default {
   contactUs: "联系我们",
   contactPlaceholder: "输入您的联系信息",
   emailPlaceholder: "邮箱",
+  namePlaceholder: "您的姓名",
   contactMessage: "会尽快与您联系^^",
   sendContact: "发送联系信息",
   languages: {

@@ -164,7 +164,11 @@ const CreateRoomModal = ({ open, onCancel }) => {
           </Stack>
         </DialogContent>
         <DialogActions sx={{ p: 3, justifyContent: "center", gap: 1 }}>
-          <PillButton onClick={handleCancel} variant="text" color="inherit">
+          <PillButton
+            onClick={handleCancel}
+            variant="text"
+            color="inherit"
+          >
             {t.rooms.createRoom.cancel}
           </PillButton>
           <PillButton

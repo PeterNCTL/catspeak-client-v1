@@ -7,16 +7,25 @@ import {
   useCreateVideoSessionMutation,
 } from "@/store/api/videoSessionsApi"
 import useAuth from "@/hooks/useAuth"
-import WaitingScreen from "@/components/video-call/WaitingScreen"
-import toast from "react-hot-toast"
+import WaitingScreen from "@/components/waiting-room/WaitingScreen"
+import { useLanguage } from "@/context/LanguageContext"
+import { Snackbar, Alert } from "@mui/material"
 
 const RoomDetailPage = () => {
   const { id } = useParams()
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
+  const { t } = useLanguage()
 
   // Auth & Room Data
   const { user } = useAuth()
+
+  useEffect(() => {
+    if (!user) {
+      navigate("/")
+    }
+  }, [user, navigate])
+
   const {
     data: room,
     isLoading: isLoadingRoom,
@@ -44,6 +53,20 @@ const RoomDetailPage = () => {
   const [audioTrack, setAudioTrack] = useState(null)
   const [localStream, setLocalStream] = useState(null)
 
+  // -- Snackbar State --
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "error", // 'error' | 'warning' | 'info' | 'success'
+  })
+
+  const handleCloseSnackbar = (event, reason) => {
+    if (reason === "clickaway") {
+      return
+    }
+    setSnackbar({ ...snackbar, open: false })
+  }
+
   // -- Media Effects (Copied/Adapted from VideoCallContext logic) --
   useEffect(() => {
     let active = true
@@ -60,6 +83,18 @@ const RoomDetailPage = () => {
           else newTrack.stop()
         } catch (err) {
           console.error("Error getting video:", err)
+          if (
+            err.name === "NotAllowedError" ||
+            err.name === "PermissionDeniedError" ||
+            err.name === "NotReadableError"
+          ) {
+            setCameraOn(false)
+            setSnackbar({
+              open: true,
+              message: t.rooms.waitingScreen.cameraAccessError,
+              severity: "error",
+            })
+          }
         }
       } else {
         setVideoTrack(null)
@@ -93,6 +128,18 @@ const RoomDetailPage = () => {
           else newTrack.stop()
         } catch (err) {
           console.error("Error getting audio:", err)
+          if (
+            err.name === "NotAllowedError" ||
+            err.name === "PermissionDeniedError" ||
+            err.name === "NotReadableError"
+          ) {
+            setMicOn(false)
+            setSnackbar({
+              open: true,
+              message: t.rooms.waitingScreen.micAccessError,
+              severity: "error",
+            })
+          }
         }
       } else {
         setAudioTrack(null)
@@ -130,9 +177,9 @@ const RoomDetailPage = () => {
       let sessionId
 
       if (activeSession) {
-        // Session exists
+        // Session exists -> Join it explicitly
         sessionId = activeSession.sessionId
-        // Verify joined status or pre-join logic if needed
+        await joinVideoSession(sessionId).unwrap()
       } else {
         // No session → create new session
         try {
@@ -154,7 +201,11 @@ const RoomDetailPage = () => {
             sessionId = retrySession.sessionId
           } else {
             console.error("Failed to create or join session:", err)
-            toast.error("Failed to create session. Please try again.")
+            setSnackbar({
+              open: true,
+              message: t.rooms.waitingScreen.createSessionError,
+              severity: "error",
+            })
             return
           }
         }
@@ -170,7 +221,11 @@ const RoomDetailPage = () => {
       })
     } catch (err) {
       console.error("Failed to process join:", err)
-      toast.error("Something went wrong joining the room.")
+      setSnackbar({
+        open: true,
+        message: t.rooms.waitingScreen.joinError,
+        severity: "error",
+      })
     }
   }
 
@@ -179,7 +234,7 @@ const RoomDetailPage = () => {
   if (isLoadingRoom || isLoadingSessions) {
     return (
       <div className="flex h-screen items-center justify-center bg-white text-gray-500">
-        Loading...
+        {t.rooms.waitingScreen.loading}
       </div>
     )
   }
@@ -187,7 +242,7 @@ const RoomDetailPage = () => {
   if (error || !room) {
     return (
       <div className="flex h-screen items-center justify-center bg-white text-red-500">
-        Room not found
+        {t.rooms.waitingScreen.roomNotFound}
       </div>
     )
   }
@@ -202,16 +257,32 @@ const RoomDetailPage = () => {
   }
 
   return (
-    <WaitingScreen
-      session={displaySession}
-      localStream={localStream}
-      micOn={micOn}
-      cameraOn={cameraOn}
-      user={user}
-      onToggleMic={() => setMicOn(!micOn)}
-      onToggleCam={() => setCameraOn(!cameraOn)}
-      onJoin={handleJoin}
-    />
+    <>
+      <WaitingScreen
+        session={displaySession}
+        localStream={localStream}
+        micOn={micOn}
+        cameraOn={cameraOn}
+        user={user}
+        onToggleMic={() => setMicOn(!micOn)}
+        onToggleCam={() => setCameraOn(!cameraOn)}
+        onJoin={handleJoin}
+      />
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity={snackbar.severity}
+          sx={{ width: "100%" }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
+    </>
   )
 }
 

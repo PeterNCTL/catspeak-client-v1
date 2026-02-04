@@ -1,22 +1,23 @@
 import React, { useEffect, useState, useMemo } from "react"
 import { useNavigate } from "react-router-dom"
-import { motion } from "framer-motion"
+import { useLanguage } from "@context/LanguageContext"
+import QueueStatusCard from "@/components/queue/QueueStatusCard"
+
+import Logo from "@/assets/icons/logo/logo.svg"
 
 import { useQueueSignaling } from "@/hooks/useQueueSignaling"
 const QueuePage = () => {
   const navigate = useNavigate()
+  const { t } = useLanguage()
 
-  // Local state
-  const [statusText, setStatusText] = useState("Đang kết nối vào hàng chờ...")
+  const [queueState, setQueueState] = useState({ type: "CONNECTING" })
   const [position, setPosition] = useState(0)
   const [hasJoinedSignalR, setHasJoinedSignalR] = useState(false)
-
-  // SignalR Handlers
   const handlers = useMemo(
     () => ({
       MatchFound: (data) => {
         console.log("MATCH FOUND EVENT:", data)
-        setStatusText(data.message || "Đã tìm thấy match!")
+        setQueueState({ type: "MATCHED" })
         if (data.sessionId) {
           // Play notification sound?
           setTimeout(() => {
@@ -26,7 +27,7 @@ const QueuePage = () => {
       },
       QueueJoined: (data) => {
         console.log("QueueJoined event received!", data)
-        setStatusText("Đang chờ ghép đôi...")
+        setQueueState({ type: "WAITING" })
         if (data && data.position) setPosition(data.position)
         setHasJoinedSignalR(true)
       },
@@ -39,7 +40,7 @@ const QueuePage = () => {
       },
       QueueError: (msg) => {
         console.error("Queue Error:", msg)
-        setStatusText(`Lỗi: ${msg}`)
+        setQueueState({ type: "ERROR", message: msg })
       },
       OnReconnected: () => {
         console.log("Reconnected to SignalR. Re-joining queue...")
@@ -49,7 +50,7 @@ const QueuePage = () => {
         setHasJoinedSignalR(false)
       },
     }),
-    [navigate],
+    [navigate, t],
   )
 
   const { isConnected, joinQueue, leaveQueue } = useQueueSignaling(handlers)
@@ -62,11 +63,6 @@ const QueuePage = () => {
     }
   }, [isConnected])
 
-  // Flow:
-  // 1. User enters page -> Call REST API Join (User request: "user join queue (api join queue)")
-  // 2. Front end calls "JoinQueue" (SignalR)
-
-  // Guard to prevent double execution
   const joinAttemptedRef = React.useRef(false)
 
   useEffect(() => {
@@ -99,71 +95,41 @@ const QueuePage = () => {
     }
   }
 
+  const getStatusText = () => {
+    switch (queueState.type) {
+      case "WAITING":
+        return t.rooms.queue.waitingForPairing
+      case "MATCHED":
+        return t.rooms.queue.matchFound
+      case "ERROR":
+        return t.rooms.queue.error.replace("{{msg}}", queueState.message)
+      case "CONNECTING":
+      default:
+        return t.rooms.queue.connectingToQueue
+    }
+  }
+
+  const statusText = getStatusText()
+
   return (
-    <div className="flex h-screen w-full flex-col items-center justify-center bg-primary2 text-textColor font-sans">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="relative flex w-full max-w-md flex-col items-center rounded-3xl bg-white p-10 shadow-[0_20px_40px_rgba(0,0,0,0.08)] border-t-4 border-cath-orange-500"
-      >
-        {/* Decorative background blob */}
-        <div className="absolute top-0 inset-x-0 h-40 bg-gradient-to-b from-cath-orange-50/50 to-transparent rounded-t-3xl -z-10" />
-
-        <div className="mb-8 flex h-36 w-36 items-center justify-center rounded-full bg-orange-100 relative overflow-hidden ring-4 ring-white shadow-lg">
-          <div className="absolute inset-0 bg-gradient-to-br from-cath-orange-200 to-orange-100 opacity-50" />
-          <motion.div
-            animate={{
-              scale: [1, 1.15, 1],
-              opacity: [0.8, 1, 0.8],
-            }}
-            transition={{
-              duration: 2,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-            className="h-28 w-28 rounded-full bg-gradient-to-br from-cath-orange-500 to-red-500 shadow-xl shadow-orange-500/20"
+    <div className="relative flex h-screen w-full flex-col items-center justify-center bg-gradient-to-b from-cath-red-500 via-cath-red-700 to-[#f08d1d] text-textColor font-sans px-4">
+      {/* Logo */}
+      <div className="absolute top-6 left-6 z-10">
+        <div className="bg-white/90 backdrop-blur-sm p-2 rounded-xl shadow-lg border border-white/50">
+          <img
+            src={Logo}
+            alt="Cat Speak Logo"
+            className="h-8 w-auto object-contain"
           />
-          <div className="absolute text-5xl drop-shadow-sm">😺</div>
         </div>
+      </div>
 
-        <h2 className="mb-2 text-2xl font-bold text-headingColor text-center drop-shadow-sm">
-          {statusText}
-        </h2>
-
-        <div className="h-4"></div>
-
-        {isConnected ? (
-          <span className="mb-6 inline-flex items-center rounded-full bg-green-100 px-4 py-1.5 text-sm font-semibold text-green-700 shadow-sm border border-green-200">
-            <span className="mr-2 h-2 w-2 rounded-full bg-green-600 shadow-sm"></span>
-            Socket Connected
-          </span>
-        ) : (
-          <span className="mb-6 inline-flex items-center rounded-full bg-amber-100 px-4 py-1.5 text-sm font-semibold text-amber-700 shadow-sm border border-amber-200">
-            <span className="mr-2 h-2 w-2 rounded-full bg-amber-500 animate-bounce"></span>
-            Connecting...
-          </span>
-        )}
-
-        <p className="mb-8 text-center text-gray-500 text-sm leading-relaxed max-w-[90%]">
-          Chúng mình đang tìm người phù hợp nhất với trình độ của bạn.
-        </p>
-
-        {position > 0 && (
-          <div className="mb-8 flex items-center gap-2 rounded-xl  px-5 py-3 text-sm font-medium text-headingColor border border-gray-100">
-            <span>Vị trí của bạn:</span>
-            <span className="flex h-6 w-6 items-center justify-center rounded-md bg-white shadow-sm border border-gray-100 text-cath-orange-600 font-bold">
-              {position}
-            </span>
-          </div>
-        )}
-
-        <button
-          onClick={handleCancel}
-          className="bg-[#990011] text-white mt-4 rounded-full px-8 py-3 text-sm font-bold text-gray-500 ring-1 ring-gray-200 transition hover:bg-red-50 hover:text-red-500 hover:ring-red-200 active:scale-95"
-        >
-          Hủy tìm kiếm
-        </button>
-      </motion.div>
+      <QueueStatusCard
+        statusText={statusText}
+        isConnected={isConnected}
+        position={position}
+        onCancel={handleCancel}
+      />
     </div>
   )
 }

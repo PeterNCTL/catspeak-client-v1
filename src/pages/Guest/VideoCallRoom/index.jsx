@@ -1,24 +1,20 @@
 import React from "react"
 import { Navigate } from "react-router-dom"
-import {
-  FiVideo,
-  FiVideoOff,
-  FiMonitor,
-  FiMessageCircle,
-  FiMoreVertical,
-  FiUsers,
-  FiChevronRight,
-} from "react-icons/fi"
+import { FiChevronRight } from "react-icons/fi"
+import { Box, Typography } from "@mui/material"
+import HeaderLogo from "@/layouts/MainLayout/Header/HeaderLogo"
+import { useSessionTimer } from "@/hooks/rooms/useSessionTimer"
 
-import VideoGrid from "@/components/video-call/VideoGrid"
+import VideoGrid from "@/components/video-call/video/VideoGrid"
 import ParticipantList from "@/components/video-call/ParticipantList"
 import ChatBox from "@/components/video-call/ChatBox"
-import MicButton from "@/components/video-call/MicButton"
+import VideoCallControlBar from "@/components/video-call/ControlBar"
+import { formatDate } from "@/utils/dateFormatter"
 
 import {
-  VideoCallProvider,
   useVideoCallContext,
-} from "@/context/VideoCallContext"
+} from "@/context/video/VideoCallContext"
+import { VideoCallProvider } from "@/context/video/VideoCallProvider"
 
 const VideoCallRoomContent = () => {
   const {
@@ -48,6 +44,12 @@ const VideoCallRoomContent = () => {
     handleLeaveSession,
     handleCopyLink,
   } = useVideoCallContext()
+
+  const { elapsedSeconds, formattedElapsed, formattedMax } =
+    useSessionTimer(session)
+
+  const isSidePanelOpen = showChat || showParticipants
+  const sidePanelTitle = showParticipants ? "Participants" : "Chat"
 
   // Unread Messages Logic
   const [unreadMessages, setUnreadMessages] = React.useState(0)
@@ -83,35 +85,58 @@ const VideoCallRoomContent = () => {
   return (
     <div className="flex h-full w-full flex-col bg-primary2 text-textColor font-sans">
       {/* Top Bar */}
-      <div className="flex items-center justify-between border-b border-gray-200 bg-white px-6 py-4 shadow-sm">
-        <div className="flex items-center gap-4">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-cath-red-700 text-white font-bold shadow-md">
-            CA
-          </div>
-          <div>
-            <div className="text-sm font-semibold text-headingColor">
-              Topic : {session?.topic || "General"}
-            </div>
-            <div className="text-xs text-lighttextGray">
-              {new Date().toLocaleDateString()}
-            </div>
-          </div>
-        </div>
-
-        {/* <div className="flex items-center gap-4">
-          <button
-            onClick={handleCopyLink}
-            className="flex items-center gap-2 rounded-lg bg-cath-orange-500 px-3 py-1.5 text-sm font-semibold text-white hover:bg-cath-orange-600 transition shadow-sm"
-            title="Click to copy link"
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          borderBottom: 1,
+          borderColor: "divider",
+          bgcolor: "background.paper",
+          px: 3,
+          py: 2,
+          boxShadow: 1,
+        }}
+      >
+        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+          <Box
+            sx={{
+              flexShrink: 0,
+              width: 160,
+              display: "flex",
+              alignItems: "center",
+            }}
           >
-            <FiChevronRight className="h-4 w-4" />
-            {id} (Copy Link)
-          </button>
-        </div> */}
-      </div>
+            <HeaderLogo />
+          </Box>
+          <Box>
+            <Typography
+              variant="body2"
+              sx={{ fontWeight: 600, color: "text.primary" }}
+            >
+              Topic : {session?.name || session?.roomName || "General"}
+            </Typography>
+            <Typography
+              variant="caption"
+              sx={{ color: "text.secondary" }}
+            >
+              {formatDate(new Date())}
+            </Typography>
+          </Box>
+        </Box>
+        <Box>
+          <Typography
+            variant="caption"
+            sx={{ color: "text.secondary", fontWeight: 500 }}
+          >
+            {formattedElapsed}
+            {formattedMax ? ` / ${formattedMax}` : ""}
+          </Typography>
+        </Box>
+      </Box>
 
       {/* Main Content Area */}
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 flex-col overflow-hidden md:flex-row">
         {/* Video Area */}
         <div className="relative flex flex-1 flex-col bg-gradient-to-br from-primary2 via-white to-primary2">
           <div className="absolute inset-0 bg-[url('/bg-pattern.svg')] opacity-[0.03] pointer-events-none" />
@@ -123,9 +148,9 @@ const VideoCallRoomContent = () => {
           />
         </div>
 
-        {/* Side Panel (Chat or Participants) */}
-        {(showChat || showParticipants) && (
-          <div className="w-80 flex flex-col border-l border-gray-200 bg-white">
+        {/* Desktop Side Panel (Chat or Participants) */}
+        {isSidePanelOpen && (
+          <div className="hidden w-80 flex-col border-l border-gray-200 bg-white md:flex">
             {showParticipants && (
               <ParticipantList
                 participants={activeParticipants}
@@ -141,97 +166,85 @@ const VideoCallRoomContent = () => {
                 allParticipants={activeParticipants}
                 onSendMessage={handleSendMessage}
                 isConnected={isConnected}
-                className="w-full h-full"
+                className="h-full w-full"
               />
             )}
           </div>
         )}
+
+        {/* Mobile Overlay Side Panel */}
+        {isSidePanelOpen && (
+          <div className="md:hidden">
+            <div
+              className="fixed inset-0 z-30 flex bg-black/40"
+              onClick={() => {
+                setShowChat(false)
+                setShowParticipants(false)
+              }}
+            >
+              <div
+                className="ml-auto flex h-full w-full max-w-sm flex-col bg-white shadow-xl"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <button
+                  type="button"
+                  className="flex w-full items-center gap-2 border-b border-gray-200 px-4 py-3 text-left hover:bg-gray-50"
+                  onClick={() => {
+                    setShowChat(false)
+                    setShowParticipants(false)
+                  }}
+                >
+                  <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-primary2/10 text-primary1">
+                    <FiChevronRight className="h-4 w-4 rotate-180" />
+                  </span>
+                  <Typography
+                    variant="subtitle2"
+                    sx={{ fontWeight: 600, fontSize: "0.9rem" }}
+                  >
+                    {sidePanelTitle}
+                  </Typography>
+                </button>
+
+                <div className="flex-1 overflow-y-auto">
+                  {showParticipants && (
+                    <ParticipantList
+                      participants={activeParticipants}
+                      peers={peers}
+                      currentUserId={currentUserId}
+                    />
+                  )}
+
+                  {showChat && !showParticipants && (
+                    <ChatBox
+                      messages={messages}
+                      currentUser={user}
+                      allParticipants={activeParticipants}
+                      onSendMessage={handleSendMessage}
+                      isConnected={isConnected}
+                      className="h-full w-full"
+                    />
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* Control Bar */}
-      <div className="flex items-center justify-between border-t border-gray-200 bg-white px-6 py-4 shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
-        <div className="text-lg font-semibold text-headingColor w-32">
-          {/* Timer Placeholder */}
-        </div>
-
-        <div className="flex items-center gap-4">
-          <MicButton
-            micOn={micOn}
-            onToggle={handleToggleMic}
-            stream={localStream}
-            className="z-10"
-          />
-
-          <button
-            onClick={handleToggleCam}
-            className={`flex h-12 w-12 items-center justify-center rounded-full transition shadow-md border ${
-              cameraOn
-                ? "bg-cath-red-600 text-white border-transparent hover:bg-cath-red-700"
-                : "bg-white text-cath-red-400 border-gray-200 hover:bg-primary2"
-            }`}
-          >
-            {cameraOn ? (
-              <FiVideo className="h-5 w-5" />
-            ) : (
-              <FiVideoOff className="h-5 w-5" />
-            )}
-          </button>
-
-          <button className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-gray-500 border border-gray-200 transition hover:bg-primary2 hover:text-headingColor shadow-sm">
-            <FiMonitor className="h-5 w-5" />
-          </button>
-
-          <div className="h-8 w-px bg-gray-200 mx-2" />
-
-          {/* Participants Toggle */}
-          <button
-            onClick={() => {
-              setShowParticipants(!showParticipants)
-              setShowChat(false)
-            }}
-            className={`flex h-12 w-12 items-center justify-center rounded-full transition shadow-md border ${
-              showParticipants
-                ? "bg-cath-orange-500 text-white border-transparent"
-                : "bg-white text-gray-500 border-gray-200 hover:bg-primary2 hover:text-headingColor"
-            }`}
-          >
-            <FiUsers className="h-5 w-5" />
-          </button>
-
-          <button
-            onClick={() => {
-              setShowChat(!showChat)
-              setShowParticipants(false)
-            }}
-            className={`flex h-12 w-12 items-center justify-center rounded-full transition shadow-md border relative ${
-              showChat
-                ? "bg-cath-orange-500 text-white border-transparent"
-                : "bg-white text-gray-500 border-gray-200 hover:bg-primary2 hover:text-headingColor"
-            }`}
-          >
-            <FiMessageCircle className="h-5 w-5" />
-            {unreadMessages > 0 && (
-              <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-600 text-[10px] font-bold text-white shadow-sm animate-bounce">
-                {unreadMessages > 9 ? "9+" : unreadMessages}
-              </span>
-            )}
-          </button>
-
-          <button className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-gray-500 border border-gray-200 transition hover:bg-primary2 hover:text-headingColor shadow-sm">
-            <FiMoreVertical className="h-5 w-5" />
-          </button>
-        </div>
-
-        <div className="flex justify-end w-32">
-          <button
-            onClick={handleLeaveSession}
-            disabled={isLeaving}
-            className="rounded-full bg-red-50 px-6 py-2.5 text-sm font-semibold text-red-600 ring-1 ring-red-200 transition hover:bg-red-100 hover:ring-red-300 disabled:opacity-50"
-          >
-            {isLeaving ? "Leaving..." : "Leave"}
-          </button>
-        </div>
-      </div>
+      <VideoCallControlBar
+        micOn={micOn}
+        cameraOn={cameraOn}
+        showChat={showChat}
+        setShowChat={setShowChat}
+        showParticipants={showParticipants}
+        setShowParticipants={setShowParticipants}
+        unreadMessages={unreadMessages}
+        localStream={localStream}
+        isLeaving={isLeaving}
+        handleToggleMic={handleToggleMic}
+        handleToggleCam={handleToggleCam}
+        handleLeaveSession={handleLeaveSession}
+      />
     </div>
   )
 }

@@ -5,7 +5,11 @@ import { colors } from "@/utils/colors"
 const LevelSelector = ({ selectedLevel, onSelect, levels, t }) => {
   return (
     <Box sx={{ textAlign: "center" }}>
-      <Typography variant="overline" display="block" gutterBottom>
+      <Typography
+        display="block"
+        gutterBottom
+        sx={{ fontWeight: 700, fontSize: "0.875rem" }}
+      >
         {t.rooms.createRoom.requiredLevel}
       </Typography>
       <Stack

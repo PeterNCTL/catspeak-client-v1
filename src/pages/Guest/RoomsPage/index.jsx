@@ -225,10 +225,9 @@ const RoomsPage = () => {
                 placement="right"
                 onClose={() => setMobileFiltersOpen(false)}
                 open={mobileFiltersOpen}
-                width={320}
-                zIndex={1200}
                 styles={{
                   body: { padding: 0 },
+                  wrapper: { width: 320 },
                 }}
               >
                 <div className="p-4">

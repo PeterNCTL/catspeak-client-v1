@@ -1,6 +1,9 @@
 import React, { useState, useRef, useEffect } from "react"
 import { Send as SendIcon } from "@mui/icons-material"
 import { Typography, Box, IconButton, InputBase, Paper } from "@mui/material"
+import { useLanguage } from "@/context/LanguageContext"
+import { colors } from "@/utils/colors"
+import { formatTime } from "@/utils/dateFormatter"
 
 const ChatBox = ({
   messages,
@@ -12,6 +15,7 @@ const ChatBox = ({
 }) => {
   const [message, setMessage] = useState("")
   const scrollRef = useRef(null)
+  const { t } = useLanguage()
 
   // Auto-scroll to bottom when messages change
   useEffect(() => {
@@ -33,7 +37,7 @@ const ChatBox = ({
 
   return (
     <div
-      className={`flex h-full flex-col border-l border-gray-200 bg-white ${className}`}
+      className={`flex h-full flex-col bg-white ${className}`}
     >
       <div className="border-b border-gray-200 px-4 py-3">
         <Typography
@@ -41,7 +45,7 @@ const ChatBox = ({
           className="text-headingColor"
           fontWeight="bold"
         >
-          Room Message
+          {t.rooms.chatBox.title}
         </Typography>
       </div>
 
@@ -51,7 +55,7 @@ const ChatBox = ({
             variant="body2"
             className="text-center text-gray-400 mt-10"
           >
-            No messages yet
+            {t.rooms.chatBox.empty}
           </Typography>
         ) : (
           messages.map((msg) => {
@@ -80,7 +84,7 @@ const ChatBox = ({
               (sender &&
                 String(sender.accountId) === String(currentUser?.accountId))
             const senderName = isMe
-              ? "You"
+              ? t.rooms.chatBox.you
               : sender?.username || sender?.name || `User ${msg.senderId}`
 
             return (
@@ -103,18 +107,18 @@ const ChatBox = ({
                     color="text.disabled"
                     sx={{ fontSize: "0.65rem" }}
                   >
-                    {new Date(msg.timestamp).toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
+                    {formatTime(msg.timestamp)}
                   </Typography>
                 </div>
                 <div
-                  className={`px-3 py-2 rounded-lg max-w-[85%] break-words shadow-sm ${
+                  className={`px-3 py-2 rounded-full max-w-[85%] break-words shadow-sm ${
                     isMe
-                      ? "bg-cath-orange-500 text-white"
+                      ? "text-white"
                       : "bg-gray-100 text-textColor border border-gray-100"
                   }`}
+                  style={
+                    isMe ? { backgroundColor: colors.red[700] } : undefined
+                  }
                 >
                   <Typography variant="body2">{msg.content}</Typography>
                 </div>
@@ -129,15 +133,20 @@ const ChatBox = ({
       <div className="border-t border-gray-200 p-4">
         <Paper
           component="div"
-          className="flex items-center gap-2 p-1 border border-gray-200 rounded-lg focus-within:ring-1 focus-within:ring-cath-orange-500 focus-within:border-cath-orange-500"
+          className="flex items-center gap-2 p-1 border rounded-lg focus-within:ring-1 focus-within:ring-[var(--cath-primary)] focus-within:border-[var(--cath-primary)]"
           elevation={0}
+          sx={{ borderColor: "divider" }}
         >
           <InputBase
             disabled={!isConnected}
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder={isConnected ? "Type Something..." : "Connecting..."}
+            placeholder={
+              isConnected
+                ? t.rooms.chatBox.inputPlaceholder
+                : t.rooms.chatBox.connectingPlaceholder
+            }
             className="flex-1 text-sm text-headingColor placeholder:text-gray-400"
             sx={{ ml: 1, flex: 1, fontSize: "0.875rem" }}
           />
@@ -146,10 +155,10 @@ const ChatBox = ({
             disabled={!isConnected || !message.trim()}
             size="small"
             sx={{
-              bgcolor: "var(--cath-primary)",
+              bgcolor: colors.red[700],
               color: "white",
               "&:hover": {
-                bgcolor: "#c98a0c", // Darker shade of cath-orange/primary roughly
+                bgcolor: colors.red[800],
               },
               "&.Mui-disabled": {
                 bgcolor: "rgba(0, 0, 0, 0.12)",

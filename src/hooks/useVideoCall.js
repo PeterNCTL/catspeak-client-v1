@@ -1,7 +1,18 @@
 import { useState, useEffect, useMemo, useRef } from "react"
-import { useMeeting, useParticipant, usePubSub } from "@videosdk.live/react-sdk"
+import { useMeeting, usePubSub } from "@videosdk.live/react-sdk"
 
-export const useVideoCall = (shouldJoin = false) => {
+const isProbablyJwt = (token) => {
+  if (typeof token !== "string") return false
+  const t = token.trim()
+  if (!t) return false
+  const parts = t.split(".")
+  return parts.length === 3 && parts.every(Boolean)
+}
+
+export const useVideoCall = (
+  shouldJoin = false,
+  { meetingId, token, providerMounted } = {},
+) => {
   const [messages, setMessages] = useState([])
 
   // -- VideoSDK Hooks --
@@ -49,14 +60,40 @@ export const useVideoCall = (shouldJoin = false) => {
 
   // -- Lifecycle --
   const hasJoinedRef = useRef(false)
+  const joinKeyRef = useRef("")
+  // useEffect(() => {
+  //   if (shouldJoin && !hasJoinedRef.current) {
+  //     // Prevent spamming join
+  //     console.log("[useVideoCall] Attempting to join meeting from hooks...")
+  //     hasJoinedRef.current = true
+  //     join()
+  //   }
+  // }, [shouldJoin, join])
+
+  // Reset join guard if meetingId/token changes (fresh token / new meeting)
   useEffect(() => {
-    if (shouldJoin && !hasJoinedRef.current) {
-      // Prevent spamming join
-      console.log("[useVideoCall] Attempting to join meeting from hooks...")
-      hasJoinedRef.current = true
-      join()
+    const joinKey = `${meetingId || ""}:${token || ""}`
+    if (joinKeyRef.current !== joinKey) {
+      joinKeyRef.current = joinKey
+      hasJoinedRef.current = false
     }
-  }, [shouldJoin, join])
+  }, [meetingId, token])
+
+  useEffect(() => {
+    const canJoin =
+      !!shouldJoin &&
+      typeof meetingId === "string" &&
+      meetingId.trim().length > 0 &&
+      isProbablyJwt(token) &&
+      providerMounted === true
+
+    if (!canJoin) return
+    if (hasJoinedRef.current) return
+
+    console.log("[useVideoCall] Joining VideoSDK meeting (gated)")
+    hasJoinedRef.current = true
+    join()
+  }, [shouldJoin, meetingId, token, providerMounted, join])
 
   // -- Helpers to map participants for UI --
   const mappedParticipants = useMemo(() => {

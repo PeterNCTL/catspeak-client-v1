@@ -1,4 +1,5 @@
 import { useLanguage } from "@/context/LanguageContext"
+import colors from "@/utils/colors"
 
 const PrivacyPolicy = () => {
   const { t } = useLanguage()
@@ -127,17 +128,34 @@ const PrivacyPolicy = () => {
         <ul className="list-none text-sm space-y-1 ml-2">
           <li>
             <strong>{policy.section9.contact.email}</strong>{" "}
-            support@catspeak.com
+            catspeak.vn@gmail.com
           </li>
           <li>
-            <strong>{policy.section9.contact.website}</strong> www.catspeak.com
+            <strong>{policy.section9.contact.website}</strong>{" "}
+            <a
+              href="https://www.catspeak.com.vn/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:opacity-80"
+              style={{ color: colors.red[700] }}
+            >
+              https://www.catspeak.com.vn/
+            </a>
           </li>
           <li>
             <strong>{policy.section9.contact.fanpage}</strong>{" "}
-            facebook.com/catspeak
+            <a
+              href="https://www.facebook.com/share/1DzTNUSEAN/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:opacity-80"
+              style={{ color: colors.red[700] }}
+            >
+              https://www.facebook.com/share/1DzTNUSEAN/
+            </a>
           </li>
           <li>
-            <strong>{policy.section9.contact.hotline}</strong> 1900-xxxx
+            <strong>{policy.section9.contact.hotline}</strong> 0868192604
           </li>
         </ul>
       </div>

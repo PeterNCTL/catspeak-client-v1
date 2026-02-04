@@ -23,7 +23,11 @@ const RoomNameInput = ({ value, onChange, t }) => {
 
   return (
     <Box>
-      <Typography variant="overline" display="block" gutterBottom>
+      <Typography
+        display="block"
+        gutterBottom
+        sx={{ fontWeight: 700, fontSize: "0.875rem" }}
+      >
         {t.rooms.createRoom.nameLabel}
       </Typography>
       <TextField

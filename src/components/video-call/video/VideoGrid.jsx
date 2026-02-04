@@ -12,9 +12,9 @@ const VideoGrid = ({ localStream, peers, participants, currentUserId }) => {
   /*
     Grid Layout Logic:
     - 1 participant: Full screen (center)
-    - 2 participants: Side by side (1 row, 2 cols) -> h-full
-    - 3-4 participants: 2x2 grid (2 rows, 2 cols) -> h-full
-    - 5-6 participants: 2x3 grid (2 rows, 3 cols) -> h-full
+    - 2 participants: Side by side (1 row, 2 cols)
+    - 3-4 participants: 2x2 grid (2 rows, 2 cols)
+    - 5-6 participants: 2x3 grid (2 rows, 3 cols)
     - 7+ participants: 3 cols, auto rows
   */
   let gridClassName = ""
@@ -22,18 +22,21 @@ const VideoGrid = ({ localStream, peers, participants, currentUserId }) => {
   if (count === 1) {
     gridClassName = "grid-cols-1 grid-rows-1"
   } else if (count === 2) {
-    gridClassName = "grid-cols-2 grid-rows-1"
+    gridClassName = "grid-cols-1 sm:grid-cols-2 sm:grid-rows-1"
   } else if (count <= 4) {
-    gridClassName = "grid-cols-2 grid-rows-2"
+    gridClassName = "grid-cols-1 sm:grid-cols-2 sm:grid-rows-2"
   } else if (count <= 6) {
-    gridClassName = "grid-cols-3 grid-rows-2"
+    gridClassName =
+      "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 sm:grid-rows-2"
   } else {
     // Fallback for larger meetings if needed
-    gridClassName = "grid-cols-3 auto-rows-fr"
+    gridClassName = "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 auto-rows-fr"
   }
 
   return (
-    <div className={`grid h-screen w-full gap-4 ${gridClassName} p-4`}>
+    <div
+      className={`grid h-full w-full gap-2 p-2 sm:gap-3 sm:p-3 md:gap-4 md:p-4 ${gridClassName}`}
+    >
       {participants.map((participant) => {
         // Note: isLocal calculation is still useful for UI,
         // but stream access is now normalized in `participant.stream`

@@ -4,12 +4,13 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Button,
   Typography,
   Box,
 } from "@mui/material"
 import dayjs from "dayjs"
 import { useLanguage } from "@/context/LanguageContext"
+
+import PillButton from "@/components/ui/PillButton"
 
 const MyStoryModal = ({ open, story, onClose, onDelete }) => {
   const { t } = useLanguage()
@@ -94,24 +95,21 @@ const MyStoryModal = ({ open, story, onClose, onDelete }) => {
         </Box>
       </DialogContent>
 
-      <DialogActions sx={{ px: 3, pb: 2 }}>
-        <Button onClick={handleClose} sx={{ color: "text.secondary" }}>
+      <DialogActions sx={{ gap: 1 }}>
+        <PillButton
+          onClick={handleClose}
+          variant="text"
+          color="inherit"
+        >
           {t.common?.close || "Close"}
-        </Button>
-        <Button
+        </PillButton>
+        <PillButton
           onClick={handleDelete}
-          variant="contained"
-          sx={{
-            backgroundColor: confirmDelete ? "#d32f2f" : "#990011",
-            "&:hover": {
-              backgroundColor: confirmDelete ? "#b71c1c" : "#7a000d",
-            },
-          }}
         >
           {confirmDelete
             ? t.catSpeak?.confirmDelete || "Confirm Delete"
             : t.catSpeak?.deleteStory || "Delete Story"}
-        </Button>
+        </PillButton>
       </DialogActions>
     </Dialog>
   )

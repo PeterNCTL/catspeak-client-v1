@@ -19,7 +19,7 @@ const PillButton = ({
 
   const baseSx = {
     borderRadius: "50px",
-    textTransform: "none",
+    textTransform: "uppercase",
     boxShadow: "none",
     padding: "8px 24px",
     ...(isRed && {
