@@ -13,6 +13,7 @@ import {
   Stack,
   Typography,
   Chip,
+  Box,
 } from "@mui/material"
 import { FiChevronDown } from "react-icons/fi"
 import { VietNam, China, USA } from "@assets/icons/flags"
@@ -20,7 +21,7 @@ import { useLanguage } from "../../../context/LanguageContext"
 
 export const navLinks = [
   { key: "community", href: "/community", hasDropdown: true },
-  { key: "catSpeak", href: "/cat-speak" },
+  { key: "catSpeak", href: "/cat-speak/news" },
   { key: "cart", href: "/cart" },
   { key: "connect", href: "/connect" },
 ]
@@ -42,13 +43,15 @@ const HeaderNav = () => {
   useEffect(() => {
     const lang = searchParams.get("language")
     if (location.pathname === "/community") {
-      if (lang === "chinese") setSelectedLabel("Trung Quốc")
-      else if (lang === "english") setSelectedLabel("Anh")
+      if (lang === "chinese")
+        setSelectedLabel(t.header?.countries?.china || "Trung Quốc")
+      else if (lang === "english")
+        setSelectedLabel(t.header?.countries?.english || "Anh")
       else setSelectedLabel(null) // Default to "Community"
     } else {
       setSelectedLabel(null)
     }
-  }, [location.pathname, searchParams])
+  }, [location.pathname, searchParams, t])
 
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget)
@@ -66,6 +69,10 @@ const HeaderNav = () => {
 
   const renderNavItem = ({ key, href, hasDropdown, noActive }) => {
     const isActive = location.pathname.startsWith(href)
+
+    // Persist language param
+    const lang = searchParams.get("language")
+    const finalHref = lang ? `${href}?language=${lang}` : href
 
     // For items with noActive flag, never show active state
     const baseClassName = [
@@ -163,10 +170,10 @@ const HeaderNav = () => {
                 width="100%"
               >
                 <Typography variant="body2" color="text.secondary">
-                  Việt Nam
+                  {t.header?.countries?.vietnam || "Việt Nam"}
                 </Typography>
                 <Chip
-                  label="Soon"
+                  label={t.header?.soon || "Soon"}
                   size="small"
                   sx={{
                     ml: 1,
@@ -183,7 +190,7 @@ const HeaderNav = () => {
             <MenuItem
               onClick={() =>
                 handleLanguageSelect(
-                  "Trung Quốc",
+                  t.header?.countries?.china || "Trung Quốc",
                   "/community?language=chinese",
                 )
               }
@@ -197,13 +204,18 @@ const HeaderNav = () => {
                   style={{ width: 24, height: 24 }}
                 />
               </ListItemIcon>
-              <Typography variant="body2">Trung Quốc</Typography>
+              <Typography variant="body2">
+                {t.header?.countries?.china || "Trung Quốc"}
+              </Typography>
             </MenuItem>
 
             {/* USA */}
             <MenuItem
               onClick={() =>
-                handleLanguageSelect("Anh", "/community?language=english")
+                handleLanguageSelect(
+                  t.header?.countries?.english || "Anh",
+                  "/community?language=english",
+                )
               }
               sx={{ height: 40 }}
             >
@@ -215,7 +227,9 @@ const HeaderNav = () => {
                   style={{ width: 24, height: 24 }}
                 />
               </ListItemIcon>
-              <Typography variant="body2">Anh</Typography>
+              <Typography variant="body2">
+                {t.header?.countries?.english || "Anh"}
+              </Typography>
             </MenuItem>
           </Menu>
         </React.Fragment>
@@ -223,7 +237,7 @@ const HeaderNav = () => {
     }
 
     return (
-      <NavLink key={key} to={href} className={baseClassName}>
+      <NavLink key={key} to={finalHref} className={baseClassName}>
         {t.nav[key]}
       </NavLink>
     )

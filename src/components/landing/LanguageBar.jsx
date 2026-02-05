@@ -1,10 +1,13 @@
 import { VietNam, China, USA } from "@assets/icons/flags"
 import { useLanguage } from "@context/LanguageContext.jsx"
 import { useNavigate } from "react-router-dom"
+import { useState } from "react"
+import InDevelopmentModal from "@/components/common/InDevelopmentModal"
 
 const LanguageBar = () => {
   const { t } = useLanguage()
   const navigate = useNavigate()
+  const [isDevModalOpen, setIsDevModalOpen] = useState(false)
 
   const languages = [
     {
@@ -18,7 +21,11 @@ const LanguageBar = () => {
   ]
 
   const handleNavigation = (param) => {
-    navigate(`/community?language=${param}`)
+    if (param === "vietnamese") {
+      setIsDevModalOpen(true)
+    } else {
+      navigate(`/community?language=${param}`)
+    }
   }
 
   return (
@@ -45,6 +52,10 @@ const LanguageBar = () => {
           </div>
         ))}
       </div>
+      <InDevelopmentModal
+        open={isDevModalOpen}
+        onCancel={() => setIsDevModalOpen(false)}
+      />
     </div>
   )
 }

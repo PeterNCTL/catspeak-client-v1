@@ -9,8 +9,8 @@ export default {
   nav: {
     community: "Community",
     catSpeak: "Cat Speak",
-    cart: "Cart",
-    connect: "Connect",
+    cart: "Courses",
+    connect: "Profile",
   },
   comingSoon: {
     badge: "Coming Soon",

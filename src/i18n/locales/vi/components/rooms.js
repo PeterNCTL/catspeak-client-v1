@@ -1,6 +1,7 @@
 export default {
   welcome: {
     greeting: "Chào {{name}},",
+    friend: "Bạn",
     title: "Happy Halloween",
     description: {
       part1: "Halloween về danh nghĩa là một ",
@@ -15,6 +16,7 @@ export default {
     allowConnect: "Cho phép kết nối với bạn bè quốc tế",
   },
   heroCarousel: {
+    comingSoonTitle: "Sắp ra mắt",
     slides: [
       {
         title: "Title của cái này",
@@ -146,5 +148,15 @@ export default {
       "Không thể truy cập camera. Kiểm tra quyền hoặc thiết bị đang được sử dụng.",
     micAccessError:
       "Không thể truy cập micro. Kiểm tra quyền hoặc thiết bị đang được sử dụng.",
+  },
+  videoCall: {
+    error: {
+      micPermission:
+        "Đã xảy ra lỗi khi tạo track âm thanh. Không thể khởi tạo nguồn âm thanh. Vui lòng kiểm tra cài đặt quyền âm thanh của trình duyệt.",
+      camPermission:
+        "Đã xảy ra lỗi khi tạo track video. Không thể khởi tạo nguồn video. Vui lòng kiểm tra cài đặt quyền video của trình duyệt.",
+      toggleMic: "Không thể bật/tắt micro",
+      toggleCam: "Không thể bật/tắt camera",
+    },
   },
 }

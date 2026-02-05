@@ -1,13 +1,9 @@
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-} from "react"
+import React, { createContext, useContext, useEffect, useState } from "react"
 import { useParams, useNavigate, useLocation } from "react-router-dom"
 import { useGetProfileQuery } from "@/store/api/authApi"
 import { useVideoCall } from "@/hooks/useVideoCall"
 import toast from "react-hot-toast"
+import { useLanguage } from "@/context/LanguageContext"
 
 const VideoCallContext = createContext()
 
@@ -26,10 +22,13 @@ export const VideoCallContent = ({
   const { id } = useParams()
   const navigate = useNavigate()
   const location = useLocation()
+  const { t } = useLanguage()
 
-  // Local UI state
-  const [micOn, setMicOn] = useState(true)
-  const [cameraOn, setCameraOn] = useState(true)
+  // Local UI state (Sync with passed state, default to off)
+  const [micOn, setMicOn] = useState(location.state?.micEnabled || false)
+  const [cameraOn, setCameraOn] = useState(
+    location.state?.webcamEnabled || false,
+  )
   const [showChat, setShowChat] = useState(false)
   const [showParticipants, setShowParticipants] = useState(false)
   const [hasJoined, setHasJoined] = useState(true) // Always join immediately when on this route
@@ -165,16 +164,42 @@ export const VideoCallContent = ({
   })
 
   // Sync local UI toggles with hook actions
-  const handleToggleMic = () => {
+  const handleToggleMic = async () => {
     const newState = !micOn
-    setMicOn(newState)
-    toggleAudio(newState)
+    try {
+      await toggleAudio(newState)
+      setMicOn(newState)
+    } catch (err) {
+      console.error("Failed to toggle mic:", err)
+      if (
+        err.name === "NotAllowedError" ||
+        err.name === "PermissionDeniedError" ||
+        err.name === "NotReadableError"
+      ) {
+        toast.error(t.rooms.videoCall.error.micPermission)
+      } else {
+        toast.error(t.rooms.videoCall.error.toggleMic)
+      }
+    }
   }
 
-  const handleToggleCam = () => {
+  const handleToggleCam = async () => {
     const newState = !cameraOn
-    setCameraOn(newState)
-    toggleVideo(newState)
+    try {
+      await toggleVideo(newState)
+      setCameraOn(newState)
+    } catch (err) {
+      console.error("Failed to toggle camera:", err)
+      if (
+        err.name === "NotAllowedError" ||
+        err.name === "PermissionDeniedError" ||
+        err.name === "NotReadableError"
+      ) {
+        toast.error(t.rooms.videoCall.error.camPermission)
+      } else {
+        toast.error(t.rooms.videoCall.error.toggleCam)
+      }
+    }
   }
 
   const handleSendMessage = (text) => {
@@ -246,5 +271,3 @@ export const VideoCallContent = ({
     </VideoCallContext.Provider>
   )
 }
-
-

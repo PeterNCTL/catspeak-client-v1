@@ -7,9 +7,7 @@ const PrivacyPolicy = () => {
 
   return (
     <div className="space-y-4 text-gray-700">
-      <p className="text-sm leading-relaxed">
-        <strong>Cat Speak</strong> - {policy.intro}
-      </p>
+      <p className="text-sm leading-relaxed">{policy.intro}</p>
 
       {/* Section 1 */}
       <div>

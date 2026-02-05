@@ -8,4 +8,9 @@ export default {
     zh: "Tiếng Trung",
     en: "Tiếng Anh",
   },
+  countries: {
+    vietnam: "Việt Nam",
+    china: "Trung Quốc",
+    english: "Anh",
+  },
 }

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react"
-import { useParams } from "react-router-dom"
+import { useParams, useLocation } from "react-router-dom"
 import { MeetingProvider } from "@videosdk.live/react-sdk"
 
 import { useGetProfileQuery } from "@/store/api/authApi"
@@ -101,6 +101,11 @@ export const VideoCallProvider = ({ children }) => {
     )
   }
 
+  // Read initial state from navigation (default to false if not set)
+  const location = useLocation()
+  const initMic = location.state?.micEnabled || false
+  const initCam = location.state?.webcamEnabled || false
+
   // Render Provider
   return (
     <MeetingProvider
@@ -108,8 +113,8 @@ export const VideoCallProvider = ({ children }) => {
         ...meetingConfig,
         apiKey: import.meta.env.VITE_VIDEOSDK_API_KEY,
         meetingId: session.videoSdkMeetingId,
-        micEnabled: true,
-        webcamEnabled: true,
+        micEnabled: initMic,
+        webcamEnabled: initCam,
         name: user?.username || "Guest",
         metaData: {
           accountId: user?.accountId,
@@ -132,5 +137,3 @@ export const VideoCallProvider = ({ children }) => {
     </MeetingProvider>
   )
 }
-
-

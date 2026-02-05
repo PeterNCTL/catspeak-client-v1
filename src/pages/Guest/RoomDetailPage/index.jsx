@@ -46,8 +46,8 @@ const RoomDetailPage = () => {
   const activeSession = activeSessions?.find((s) => s.roomId === parseInt(id))
 
   // -- Media Preview State --
-  const [micOn, setMicOn] = useState(true)
-  const [cameraOn, setCameraOn] = useState(true)
+  const [micOn, setMicOn] = useState(false)
+  const [cameraOn, setCameraOn] = useState(false)
 
   const [videoTrack, setVideoTrack] = useState(null)
   const [audioTrack, setAudioTrack] = useState(null)
@@ -177,11 +177,20 @@ const RoomDetailPage = () => {
       let sessionId
 
       if (activeSession) {
-        // Session exists -> Join it explicitly
-        sessionId = activeSession.sessionId
-        await joinVideoSession(sessionId).unwrap()
-      } else {
-        // No session → create new session
+        try {
+          // Session exists -> Join it explicitly
+          await joinVideoSession(activeSession.sessionId).unwrap()
+          sessionId = activeSession.sessionId
+        } catch (err) {
+          console.warn(
+            "Failed to join active session, falling back to create:",
+            err,
+          )
+        }
+      }
+
+      if (!sessionId) {
+        // No session or failed to join -> create new session
         try {
           const newSession = await createVideoSession({
             roomId: parseInt(id),
@@ -215,10 +224,18 @@ const RoomDetailPage = () => {
       const search = searchParams.toString()
       const searchStr = search ? `?${search}` : ""
 
-      navigate({
-        pathname: `/meet/${sessionId}`,
-        search: searchStr,
-      })
+      navigate(
+        {
+          pathname: `/meet/${sessionId}`,
+          search: searchStr,
+        },
+        {
+          state: {
+            micEnabled: micOn,
+            webcamEnabled: cameraOn,
+          },
+        },
+      )
     } catch (err) {
       console.error("Failed to process join:", err)
       setSnackbar({

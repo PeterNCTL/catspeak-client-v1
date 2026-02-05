@@ -8,4 +8,9 @@ export default {
     zh: "中文",
     en: "英语",
   },
+  countries: {
+    vietnam: "越南",
+    china: "中国",
+    english: "英语",
+  },
 }

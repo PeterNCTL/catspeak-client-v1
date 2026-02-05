@@ -88,11 +88,11 @@ const CreateRoomModal = ({ open, onCancel }) => {
         categories: categories.length > 0 ? categories : ["Other"],
       }).unwrap()
 
-      const sessionId = response.sessionId || response.id
+      const roomId = response.roomId
       handleCancel() // Close modal
 
-      if (sessionId) {
-        navigate(`/meet/${sessionId}`)
+      if (roomId) {
+        navigate(`/room/${roomId}`)
       }
     } catch (err) {
       console.error("Failed to create room:", err)
@@ -164,11 +164,7 @@ const CreateRoomModal = ({ open, onCancel }) => {
           </Stack>
         </DialogContent>
         <DialogActions sx={{ p: 3, justifyContent: "center", gap: 1 }}>
-          <PillButton
-            onClick={handleCancel}
-            variant="text"
-            color="inherit"
-          >
+          <PillButton onClick={handleCancel} variant="text" color="inherit">
             {t.rooms.createRoom.cancel}
           </PillButton>
           <PillButton

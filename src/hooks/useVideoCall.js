@@ -188,19 +188,33 @@ export const useVideoCall = (
     publish(text, { persist: true })
   }
 
-  const toggleAudio = (isEnabled) => {
+  const toggleAudio = async (isEnabled) => {
     if (isEnabled) {
-      if (!localParticipant?.micOn) toggleMic()
+      if (!localParticipant?.micOn) {
+        // Pre-check permission
+        const stream = await navigator.mediaDevices.getUserMedia({
+          audio: true,
+        })
+        stream.getTracks().forEach((t) => t.stop())
+        return toggleMic()
+      }
     } else {
-      if (localParticipant?.micOn) toggleMic()
+      if (localParticipant?.micOn) return toggleMic()
     }
   }
 
-  const toggleVideo = (isEnabled) => {
+  const toggleVideo = async (isEnabled) => {
     if (isEnabled) {
-      if (!localParticipant?.webcamOn) toggleWebcam()
+      if (!localParticipant?.webcamOn) {
+        // Pre-check permission
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: true,
+        })
+        stream.getTracks().forEach((t) => t.stop())
+        return toggleWebcam()
+      }
     } else {
-      if (localParticipant?.webcamOn) toggleWebcam()
+      if (localParticipant?.webcamOn) return toggleWebcam()
     }
   }
 

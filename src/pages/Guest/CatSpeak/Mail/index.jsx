@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { message } from "antd"
+
 import dayjs from "dayjs"
 import { useLanguage } from "@/context/LanguageContext"
 import {
@@ -43,17 +43,14 @@ const MailPage = () => {
     if (!content.trim()) return
 
     if (!canCreate) {
-      message.warning("You can only have 2 active stories at a time.")
       return
     }
 
     try {
       await createStory({ storyContent: content }).unwrap()
-      message.success("Story posted successfully!")
+
       setInputValue("")
-    } catch (error) {
-      message.error("Failed to post story.")
-    }
+    } catch (error) {}
   }
 
   const handleInteract = async (storyId, actionType) => {
@@ -75,17 +72,14 @@ const MailPage = () => {
       }
     } catch (error) {
       console.error("Interaction failed:", error)
-      message.error("Failed to interact with story.")
     }
   }
 
   const handleDelete = async (storyId) => {
     try {
       await deleteStory(storyId).unwrap()
-      message.success("Story deleted successfully!")
     } catch (error) {
       console.error("Delete failed:", error)
-      message.error("Failed to delete story.")
     }
   }
 
@@ -100,7 +94,7 @@ const MailPage = () => {
         onInteract={handleInteract}
         onDeleteStory={handleDelete}
         userLetters={myStories.length}
-        totalLetters={stories.length}
+        totalLetters={stories.length + myStories.length}
       />
     </div>
   )

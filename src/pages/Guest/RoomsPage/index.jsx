@@ -9,7 +9,7 @@ import {
 } from "react-icons/fi"
 import { Drawer } from "antd"
 import { useSearchParams } from "react-router-dom"
-import FiltersSidebar from "@/components/rooms/FiltersSidebar"
+import RoomFilterSidebar from "@/components/rooms/RoomFilterSidebar"
 import ClassSidebar from "@/components/rooms/ClassSidebar"
 import { useRoomsPageLogic } from "@/hooks/rooms/useRoomsPageLogic"
 import WelcomeSection from "@/components/rooms/WelcomeSection"
@@ -122,7 +122,7 @@ const RoomsPage = () => {
         <div className="flex flex-col gap-6 lg:grid lg:grid-cols-[300px_1fr] xl:grid-cols-[360px_1fr]">
           {/* Sidebar - Hidden on mobile by default, shown on tablet+ */}
           <div className="hidden lg:block">
-            {tab === "class" ? <ClassSidebar /> : <FiltersSidebar />}
+            {tab === "class" ? <ClassSidebar /> : <RoomFilterSidebar />}
           </div>
 
           {/* Content area */}
@@ -231,7 +231,7 @@ const RoomsPage = () => {
                 }}
               >
                 <div className="p-4">
-                  {tab === "class" ? <ClassSidebar /> : <FiltersSidebar />}
+                  {tab === "class" ? <ClassSidebar /> : <RoomFilterSidebar />}
                 </div>
               </Drawer>
 

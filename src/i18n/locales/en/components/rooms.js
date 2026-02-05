@@ -1,6 +1,7 @@
 export default {
   welcome: {
     greeting: "Hi {{name}},",
+    friend: "Friend",
     title: "Happy Halloween",
     description: {
       part1: "Halloween is nominally a ",
@@ -14,6 +15,7 @@ export default {
     allowConnect: "Allow connection with international friends",
   },
   heroCarousel: {
+    comingSoonTitle: "Coming Soon",
     slides: [
       {
         title: "Title of this item",
@@ -170,5 +172,15 @@ export default {
       "Cannot access camera. Check permissions or if used by another app.",
     micAccessError:
       "Cannot access microphone. Check permissions or if used by another app.",
+  },
+  videoCall: {
+    error: {
+      micPermission:
+        "An error occurred in creating audio track, Unable to initiate audio source. Please verify browser settings for audio permissions.",
+      camPermission:
+        "An error occurred in creating video track, Unable to initiate video source. Please verify browser settings for video permissions.",
+      toggleMic: "Failed to toggle microphone",
+      toggleCam: "Failed to toggle camera",
+    },
   },
 }

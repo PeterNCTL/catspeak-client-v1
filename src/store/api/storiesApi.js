@@ -34,7 +34,7 @@ export const storiesApi = baseApi.injectEndpoints({
         method: "POST",
         body: data,
       }),
-      invalidatesTags: ["Stories"],
+      invalidatesTags: ["Stories", "Conversations"],
     }),
 
     // Delete a story (only by story creator)

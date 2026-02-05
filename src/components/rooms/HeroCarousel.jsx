@@ -1,8 +1,12 @@
 import React, { useRef } from "react"
 import { Carousel, ConfigProvider } from "antd"
 import { BubbleChevronLeft, BubbleChevronRight } from "@/components/ui/button"
+import { useLanguage } from "@/context/LanguageContext"
+import InDevelopmentModal from "@/components/common/InDevelopmentModal"
 
 const HeroCarousel = ({ slides }) => {
+  const { t } = useLanguage()
+  const [isModalOpen, setIsModalOpen] = React.useState(false)
   const carouselRef = useRef(null)
 
   const handlePrev = () => {
@@ -47,9 +51,12 @@ const HeroCarousel = ({ slides }) => {
               <div className="absolute inset-0 flex flex-col justify-center px-4 sm:px-6 md:px-8 text-white drop-shadow-[0_3px_10px_rgba(0,0,0,0.35)]">
                 <div className="inline-flex flex-col gap-2 sm:gap-3 rounded-xl sm:rounded-2xl bg-black/45 px-4 py-3 sm:px-6 sm:py-4 backdrop-blur-[2px] w-fit">
                   <p className="text-sm sm:text-base md:text-lg font-semibold uppercase">
-                    {slide.title}
+                    {t.rooms.heroCarousel.comingSoonTitle}
                   </p>
-                  <button className="inline-flex w-fit items-center gap-2 rounded-full bg-[#f5c518] px-4 py-1.5 sm:px-5 sm:py-2 text-xs sm:text-sm font-semibold text-[#990011] shadow hover:bg-[#ffe066] transition-colors">
+                  <button
+                    onClick={() => setIsModalOpen(true)}
+                    className="inline-flex w-fit items-center gap-2 rounded-full bg-[#f5c518] px-4 py-1.5 sm:px-5 sm:py-2 text-xs sm:text-sm font-semibold text-[#990011] shadow hover:bg-[#ffe066] transition-colors"
+                  >
                     {slide.cta}
                   </button>
                 </div>
@@ -83,6 +90,10 @@ const HeroCarousel = ({ slides }) => {
           }
         `}</style>
       </div>
+      <InDevelopmentModal
+        open={isModalOpen}
+        onCancel={() => setIsModalOpen(false)}
+      />
     </ConfigProvider>
   )
 }

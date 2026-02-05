@@ -1,7 +1,7 @@
 export default {
   heroTitle: "Multilingual Community Communication Platform",
   heroSubtitle:
-    "Where anyone can freely communicate, share experiences, exchange cultures and make friends from all over!",
+    "A space where anyone can freely communicate, share experiences, exchange cultures, and make friends from all over the world!",
   countries: {
     vietnam: "Vietnam",
     china: "China",

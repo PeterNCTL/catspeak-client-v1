@@ -37,7 +37,7 @@ const LEVELS = {
   ],
 }
 
-const FiltersSidebar = () => {
+const RoomFilterSidebar = () => {
   const { t } = useLanguage()
   const filtersText = t.rooms.filters
   const [searchParams, setSearchParams] = useSearchParams()
@@ -49,6 +49,35 @@ const FiltersSidebar = () => {
   const handleSearch = () => {
     // Add search functionality here
     console.log("Search clicked:", searchValue)
+  }
+
+  const handleLevelChange = (levelValue, isChecked) => {
+    const newParams = new URLSearchParams(searchParams)
+    const requiredLevelsParam = searchParams.get("requiredLevels")
+    const currentLevelsArray = requiredLevelsParam
+      ? requiredLevelsParam.split(",").map((s) => s.trim())
+      : []
+
+    let newLevels = [...currentLevelsArray]
+
+    if (isChecked) {
+      if (!newLevels.includes(levelValue)) {
+        newLevels.push(levelValue)
+      }
+    } else {
+      newLevels = newLevels.filter((l) => l !== levelValue)
+    }
+
+    // Set as comma-separated string or delete if empty
+    if (newLevels.length > 0) {
+      newParams.set("requiredLevels", newLevels.join(","))
+    } else {
+      newParams.delete("requiredLevels")
+    }
+
+    // Reset page to 1 when filter changes
+    newParams.set("page", "1")
+    setSearchParams(newParams, { preventScrollReset: true })
   }
 
   return (
@@ -157,36 +186,10 @@ const FiltersSidebar = () => {
                     control={
                       <Checkbox
                         checked={isChecked}
-                        onChange={(e) => {
-                          const newParams = new URLSearchParams(searchParams)
-
-                          let newLevels = [...currentLevelsArray]
-
-                          if (e.target.checked) {
-                            if (!newLevels.includes(levelObj.value)) {
-                              newLevels.push(levelObj.value)
-                            }
-                          } else {
-                            newLevels = newLevels.filter(
-                              (l) => l !== levelObj.value,
-                            )
-                          }
-
-                          // Set as comma-separated string or delete if empty
-                          if (newLevels.length > 0) {
-                            newParams.set("requiredLevels", newLevels.join(","))
-                          } else {
-                            newParams.delete("requiredLevels")
-                          }
-
-                          // Reset page to 1 when filter changes
-                          newParams.set("page", "1")
-                          setSearchParams(newParams)
-                        }}
+                        onChange={(e) =>
+                          handleLevelChange(levelObj.value, e.target.checked)
+                        }
                         sx={{
-                          width: 40,
-                          height: 40,
-                          color: "grey.600",
                           "&.Mui-checked": {
                             color: "#990011",
                           },
@@ -194,15 +197,6 @@ const FiltersSidebar = () => {
                       />
                     }
                     label={levelObj.label}
-                    sx={{
-                      "& .MuiFormControlLabel-label": {
-                        fontWeight: 500,
-                        color: "grey.600",
-                        "&:hover": {
-                          color: "#990011",
-                        },
-                      },
-                    }}
                   />
                 )
               })}
@@ -214,4 +208,4 @@ const FiltersSidebar = () => {
   )
 }
 
-export default FiltersSidebar
+export default RoomFilterSidebar

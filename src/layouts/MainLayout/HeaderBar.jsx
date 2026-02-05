@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { NavLink, useNavigate } from "react-router-dom"
+import { NavLink, useNavigate, useSearchParams } from "react-router-dom"
 import {
   AppBar,
   Toolbar,
@@ -133,13 +133,14 @@ const HeaderBar = ({ onGetStarted }) => {
 const MobileNavLinks = ({ onClose }) => {
   const { t } = useLanguage()
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const [communityOpen, setCommunityOpen] = useState(false)
 
   // Sub-menu items for Community
   const communityItems = [
-    { key: "vietnamese", label: "Việt Nam", icon: VietNam },
-    { key: "chinese", label: "Trung Quốc", icon: China },
-    { key: "english", label: "Anh", icon: USA },
+    { key: "vietnamese", label: t.home.countries.vietnam, icon: VietNam },
+    { key: "chinese", label: t.home.countries.china, icon: China },
+    { key: "english", label: t.home.countries.usa, icon: USA },
   ]
 
   const handleCommunityClick = (langKey) => {
@@ -154,6 +155,9 @@ const MobileNavLinks = ({ onClose }) => {
   return (
     <List component="div" disablePadding>
       {navLinks.map(({ key, href, hasDropdown }) => {
+        const lang = searchParams.get("language")
+        const finalHref = lang ? `${href}?language=${lang}` : href
+
         if (hasDropdown && key === "community") {
           return (
             <React.Fragment key={key}>
@@ -250,7 +254,7 @@ const MobileNavLinks = ({ onClose }) => {
                                 borderRadius: 999,
                               }}
                             >
-                              Soon
+                              {t.header.soon}
                             </Box>
                           )}
                         </ListItemButton>
@@ -267,7 +271,7 @@ const MobileNavLinks = ({ onClose }) => {
           <ListItemButton
             key={key}
             component={NavLink}
-            to={href}
+            to={finalHref}
             onClick={onClose}
             sx={{
               borderRadius: 3,

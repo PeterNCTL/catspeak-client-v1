@@ -1,5 +1,6 @@
 import React from "react"
 import ConversationItem from "./ConversationItem"
+import { useLanguage } from "@/context/LanguageContext"
 
 const ConversationList = ({
   conversations,
@@ -7,21 +8,25 @@ const ConversationList = ({
   isError,
   onSelectConversation,
 }) => {
+  const { t } = useLanguage()
+
   return (
     <div className="flex flex-col px-4 pt-3 pb-4">
-      <div className="text-xs font-semibold text-gray-900">TIN NHẮN</div>
+      <div className="text-xs font-semibold text-gray-900">
+        {t.messages.title}
+      </div>
       <div className="mt-3 space-y-2 max-h-[400px] overflow-y-auto">
         {isLoading ? (
           <div className="text-center text-sm text-gray-400 py-4">
-            Đang tải...
+            {t.messages.loading}
           </div>
         ) : isError ? (
           <div className="text-center text-sm text-red-500 py-4">
-            Lỗi tải dữ liệu
+            {t.messages.error}
           </div>
         ) : conversations.length === 0 ? (
           <div className="text-center text-sm text-gray-400 py-4">
-            Chưa có tin nhắn
+            {t.messages.noMessages}
           </div>
         ) : (
           conversations.map((conv) => (

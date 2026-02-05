@@ -9,8 +9,8 @@ export default {
   nav: {
     community: "社区",
     catSpeak: "猫语",
-    cart: "购物车",
-    connect: "连接",
+    cart: "课程",
+    connect: "个人",
   },
   comingSoon: {
     badge: "即将推出",

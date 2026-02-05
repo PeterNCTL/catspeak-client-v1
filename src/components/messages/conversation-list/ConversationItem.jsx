@@ -1,8 +1,11 @@
 import React from "react"
 import { FiMoreVertical } from "react-icons/fi"
 import { getColorFromUsername, getInitials } from "../../../utils/avatarUtils"
+import { useLanguage } from "@/context/LanguageContext"
 
 const ConversationItem = ({ conversation, onClick }) => {
+  const { t } = useLanguage()
+
   return (
     <button
       onClick={onClick}
@@ -12,17 +15,23 @@ const ConversationItem = ({ conversation, onClick }) => {
         <div
           className="flex h-9 w-9 items-center justify-center rounded-full text-white text-xs font-semibold"
           style={{
-            background: getColorFromUsername(conversation.friend.username),
+            background: getColorFromUsername(
+              conversation?.friend?.username ||
+                t.components.messages.unknownUser,
+            ),
           }}
         >
-          {getInitials(conversation.friend.username)}
+          {getInitials(
+            conversation?.friend?.username || t.components.messages.unknown,
+          )}
         </div>
         <div className="flex flex-col text-left">
           <span className="text-sm font-semibold text-gray-900">
-            {conversation.friend.username}
+            {conversation?.friend?.username ||
+              t.components.messages.unknownUser}
           </span>
           <span className="text-xs text-gray-500 truncate max-w-[200px]">
-            {conversation.lastMessage || "Chưa có tin nhắn"}
+            {conversation?.lastMessage || t.components.messages.noMessages}
           </span>
         </div>
       </div>

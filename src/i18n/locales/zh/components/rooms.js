@@ -1,6 +1,7 @@
 export default {
   welcome: {
     greeting: "你好 {{name}},",
+    friend: "朋友",
     title: "万圣节快乐",
     description: {
       part1: "万圣节名义上是一个",
@@ -13,6 +14,7 @@ export default {
     allowConnect: "允许与国际朋友联系",
   },
   heroCarousel: {
+    comingSoonTitle: "即将推出",
     slides: [
       {
         title: "这个标题",
@@ -141,5 +143,15 @@ export default {
     createSessionError: "无法创建会话。请重试。",
     cameraAccessError: "无法访问摄像头。请检查权限或是否被其他应用占用。",
     micAccessError: "无法访问麦克风。请检查权限或是否被其他应用占用。",
+  },
+  videoCall: {
+    error: {
+      micPermission:
+        "创建音频轨道时出错，无法启动音频源。请验证浏览器的音频权限设置。",
+      camPermission:
+        "创建视频轨道时出错，无法启动视频源。请验证浏览器的视频权限设置。",
+      toggleMic: "无法切换麦克风",
+      toggleCam: "无法切换摄像头",
+    },
   },
 }

@@ -4,7 +4,9 @@ import {
   useGetConversationsQuery,
   useGetConversationMessagesQuery,
   useSendMessageMutation,
+  conversationsApi,
 } from "../../store/api/conversationsApi"
+import useConversationSignalR from "../../hooks/useConversationSignalR"
 import {
   closeWidget,
   openWidget,
@@ -50,6 +52,53 @@ const MessageWidget = () => {
   // Send message mutation
   const [sendMessage, { isLoading: isSending }] = useSendMessageMutation()
 
+  // -- SignalR Integration --
+  const signalRHandlers = React.useMemo(
+    () => ({
+      NewMessage: (message) => {
+        // If the message belongs to the active conversation, update the messages cache
+        if (
+          activeConversationId &&
+          message.conversationId === activeConversationId
+        ) {
+          dispatch(
+            conversationsApi.util.updateQueryData(
+              "getConversationMessages",
+              activeConversationId,
+              (draft) => {
+                // Prevent duplicates
+                const exists = draft.find(
+                  (m) => m.messageId === message.messageId,
+                )
+                if (!exists) {
+                  draft.push(message)
+                }
+              },
+            ),
+          )
+        }
+
+        // Always invalidate conversations list to update snippets/unread counts
+        dispatch(conversationsApi.util.invalidateTags(["Conversations"]))
+      },
+      NewConversation: (data) => {
+        // Refresh conversation list
+        dispatch(conversationsApi.util.invalidateTags(["Conversations"]))
+      },
+      FriendStatusChange: (data) => {
+        // Refresh conversation list (to show online status)
+        dispatch(conversationsApi.util.invalidateTags(["Conversations"]))
+      },
+      ChatUpdated: (data) => {
+        dispatch(conversationsApi.util.invalidateTags(["Conversations"]))
+      },
+    }),
+    [activeConversationId, dispatch],
+  )
+
+  const { sendMessage: sendSignalRMessage } =
+    useConversationSignalR(signalRHandlers)
+
   // Handle conversation selection
   const handleSelectConversation = (conv) => {
     dispatch(setActiveConversation(conv.conversationId))
@@ -66,12 +115,17 @@ const MessageWidget = () => {
     if (!input.trim() || !activeConversationId) return
 
     try {
+      // Option: Use SignalR for sending if preferred, or stick to REST.
+      // Using REST confirms persistence before UI update (unless optimistic).
+      // If using SignalR: await sendSignalRMessage(activeConversationId, input)
+
       await sendMessage({
         conversationId: activeConversationId,
         messageData: { content: input },
       }).unwrap()
+
       setInput("")
-      refetchMessages()
+      // refetchMessages() // No longer needed if SignalR 'NewMessage' fires or mutation invalidates tags
     } catch (error) {
       console.error("Failed to send message:", error)
     }

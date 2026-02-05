@@ -19,6 +19,7 @@ const CommunicateTab = ({
 }) => {
   const [searchParams, setSearchParams] = useSearchParams()
   const { t } = useLanguage()
+  console.log(rooms)
 
   const handleCategoryClick = (categoryKey) => {
     const newParams = new URLSearchParams(searchParams)

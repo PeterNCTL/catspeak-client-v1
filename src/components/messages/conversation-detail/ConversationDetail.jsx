@@ -12,12 +12,20 @@ const ConversationDetail = ({
   onKeyPress,
   isSending,
 }) => {
+  if (!conversation) {
+    return (
+      <div className="flex h-[400px] items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-[#990011]"></div>
+      </div>
+    )
+  }
+
   return (
     <>
       <MessageList
-        messages={messages}
+        messages={messages || []}
         isLoading={isLoading}
-        friendAccountId={conversation.friend.accountId}
+        friendAccountId={conversation?.friend?.accountId}
       />
       <MessageInput
         value={input}

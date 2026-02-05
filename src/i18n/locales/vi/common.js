@@ -9,8 +9,8 @@ export default {
   nav: {
     community: "Cộng đồng",
     catSpeak: "Cat Speak",
-    cart: "Giỏ hàng",
-    connect: "Kết nối",
+    cart: "Khóa học",
+    connect: "Cá nhân",
   },
   comingSoon: {
     badge: "Sắp ra mắt",

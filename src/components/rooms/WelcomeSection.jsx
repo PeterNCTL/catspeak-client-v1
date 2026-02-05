@@ -1,5 +1,7 @@
 import React, { useState } from "react"
+import { useSearchParams } from "react-router-dom"
 import { useLanguage } from "@/context/LanguageContext"
+import { translations } from "@/i18n"
 import { useGetProfileQuery } from "@/store/api/authApi"
 import InDevelopmentModal from "@/components/common/InDevelopmentModal"
 import { Typography, Switch, Box } from "@mui/material"
@@ -8,6 +10,19 @@ const WelcomeSection = ({ allowConnect, setAllowConnect }) => {
   const [isDevModalOpen, setIsDevModalOpen] = useState(false)
   const { t } = useLanguage()
   const { welcome } = t.rooms
+  const [searchParams] = useSearchParams()
+
+  // Determine language ONLY for the dynamic "Fun Fact" section
+  const urlLangParam = searchParams.get("language")?.toLowerCase()
+  const langMap = {
+    chinese: "zh",
+    vietnamese: "vi",
+    english: "en",
+  }
+  const effectiveDynamicLang = langMap[urlLangParam]
+  // If URL has a specific language, use it. Otherwise fall back to the global `t`.
+  const dynamicT = effectiveDynamicLang ? translations[effectiveDynamicLang] : t
+
   const { data: userData } = useGetProfileQuery()
   const user = userData?.data
 
@@ -37,7 +52,7 @@ const WelcomeSection = ({ allowConnect, setAllowConnect }) => {
           fontSize: { xs: "1.25rem", sm: "1.5rem", md: "2rem" },
         }}
       >
-        {welcome.greeting.replace("{{name}}", user?.username || "Friend")}
+        {welcome.greeting.replace("{{name}}", user?.username || welcome.friend)}
       </Typography>
 
       {/* dynamic content starts here */}
@@ -50,7 +65,7 @@ const WelcomeSection = ({ allowConnect, setAllowConnect }) => {
           fontSize: { xs: "1.25rem", sm: "1.5rem", md: "2rem" },
         }}
       >
-        Chúc Mừng Năm Mới
+        {dynamicT?.welcomeSection?.funFact?.title}
       </Typography>
       <Typography
         variant="body2"
@@ -61,16 +76,15 @@ const WelcomeSection = ({ allowConnect, setAllowConnect }) => {
           fontSize: { xs: "0.875rem", sm: "0.875rem" },
         }}
       >
-        Tết Nguyên Đán là{" "}
+        {dynamicT?.welcomeSection?.funFact?.description?.part1}
         <Box component="span" sx={{ fontWeight: 600, color: "#990011" }}>
-          lễ hội truyền thống
-        </Box>{" "}
-        lớn nhất của người Việt Nam. Đây là dịp để gia đình sum họp, tưởng nhớ
-        tổ tiên và cùng nhau đón chào một{" "}
+          {dynamicT?.welcomeSection?.funFact?.description?.highlight1}
+        </Box>
+        {dynamicT?.welcomeSection?.funFact?.description?.part2}
         <Box component="span" sx={{ fontWeight: 600, color: "#990011" }}>
-          năm mới bình an
-        </Box>{" "}
-        và hạnh phúc.
+          {dynamicT?.welcomeSection?.funFact?.description?.highlight2}
+        </Box>
+        {dynamicT?.welcomeSection?.funFact?.description?.part3}
       </Typography>
       <Typography
         variant="body2"
@@ -81,7 +95,7 @@ const WelcomeSection = ({ allowConnect, setAllowConnect }) => {
           fontSize: { xs: "0.875rem", sm: "0.875rem" },
         }}
       >
-        Cung Chúc Tân Xuân
+        {dynamicT?.welcomeSection?.funFact?.footer}
       </Typography>
       {/* dynamic content ends here */}
 
