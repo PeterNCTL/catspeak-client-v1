@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from "react-redux"
 import {
   useGetConversationsQuery,
   useGetConversationMessagesQuery,
-  useSendMessageMutation,
   conversationsApi,
 } from "../../store/api/conversationsApi"
 import useConversationSignalR from "../../hooks/useConversationSignalR"
@@ -49,17 +48,36 @@ const MessageWidget = () => {
     skip: !activeConversationId,
   })
 
-  // Send message mutation
-  const [sendMessage, { isLoading: isSending }] = useSendMessageMutation()
-
   // -- SignalR Integration --
   const signalRHandlers = React.useMemo(
     () => ({
-      NewMessage: (message) => {
-        // If the message belongs to the active conversation, update the messages cache
+      NewMessage: (...args) => {
+        let conversationId, message
+        if (args.length >= 2) {
+          conversationId = args[0]
+          message = args[1]
+        } else {
+          // If only 1 arg, assume it's the message object and ID is inside
+          message = args[0]
+          conversationId = message?.conversationId
+        }
+
+        // Always force refetch of messages to guarantee consistency
+        if (conversationId) {
+          dispatch(
+            conversationsApi.util.invalidateTags([
+              { type: "Messages", id: conversationId },
+              "Conversations",
+            ]),
+          )
+        }
+
+        // Optimistically update the messages cache (if matches active conversation)
+        // Ensure strictly converted to numbers for comparison
         if (
           activeConversationId &&
-          message.conversationId === activeConversationId
+          conversationId &&
+          Number(conversationId) === Number(activeConversationId)
         ) {
           dispatch(
             conversationsApi.util.updateQueryData(
@@ -71,7 +89,12 @@ const MessageWidget = () => {
                   (m) => m.messageId === message.messageId,
                 )
                 if (!exists) {
-                  draft.push(message)
+                  // Ensure sender exists for MessageList safety
+                  const normalized = {
+                    ...message,
+                    sender: message.sender || { accountId: message.senderId },
+                  }
+                  draft.push(normalized)
                 }
               },
             ),
@@ -115,19 +138,11 @@ const MessageWidget = () => {
     if (!input.trim() || !activeConversationId) return
 
     try {
-      // Option: Use SignalR for sending if preferred, or stick to REST.
-      // Using REST confirms persistence before UI update (unless optimistic).
-      // If using SignalR: await sendSignalRMessage(activeConversationId, input)
-
-      await sendMessage({
-        conversationId: activeConversationId,
-        messageData: { content: input },
-      }).unwrap()
-
+      // Use SignalR to send
+      await sendSignalRMessage(activeConversationId, input, 0) // 0 = Text
       setInput("")
-      // refetchMessages() // No longer needed if SignalR 'NewMessage' fires or mutation invalidates tags
     } catch (error) {
-      console.error("Failed to send message:", error)
+      console.error("Failed to send message via SignalR:", error)
     }
   }
 
@@ -173,7 +188,7 @@ const MessageWidget = () => {
             onInputChange={(e) => setInput(e.target.value)}
             onSendMessage={handleSendMessage}
             onKeyPress={handleKeyPress}
-            isSending={isSending}
+            isSending={false} // Removed mutation usage
           />
         )}
       </MessageModal>
