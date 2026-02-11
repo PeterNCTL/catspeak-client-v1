@@ -8,9 +8,9 @@ import {
 } from "react-router-dom"
 import HeaderBar from "./HeaderBar"
 import Footer from "./Footer"
-import Auth from "@components/Auth"
-import MessageWidget from "@/components/messages/MessageWidget"
-import AuthModalContext from "@/context/AuthModalContext"
+import Auth from "@/features/auth/components"
+import { MessageWidget } from "@/features/messages"
+import AuthModalContext from "@/shared/context/AuthModalContext"
 
 const { Content } = Layout
 

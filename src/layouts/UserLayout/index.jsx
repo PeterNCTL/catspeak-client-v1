@@ -3,8 +3,8 @@ import { Layout, theme } from "antd"
 import { Outlet, ScrollRestoration } from "react-router-dom"
 import HeaderBar from "../MainLayout/HeaderBar"
 import Footer from "../MainLayout/Footer"
-import Auth from "@components/Auth"
-import MessageWidget from "@/components/messages/MessageWidget"
+import Auth from "@/features/auth/components"
+import { MessageWidget } from "@/features/messages"
 
 const { Content } = Layout
 

@@ -8,12 +8,12 @@
       "@assets/*": ["./src/assets/*"],
       "@components/*": ["./src/components/*"],
       "@routes/*": ["./src/routes/*"],
-      "@utils/*": ["./src/utils/*"],
+      "@utils/*": ["src/shared/utils/*"],
       "@hooks/*": ["./src/hooks/*"],
       "@store/*": ["./src/store/*"],
       "@services/*": ["./src/services/*"],
       "@styles/*": ["./src/styles/*"],
-      "@config/*": ["./src/config/*"],
+      "@config/*": ["src/shared/config/*"],
       "@i18n/*": ["./src/i18n/*"],
       "@context/*": ["./src/context/*"]
     }
@@ -21,4 +21,3 @@
   "include": ["src"],
   "exclude": ["node_modules"]
 }
-

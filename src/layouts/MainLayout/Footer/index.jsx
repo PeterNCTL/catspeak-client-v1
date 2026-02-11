@@ -1,8 +1,8 @@
 import React from "react"
 import { Typography } from "@mui/material"
-import { Tower, Mountain, FooterBG } from "@assets/images/home/footer"
-import { IconLogo } from "@/assets/icons/logo"
-import { useLanguage } from "@context/LanguageContext.jsx"
+import { Tower, Mountain, FooterBG } from "@/shared/assets/images/home/footer"
+import { IconLogo } from "@/shared/assets/icons/logo"
+import { useLanguage } from "@/shared/context/LanguageContext.jsx"
 
 import { Facebook, YouTube } from "@mui/icons-material"
 import { SiZalo } from "react-icons/si"

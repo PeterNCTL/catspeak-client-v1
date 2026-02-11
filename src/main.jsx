@@ -4,8 +4,8 @@ import { ConfigProvider } from "antd"
 import "@styles/index.css"
 import "antd/dist/reset.css"
 import App from "./App.jsx"
-import { colors } from "@utils/colors"
-import { LanguageProvider } from "./context/LanguageContext.jsx"
+import { colors } from "@/shared/utils/colors.js"
+import { LanguageProvider } from "./shared/context/LanguageContext.jsx"
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>

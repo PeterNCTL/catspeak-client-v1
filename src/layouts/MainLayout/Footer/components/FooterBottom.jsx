@@ -1,7 +1,7 @@
 import { useState } from "react"
-import { useLanguage } from "@context/LanguageContext.jsx"
+import { useLanguage } from "@/shared/context/LanguageContext.jsx"
 import { Typography } from "@mui/material"
-import PolicyModal from "@/components/Auth/popups/PolicyModal"
+import { PolicyModal } from "@/features/auth"
 
 const FooterBottom = () => {
   const { t } = useLanguage()

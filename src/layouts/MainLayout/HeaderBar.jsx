@@ -15,14 +15,14 @@ import {
   ListItemText,
 } from "@mui/material"
 import { Menu as MenuIcon, ExpandLess, ExpandMore } from "@mui/icons-material"
-import { VietNam, China, USA } from "@assets/icons/flags"
+import { VietNam, China, USA } from "@/shared/assets/icons/flags"
 import HeaderLogo from "./Header/HeaderLogo"
 import HeaderNav, { navLinks } from "./Header/HeaderNav"
 import HeaderUserControls from "./Header/HeaderUserControls"
 import HeaderGuestControls from "./Header/HeaderGuestControls"
-import LanguageSwitcher from "@/components/common/LanguageSwitcher"
-import { useLanguage } from "@/context/LanguageContext"
-import useAuth from "@/hooks/useAuth"
+import LanguageSwitcher from "@/shared/components/common/LanguageSwitcher"
+import { useLanguage } from "@/shared/context/LanguageContext"
+import { useAuth } from "@/features/auth"
 
 const HeaderBar = ({ onGetStarted }) => {
   const { isAuthenticated: isLoggedIn } = useAuth()

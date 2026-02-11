@@ -1,5 +1,5 @@
 import React from "react"
-import { useLanguage } from "@context/LanguageContext.jsx"
+import { useLanguage } from "@/shared/context/LanguageContext.jsx"
 import { Typography } from "@mui/material"
 
 const CommunitySection = ({ languages }) => {

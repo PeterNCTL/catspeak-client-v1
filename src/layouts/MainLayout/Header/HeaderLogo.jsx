@@ -1,6 +1,6 @@
 import React from "react"
 import { Link } from "react-router-dom"
-import { MainLogo } from "@assets/icons/logo"
+import { MainLogo } from "@/shared/assets/icons/logo"
 
 const HeaderLogo = () => {
   return (

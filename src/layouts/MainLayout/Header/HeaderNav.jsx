@@ -16,8 +16,8 @@ import {
   Box,
 } from "@mui/material"
 import { FiChevronDown } from "react-icons/fi"
-import { VietNam, China, USA } from "@assets/icons/flags"
-import { useLanguage } from "../../../context/LanguageContext"
+import { VietNam, China, USA } from "@/shared/assets/icons/flags"
+import { useLanguage } from "../../../shared/context/LanguageContext"
 
 export const navLinks = [
   { key: "community", href: "/community", hasDropdown: true },

@@ -1,9 +1,9 @@
 import React, { useState } from "react"
 import { Send } from "@mui/icons-material"
-import { useLanguage } from "@context/LanguageContext.jsx"
+import { useLanguage } from "@/shared/context/LanguageContext.jsx"
 import { Typography, TextField } from "@mui/material"
-import { colors } from "@utils/colors"
-import InDevelopmentModal from "@/components/common/InDevelopmentModal"
+import { colors } from "@/shared/utils/colors"
+import InDevelopmentModal from "@/shared/components/common/InDevelopmentModal"
 
 const ContactSection = () => {
   const { t } = useLanguage()

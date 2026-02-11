@@ -1,29 +1,36 @@
 import { AdminLayout, MainLayout, UserLayout, VideoCallLayout } from "@layouts"
-import { PageNotFound, ForbiddenPage } from "@pages/ErrorPage"
-import {
-  LandingPage,
-  PolicyPage,
-  HomePage,
-  VideoCallRoom,
-  RoomDetailPage,
-  QueuePage,
-  ComingSoonPage,
-  RoomsPage,
-  // CatSpeakPage, // Deprecated in route config, replaced by NewsPage etc.
-  NewsPage,
-  DiscoverPage,
-  VideoPage,
-  MailPage,
-  CatSpeakLayout,
-  VerifyEmailPage,
-} from "@pages/Guest"
-import { UserDashboard, UserProfile, UserSetting } from "@pages/User"
-import { AdminPage } from "@pages/Admin"
+import { PageNotFound, ForbiddenPage } from "@/shared/pages"
+
+// Guest Pages
+import LandingPage from "@/features/landing/pages/LandingPage"
+import PolicyPage from "@/features/auth/pages/PolicyPage"
+import ResetPasswordPage from "@/features/auth/pages/ResetPasswordPage"
+import VerifyEmailPage from "@/features/auth/pages/VerifyEmailPage"
+import VideoCallRoom from "@/features/video-call/pages/VideoCallRoom"
+import QueuePage from "@/features/queue/pages/QueuePage"
+import RoomsPage from "@/features/rooms/pages/RoomsPage"
+import RoomDetailPage from "@/features/rooms/pages/RoomDetailPage"
+
+// Cat Speak Feature Pages
+import CatSpeakLayout from "@/features/cat-speak/pages/CatSpeakLayout"
+import NewsPage from "@/features/cat-speak/pages/NewsPage"
+import DiscoverPage from "@/features/cat-speak/pages/DiscoverPage"
+import VideoPage from "@/features/cat-speak/pages/VideoPage"
+import MailPage from "@/features/cat-speak/pages/MailPage"
+import CatSpeakPage from "@/features/cat-speak/pages/CatSpeakPage"
+
+// Shared Pages
+import { ComingSoonPage } from "@/shared/pages"
+
+// User & Admin Pages
+import UserDashboard from "@/features/user/pages/UserDashboard"
+import UserProfile from "@/features/user/pages/UserProfile"
+import SettingsPage from "@/features/settings/pages/SettingsPage"
+import { AdminPage } from "@/features/admin/pages/AdminPage"
 
 import { Navigate } from "react-router-dom"
-import useAuth from "@hooks/useAuth"
-import AuthGuard from "@components/Guards/AuthGuard"
-import GuestGuard from "@components/Guards/GuestGuard"
+import { useAuth } from "@/features/auth"
+import { AuthGuard, GuestGuard } from "@/shared/components"
 
 const RootRoute = () => {
   const { isAuthenticated, user } = useAuth()
@@ -77,7 +84,7 @@ const routesConfig = [
 
       {
         path: "reset-password",
-        element: <HomePage />,
+        element: <ResetPasswordPage />,
       },
 
       {
@@ -122,7 +129,7 @@ const routesConfig = [
       },
       {
         path: "setting",
-        element: <UserSetting />,
+        element: <SettingsPage />,
       },
       {
         path: "profile",

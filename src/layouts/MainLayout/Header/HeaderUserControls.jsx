@@ -18,9 +18,8 @@ import {
   Settings as SettingsIcon,
   Logout as LogoutIcon,
 } from "@mui/icons-material"
-import { useGetProfileQuery } from "@/store/api/authApi"
-import useAuth from "@/hooks/useAuth"
-import { useLanguage } from "@/context/LanguageContext"
+import { useGetProfileQuery, useAuth } from "@/features/auth"
+import { useLanguage } from "@/shared/context/LanguageContext"
 
 const HeaderUserControls = () => {
   const { t } = useLanguage()
