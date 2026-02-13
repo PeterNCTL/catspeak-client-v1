@@ -1,27 +1,12 @@
 import React, { useState } from "react"
-import { NavLink, useNavigate, useSearchParams } from "react-router-dom"
-import {
-  AppBar,
-  Toolbar,
-  Box,
-  IconButton,
-  Stack,
-  Drawer,
-  Typography,
-  Collapse,
-  List,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-} from "@mui/material"
-import { Menu as MenuIcon, ExpandLess, ExpandMore } from "@mui/icons-material"
-import { VietNam, China, USA } from "@/shared/assets/icons/flags"
+import { AppBar, Toolbar, Box, IconButton, Stack } from "@mui/material"
+import { Menu as MenuIcon } from "@mui/icons-material"
 import HeaderLogo from "./Header/HeaderLogo"
-import HeaderNav, { navLinks } from "./Header/HeaderNav"
+import DesktopNav from "@/features/navigation/components/DesktopNav/DesktopNav"
+import MobileDrawer from "@/features/navigation/components/MobileNav/MobileDrawer"
 import HeaderUserControls from "./Header/HeaderUserControls"
 import HeaderGuestControls from "./Header/HeaderGuestControls"
 import LanguageSwitcher from "@/shared/components/common/LanguageSwitcher"
-import { useLanguage } from "@/shared/context/LanguageContext"
 import { useAuth } from "@/features/auth"
 
 const HeaderBar = ({ onGetStarted }) => {
@@ -81,7 +66,7 @@ const HeaderBar = ({ onGetStarted }) => {
 
         {/* Center Section: Desktop Nav */}
         <Box sx={{ display: { xs: "none", lg: "block" } }}>
-          <HeaderNav />
+          <DesktopNav />
         </Box>
 
         {/* Right Section: Controls */}
@@ -104,199 +89,8 @@ const HeaderBar = ({ onGetStarted }) => {
       </Toolbar>
 
       {/* Mobile Navigation Drawer */}
-      <Drawer
-        variant="temporary"
-        open={mobileOpen}
-        onClose={handleDrawerToggle}
-        ModalProps={{
-          keepMounted: true, // Better open performance on mobile.
-        }}
-        sx={{
-          display: { xs: "block", lg: "none" },
-          "& .MuiDrawer-paper": { boxSizing: "border-box", width: 300 },
-        }}
-      >
-        <Box sx={{ p: 2, display: "flex", flexDirection: "column", gap: 2 }}>
-          {/* Mobile Language Switcher */}
-          <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-            <LanguageSwitcher />
-          </Box>
-          <Box component="nav">
-            <MobileNavLinks onClose={handleDrawerToggle} />
-          </Box>
-        </Box>
-      </Drawer>
+      <MobileDrawer open={mobileOpen} onClose={handleDrawerToggle} />
     </AppBar>
-  )
-}
-
-const MobileNavLinks = ({ onClose }) => {
-  const { t } = useLanguage()
-  const navigate = useNavigate()
-  const [searchParams] = useSearchParams()
-  const [communityOpen, setCommunityOpen] = useState(false)
-
-  // Sub-menu items for Community
-  const communityItems = [
-    { key: "vietnamese", label: t.home.countries.vietnam, icon: VietNam },
-    { key: "chinese", label: t.home.countries.china, icon: China },
-    { key: "english", label: t.home.countries.usa, icon: USA },
-  ]
-
-  const handleCommunityClick = (langKey) => {
-    navigate(`/community?language=${langKey}`)
-    onClose()
-  }
-
-  const handleExpandClick = () => {
-    setCommunityOpen(!communityOpen)
-  }
-
-  return (
-    <List component="div" disablePadding>
-      {navLinks.map(({ key, href, hasDropdown }) => {
-        const lang = searchParams.get("language")
-        const finalHref = lang ? `${href}?language=${lang}` : href
-
-        if (hasDropdown && key === "community") {
-          return (
-            <React.Fragment key={key}>
-              <ListItemButton
-                onClick={handleExpandClick}
-                sx={{
-                  borderRadius: 3,
-                  py: 1.5,
-                  mb: 0.5,
-                  color: communityOpen ? "#990011" : "text.primary",
-                  backgroundColor: communityOpen
-                    ? "rgba(153, 0, 17, 0.05)"
-                    : "transparent",
-                  "&:hover": {
-                    backgroundColor: "rgba(0, 0, 0, 0.04)",
-                  },
-                }}
-              >
-                <ListItemText
-                  primary={t.nav[key]}
-                  primaryTypographyProps={{
-                    fontWeight: 600,
-                  }}
-                />
-                {communityOpen ? <ExpandLess /> : <ExpandMore />}
-              </ListItemButton>
-              <Collapse in={communityOpen} timeout="auto" unmountOnExit>
-                <List component="div" disablePadding sx={{ pl: 2 }}>
-                  <Box
-                    sx={{
-                      borderLeft: "2px solid",
-                      borderColor: "divider",
-                      pl: 1,
-                      mt: 0.5,
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: 0.5,
-                    }}
-                  >
-                    {communityItems.map((item) => {
-                      const isVietnamese = item.key === "vietnamese"
-                      return (
-                        <ListItemButton
-                          key={item.key}
-                          disabled={isVietnamese}
-                          onClick={() => {
-                            if (!isVietnamese) handleCommunityClick(item.key)
-                          }}
-                          sx={{
-                            borderRadius: 2,
-                            py: 1,
-                            backgroundColor: isVietnamese
-                              ? "action.hover"
-                              : "transparent",
-                            opacity: isVietnamese ? 0.6 : 1,
-                            "&:hover": {
-                              backgroundColor: isVietnamese
-                                ? "action.hover"
-                                : "rgba(0,0,0,0.04)",
-                            },
-                          }}
-                        >
-                          <ListItemIcon sx={{ minWidth: 32 }}>
-                            <img
-                              src={item.icon}
-                              alt={item.label}
-                              style={{
-                                width: 20,
-                                height: 20,
-                                borderRadius: "50%",
-                                objectFit: "cover",
-                                filter: isVietnamese
-                                  ? "grayscale(100%)"
-                                  : "none",
-                              }}
-                            />
-                          </ListItemIcon>
-                          <ListItemText
-                            primary={item.label}
-                            primaryTypographyProps={{
-                              variant: "body2",
-                            }}
-                          />
-                          {isVietnamese && (
-                            <Box
-                              component="span"
-                              sx={{
-                                fontSize: "0.625rem", // 10px
-                                fontWeight: "bold",
-                                color: "white",
-                                backgroundColor: "#9ca3af", // gray-400
-                                px: 0.75,
-                                py: 0.25,
-                                borderRadius: 999,
-                              }}
-                            >
-                              {t.header.soon}
-                            </Box>
-                          )}
-                        </ListItemButton>
-                      )
-                    })}
-                  </Box>
-                </List>
-              </Collapse>
-            </React.Fragment>
-          )
-        }
-
-        return (
-          <ListItemButton
-            key={key}
-            component={NavLink}
-            to={finalHref}
-            onClick={onClose}
-            sx={{
-              borderRadius: 3,
-              py: 1.5,
-              mb: 0.5,
-              color: "text.secondary",
-              "&.active": {
-                color: "#990011",
-                backgroundColor: "rgba(153, 0, 17, 0.1)",
-              },
-              "&:hover": {
-                backgroundColor: "rgba(0, 0, 0, 0.04)",
-              },
-            }}
-          >
-            <ListItemText
-              primary={t.nav[key]}
-              primaryTypographyProps={{
-                fontWeight: 600,
-              }}
-            />
-          </ListItemButton>
-        )
-      })}
-    </List>
   )
 }
 

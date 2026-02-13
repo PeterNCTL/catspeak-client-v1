@@ -5,7 +5,7 @@ import {
   ValuesImage,
 } from "@/shared/assets/images/home"
 import { Typography } from "@mui/material"
-import ValueCard from "./Values/ValueCard"
+import ValueCard from "./ValueCard"
 import PlayArrowIcon from "@mui/icons-material/PlayArrow"
 import GroupsIcon from "@mui/icons-material/Groups"
 import HubIcon from "@mui/icons-material/Hub"

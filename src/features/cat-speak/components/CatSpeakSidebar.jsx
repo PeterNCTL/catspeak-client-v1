@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react"
 import { Drawer, Button, Box, Typography, IconButton } from "@mui/material"
-import { useNavigate, useLocation, useSearchParams } from "react-router-dom"
+import { useNavigate, useLocation, useParams } from "react-router-dom"
 import {
   FiMenu,
   FiX,
@@ -22,7 +22,8 @@ const CatSpeakSidebar = () => {
   const [devModalOpen, setDevModalOpen] = useState(false)
   const navigate = useNavigate()
   const location = useLocation()
-  const [searchParams] = useSearchParams()
+  const { lang } = useParams()
+  const currentLang = lang || "en"
 
   // Determine active key based on current path
   const getActiveKey = () => {
@@ -68,13 +69,10 @@ const CatSpeakSidebar = () => {
       return
     }
 
-    const lang = searchParams.get("language")
-    const search = lang ? `?language=${lang}` : ""
-
     if (item.path) {
-      navigate(`${item.path}${search}`)
+      navigate(item.path)
     } else if (menuItems.find((i) => i.key === item.key)) {
-      navigate(`/cat-speak/${item.key}${search}`)
+      navigate(`/${currentLang}/cat-speak/${item.key}`)
     }
     setMobileOpen(false)
   }

@@ -46,6 +46,7 @@ export default {
     searchPlaceholder: "Tìm kiếm",
     topicsAndLevels: "CHỦ ĐỀ | TRÌNH ĐỘ",
     levelsHeading: "TRÌNH ĐỘ",
+    topicsHeading: "CHỦ ĐỀ",
     roomTypes: {
       twoToFive: "2 : 5",
       saved: "Đã lưu",

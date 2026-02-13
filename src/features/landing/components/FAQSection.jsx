@@ -128,33 +128,23 @@ const FAQSection = () => {
                     onChange={() => toggleQuestion(originalIndex)}
                     disableGutters
                     elevation={0}
-                    className="border border-white bg-transparent"
+                    className="border border-white"
                     sx={{
                       borderRadius: "24px !important",
                       "&:before": { display: "none" }, // Remove default MUI Accordion divider
                       transition: "all 0.3s ease-in-out",
                       backgroundColor: "transparent",
-                      backgroundImage: isExpanded
-                        ? "linear-gradient(to bottom right, rgba(249, 115, 22, 0.5), rgba(220, 38, 38, 0.5))"
-                        : "none",
+                      backdropFilter: "blur(8px)",
                       borderColor: "white",
                       marginBottom: "8px",
-                      overflow: "hidden",
-                      "& .MuiAccordionSummary-root": {
-                        borderRadius: "24px",
-                      },
-                      boxShadow: isExpanded
-                        ? "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)"
-                        : "none",
-                      backdropFilter: "blur(4px)",
+                      padding: 4,
                     }}
                   >
                     <AccordionSummary
                       aria-controls={`panel${originalIndex}-content`}
                       id={`panel${originalIndex}-header`}
-                      className="w-full p-3 sm:p-4 md:p-5"
                       sx={{
-                        padding: { xs: 1.5, sm: 2, md: 2.5 },
+                        padding: 0,
                         minHeight: "unset",
                         "& .MuiAccordionSummary-content": {
                           margin: 0,
@@ -164,29 +154,39 @@ const FAQSection = () => {
                       }}
                     >
                       <Typography
-                        variant="h6"
+                        variant="body1"
                         component="span"
                         className="flex-1 text-base md:text-lg font-bold leading-snug pr-4 transition-colors duration-200"
-                        sx={{ color: "#FFFFFF" }}
+                        sx={{ color: "#FFFFFF", fontSize: 18 }}
                       >
                         {item.question}
                       </Typography>
-                      <div className="ml-2 flex-shrink-0 flex items-center justify-center w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-white/20">
+                      <div
+                        className={`ml-2 flex-shrink-0 flex items-center justify-center w-6 h-6 sm:w-7 sm:h-7 rounded-full ${isExpanded ? "bg-white" : "bg-[#FFB400]"}`}
+                      >
                         {isExpanded ? (
-                          <RemoveIcon className="w-5 h-5 text-cath-red-800" />
+                          <RemoveIcon className="w-5 h-5 text-black" />
                         ) : (
-                          <AddIcon className="w-5 h-5 text-cath-yellow-400" />
+                          <AddIcon className="w-5 h-5 text-white" />
                         )}
                       </div>
                     </AccordionSummary>
-                    <AccordionDetails className="px-4 md:px-5 pb-4 md:pb-5 pt-0">
-                      <div className="h-px bg-white mb-4"></div>
+
+                    <AccordionDetails
+                      sx={{ padding: 0, paddingTop: 4, paddingRight: 4 }}
+                    >
                       <Typography
                         variant="body1"
                         className="text-sm md:text-base leading-relaxed"
                         sx={{ color: "#FFFFFF" }}
+                        component="div"
                       >
-                        {item.answer}
+                        {item.answer.split("\n").map((line, idx) => (
+                          <span key={idx}>
+                            {line}
+                            {idx < item.answer.split("\n").length - 1 && <br />}
+                          </span>
+                        ))}
                       </Typography>
                     </AccordionDetails>
                   </Accordion>

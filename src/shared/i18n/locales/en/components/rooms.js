@@ -45,6 +45,7 @@ export default {
     searchPlaceholder: "Search",
     topicsAndLevels: "TOPICS | LEVELS",
     levelsHeading: "LEVELS",
+    topicsHeading: "TOPICS",
     roomTypes: {
       twoToFive: "2 : 5",
       saved: "Saved",

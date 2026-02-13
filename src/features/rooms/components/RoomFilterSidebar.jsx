@@ -1,17 +1,16 @@
 import React, { useState } from "react"
-import { useSearchParams } from "react-router-dom"
+import { useSearchParams, useParams } from "react-router-dom"
 import {
   Box,
   TextField,
-  Checkbox,
-  FormControlLabel,
   IconButton,
-  Typography,
   InputAdornment,
+  Divider,
 } from "@mui/material"
 import SearchIcon from "@mui/icons-material/Search"
 import { useLanguage } from "@/shared/context/LanguageContext"
-import colors from "@/shared/utils/colors"
+import LevelFilter from "./filters/LevelFilter"
+import TopicFilter from "./filters/TopicFilter"
 
 const LEVELS = {
   english: [
@@ -40,44 +39,22 @@ const LEVELS = {
 const RoomFilterSidebar = () => {
   const { t } = useLanguage()
   const filtersText = t.rooms.filters
-  const [searchParams, setSearchParams] = useSearchParams()
+  const [searchParams] = useSearchParams()
+  const { lang } = useParams()
   const [searchValue, setSearchValue] = useState("")
-  const currentLanguage =
-    searchParams.get("language")?.toLowerCase() || "english"
+
+  // Map URL lang code to language name for levels
+  const langMap = {
+    en: "english",
+    zh: "chinese",
+    vi: "vietnamese",
+  }
+  const currentLanguage = lang ? langMap[lang] : "english"
   const currentLevels = LEVELS[currentLanguage] || LEVELS.english
 
   const handleSearch = () => {
     // Add search functionality here
     console.log("Search clicked:", searchValue)
-  }
-
-  const handleLevelChange = (levelValue, isChecked) => {
-    const newParams = new URLSearchParams(searchParams)
-    const requiredLevelsParam = searchParams.get("requiredLevels")
-    const currentLevelsArray = requiredLevelsParam
-      ? requiredLevelsParam.split(",").map((s) => s.trim())
-      : []
-
-    let newLevels = [...currentLevelsArray]
-
-    if (isChecked) {
-      if (!newLevels.includes(levelValue)) {
-        newLevels.push(levelValue)
-      }
-    } else {
-      newLevels = newLevels.filter((l) => l !== levelValue)
-    }
-
-    // Set as comma-separated string or delete if empty
-    if (newLevels.length > 0) {
-      newParams.set("requiredLevels", newLevels.join(","))
-    } else {
-      newParams.delete("requiredLevels")
-    }
-
-    // Reset page to 1 when filter changes
-    newParams.set("page", "1")
-    setSearchParams(newParams, { preventScrollReset: true })
   }
 
   return (
@@ -159,49 +136,14 @@ const RoomFilterSidebar = () => {
             },
           }}
         >
-          <Box className="space-y-2">
-            <Typography
-              variant="subtitle2"
-              sx={{
-                fontWeight: "bold",
-                textTransform: "uppercase",
-                letterSpacing: "0.05em",
-                color: "grey.800",
-                fontSize: { xs: "0.875rem", sm: "1rem" },
-              }}
-            >
-              {filtersText.levelsHeading}
-            </Typography>
+          {/* Level Filter */}
+          <LevelFilter currentLevels={currentLevels} />
 
-            <Box className="flex flex-col">
-              {currentLevels.map((levelObj) => {
-                const requiredLevelsParam = searchParams.get("requiredLevels")
-                const currentLevelsArray = requiredLevelsParam
-                  ? requiredLevelsParam.split(",").map((s) => s.trim())
-                  : []
-                const isChecked = currentLevelsArray.includes(levelObj.value)
-                return (
-                  <FormControlLabel
-                    key={levelObj.value}
-                    control={
-                      <Checkbox
-                        checked={isChecked}
-                        onChange={(e) =>
-                          handleLevelChange(levelObj.value, e.target.checked)
-                        }
-                        sx={{
-                          "&.Mui-checked": {
-                            color: "#990011",
-                          },
-                        }}
-                      />
-                    }
-                    label={levelObj.label}
-                  />
-                )
-              })}
-            </Box>
-          </Box>
+          {/* Divider */}
+          <Divider sx={{ my: 3 }} />
+
+          {/* Topic Filter */}
+          <TopicFilter />
         </Box>
       )}
     </Box>

@@ -44,6 +44,7 @@ export default {
     searchPlaceholder: "搜索",
     topicsAndLevels: "主题 | 等级",
     levelsHeading: "等级",
+    topicsHeading: "主题",
     roomTypes: {
       twoToFive: "2 : 5",
       saved: "已保存",

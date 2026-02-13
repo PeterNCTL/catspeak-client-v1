@@ -11,7 +11,7 @@ import {
 } from "@/store/api/storiesApi"
 import { useDispatch } from "react-redux"
 import { setActiveConversation } from "@/store/slices/messageWidgetSlice"
-import LiveMessages from "@/features/cat-speak/components/mail/LiveMessages"
+import LiveMessages from "@/features/mail/components/LiveMessages"
 
 const MailPage = () => {
   const { t } = useLanguage()

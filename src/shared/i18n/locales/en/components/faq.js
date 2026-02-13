@@ -6,32 +6,32 @@ export default {
     {
       question: "How do I connect with people at my level?",
       answer:
-        "You can search and connect with learners of the same proficiency through the level-based search feature. The system automatically suggests suitable matches.",
+        "Choose the language you want to learn and connect → select your learning level, conversation topic, and room type (1-1 or 2-5) → Join the room.\n\nCat Speak will randomly match you with learners who have similar learning needs, or you can share the room link with friends or acquaintances.",
+    },
+    {
+      question: "What is the maximum number of people in a conversation group?",
+      answer:
+        "Cat Speak currently has 2 types of rooms: 1-1 rooms and 2-5 rooms, with a maximum of 5 people in the 2-5 rooms.",
+    },
+    {
+      question: "What hours are the study rooms open?",
+      answer:
+        "Study rooms are open 24/7, you can join at any time.\n\nCat Speak recommends joining during 11:00 AM - 1:00 PM or 7:00 PM - 10:00 PM.",
+    },
+    {
+      question: "How long does each study session last?",
+      answer:
+        "Each session typically lasts 30-60 minutes, depending on the agreement between members in the room.",
+    },
+    {
+      question: "What is the proficiency level of the room hosts?",
+      answer:
+        "Hosts at Cat Speak all have real-life experience communicating in Chinese, helping learners practice reflexes and speak naturally.\n\nHosts can be native speakers or people who have studied or worked in Chinese-speaking environments and are connected within the Cat Speak community.",
     },
     {
       question: "How can I connect with more people?",
       answer:
-        "You can join study groups, participate in online meet sessions, or use the search feature to find other learners in the community.",
-    },
-    {
-      question: "What is the typical group size?",
-      answer:
-        "Each study group typically has 3-8 members to ensure quality interaction and effective learning.",
-    },
-    {
-      question: "How long does a session last?",
-      answer:
-        "Sessions usually last 30-60 minutes, depending on the session type and group agreement.",
-    },
-    {
-      question: "How do I report spam?",
-      answer:
-        'You can report users via the "Report" button on their profile or contact our support team directly.',
-    },
-    {
-      question: "Where can I connect with a teacher?",
-      answer:
-        "You can find and connect with teachers through the teacher directory in the app, where you can view profiles and book lessons.",
+        "You can join study groups, participate in online meet sessions, or use the search feature to connect with other learners in the community.",
     },
   ],
 }

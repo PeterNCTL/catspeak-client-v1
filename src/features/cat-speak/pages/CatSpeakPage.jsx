@@ -7,7 +7,7 @@ const CatSpeakPage = () => {
   const { t } = useLanguage()
 
   return (
-    <div className="min-h-screen w-full py-8">
+    <div className="min-h-screen w-full">
       <div className="mx-auto grid max-w-screen-xl gap-8 px-4 lg:grid-cols-[240px_1fr_350px] lg:px-8">
         {/* LEFT COLUMN: SIDEBAR */}
         <CatSpeakSidebar />

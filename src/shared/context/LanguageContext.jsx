@@ -4,7 +4,7 @@ import { translations, languageNames } from "@/shared/i18n"
 const LanguageContext = createContext(undefined)
 
 export const LanguageProvider = ({ children }) => {
-  const [language, setLanguage] = useState("en")
+  const [language, setLanguage] = useState("vi")
 
   const value = useMemo(
     () => ({

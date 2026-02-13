@@ -8,7 +8,7 @@ import {
   FiFilter,
 } from "react-icons/fi"
 import { Drawer } from "antd"
-import { useSearchParams } from "react-router-dom"
+import { useSearchParams, useParams } from "react-router-dom"
 import {
   RoomFilterSidebar,
   ClassSidebar,
@@ -42,13 +42,15 @@ const RoomsPage = () => {
 
   // --- Extracting Data Fetching Logic ---
   const [searchParams] = useSearchParams()
-  const languageParam = searchParams.get("language")
-  const languageType = languageParam
-    ? languageParam
-        .split(",")
-        .map((l) => l.trim().replace(/^\w/, (c) => c.toUpperCase()))
-        .filter(Boolean)
-    : undefined
+  const { lang } = useParams()
+
+  // Map language code to language type
+  const langMap = {
+    en: "English",
+    zh: "Chinese",
+    vi: "Vietnamese",
+  }
+  const languageType = lang ? [langMap[lang]] : undefined
 
   // Force 404 for Vietnamese language
   if (languageType?.includes("Vietnamese")) {
@@ -229,6 +231,7 @@ const RoomsPage = () => {
                   body: { padding: 0 },
                   wrapper: { width: 320 },
                 }}
+                zIndex={1300}
               >
                 <div className="p-4">
                   {tab === "class" ? <ClassSidebar /> : <RoomFilterSidebar />}

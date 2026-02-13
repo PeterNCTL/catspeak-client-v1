@@ -13,11 +13,11 @@ import RoomDetailPage from "@/features/rooms/pages/RoomDetailPage"
 
 // Cat Speak Feature Pages
 import CatSpeakLayout from "@/features/cat-speak/pages/CatSpeakLayout"
-import NewsPage from "@/features/cat-speak/pages/NewsPage"
-import DiscoverPage from "@/features/cat-speak/pages/DiscoverPage"
-import VideoPage from "@/features/cat-speak/pages/VideoPage"
-import MailPage from "@/features/cat-speak/pages/MailPage"
-import CatSpeakPage from "@/features/cat-speak/pages/CatSpeakPage"
+import NewsPage from "@/features/news/pages/NewsPage"
+import NewsDetailPage from "@/features/news/pages/NewsDetailPage"
+import DiscoverPage from "@/features/discover/DiscoverPage"
+import VideoPage from "@/features/video/VideoPage"
+import MailPage from "@/features/mail/pages/MailPage"
 
 // Shared Pages
 import { ComingSoonPage } from "@/shared/pages"
@@ -28,9 +28,12 @@ import UserProfile from "@/features/user/pages/UserProfile"
 import SettingsPage from "@/features/settings/pages/SettingsPage"
 import { AdminPage } from "@/features/admin/pages/AdminPage"
 
+// Language routing components
+import LanguageLayout from "./LanguageLayout"
+
 import { Navigate } from "react-router-dom"
 import { useAuth } from "@/features/auth"
-import { AuthGuard, GuestGuard } from "@/shared/components"
+import { AuthGuard } from "@/shared/components"
 
 const RootRoute = () => {
   const { isAuthenticated, user } = useAuth()
@@ -43,6 +46,7 @@ const RootRoute = () => {
 }
 
 const routesConfig = [
+  // Main layout routes (no language prefix)
   {
     path: "/",
     element: <MainLayout />,
@@ -52,47 +56,76 @@ const routesConfig = [
         element: <RootRoute />,
       },
       {
-        path: "community",
-        element: <RoomsPage />,
-      },
-      {
-        path: "cat-speak",
-        element: <CatSpeakLayout />,
-        children: [
-          {
-            index: true,
-            element: <Navigate to="news" replace />,
-          },
-          {
-            path: "news",
-            element: <NewsPage />,
-          },
-          {
-            path: "discover",
-            element: <DiscoverPage />,
-          },
-          {
-            path: "video",
-            element: <VideoPage />,
-          },
-          {
-            path: "mail",
-            element: <MailPage />,
-          },
-        ],
-      },
-
-      {
         path: "reset-password",
         element: <ResetPasswordPage />,
       },
-
       {
         path: "verify-email",
         element: <VerifyEmailPage />,
       },
     ],
   },
+
+  // Language-prefixed community route
+  {
+    path: "/:lang/community",
+    element: <LanguageLayout />,
+    children: [
+      {
+        element: <MainLayout />,
+        children: [
+          {
+            index: true,
+            element: <RoomsPage />,
+          },
+        ],
+      },
+    ],
+  },
+
+  // Language-prefixed cat-speak routes
+  {
+    path: "/:lang/cat-speak",
+    element: <LanguageLayout />,
+    children: [
+      {
+        element: <MainLayout />,
+        children: [
+          {
+            element: <CatSpeakLayout />,
+            children: [
+              {
+                index: true,
+                element: <Navigate to="news" replace />,
+              },
+              {
+                path: "news",
+                element: <NewsPage />,
+              },
+              {
+                path: "news/:id",
+                element: <NewsDetailPage />,
+              },
+              {
+                path: "discover",
+                element: <DiscoverPage />,
+              },
+              {
+                path: "video",
+                element: <VideoPage />,
+              },
+              {
+                path: "mail",
+                element: <MailPage />,
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  },
+
+  // Non-language routes
   {
     path: "/meet",
     element: <VideoCallLayout />,

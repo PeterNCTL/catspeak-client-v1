@@ -1,5 +1,7 @@
 import React from "react"
 import { useDispatch, useSelector } from "react-redux"
+import { useAuth } from "@/features/auth"
+import AuthModalContext from "@/shared/context/AuthModalContext"
 import {
   useGetConversationsQuery,
   useGetConversationMessagesQuery,
@@ -22,6 +24,8 @@ import ConversationDetail from "./conversation-detail/ConversationDetail"
 
 const MessageWidget = () => {
   const dispatch = useDispatch()
+  const { isAuthenticated } = useAuth()
+  const { openAuthModal } = React.useContext(AuthModalContext)
   const { isOpen, activeConversationId, view } = useSelector(
     (state) => state.messageWidget,
   )
@@ -193,7 +197,15 @@ const MessageWidget = () => {
         )}
       </MessageModal>
 
-      <FloatingButton onClick={() => dispatch(toggleWidget())} />
+      <FloatingButton
+        onClick={() => {
+          if (!isAuthenticated) {
+            openAuthModal("login")
+            return
+          }
+          dispatch(toggleWidget())
+        }}
+      />
     </div>
   )
 }
