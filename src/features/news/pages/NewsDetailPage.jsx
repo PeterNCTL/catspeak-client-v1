@@ -1,7 +1,7 @@
 import React from "react"
 import { useParams, useNavigate, Link } from "react-router-dom"
 import { Typography, Breadcrumbs, Button } from "@mui/material"
-import { ArrowBack as ArrowBackIcon } from "@mui/icons-material"
+import ArrowBackIcon from "@mui/icons-material/ArrowBack"
 import { newsData } from "../data/newsData"
 import { useLanguage } from "@/shared/context/LanguageContext"
 

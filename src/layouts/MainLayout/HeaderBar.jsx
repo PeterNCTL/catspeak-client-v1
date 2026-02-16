@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 import { AppBar, Toolbar, Box, IconButton, Stack } from "@mui/material"
-import { Menu as MenuIcon } from "@mui/icons-material"
+import MenuIcon from "@mui/icons-material/Menu"
 import HeaderLogo from "./Header/HeaderLogo"
 import DesktopNav from "@/features/navigation/components/DesktopNav/DesktopNav"
 import MobileDrawer from "@/features/navigation/components/MobileNav/MobileDrawer"

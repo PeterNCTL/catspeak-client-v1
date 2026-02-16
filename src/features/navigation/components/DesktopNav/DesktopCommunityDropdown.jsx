@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState, useRef } from "react"
 import { useNavigate, useParams, useLocation } from "react-router-dom"
-import { Menu, Fade, Box } from "@mui/material"
-import { FiChevronDown } from "react-icons/fi"
+import { ChevronDown } from "lucide-react"
 import { useLanguage } from "@/shared/context/LanguageContext"
 import { useActiveLink } from "../../hooks/useActiveLink"
 import { LANGUAGE_CONFIG } from "../../config/languages"
@@ -12,10 +11,23 @@ const DesktopCommunityDropdown = ({ navKey }) => {
   const location = useLocation()
   const navigate = useNavigate()
   const { lang } = useParams()
-  const [anchorEl, setAnchorEl] = useState(null)
+  const [isOpen, setIsOpen] = useState(false)
+  const dropdownRef = useRef(null)
   const isActive = useActiveLink(navKey)
 
-  const isDropdownOpen = Boolean(anchorEl)
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false)
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [])
 
   // Helper to get label from config
   const getLabel = (code) => {
@@ -28,12 +40,12 @@ const DesktopCommunityDropdown = ({ navKey }) => {
   // Initialize label state
   const [selectedLabel, setSelectedLabel] = useState(() => {
     const savedLang = localStorage.getItem("communityLanguage")
-    return getLabel(savedLang || "en")
+    return getLabel(savedLang || "zh")
   })
 
   // Sync label with URL param or localStorage
   useEffect(() => {
-    const targetLang = lang || localStorage.getItem("communityLanguage") || "en"
+    const targetLang = lang || localStorage.getItem("communityLanguage") || "zh"
     const label = getLabel(targetLang)
     setSelectedLabel(label)
 
@@ -45,7 +57,7 @@ const DesktopCommunityDropdown = ({ navKey }) => {
 
   const handleLanguageSelect = (newLang, label) => {
     setSelectedLabel(label)
-    setAnchorEl(null)
+    setIsOpen(false)
 
     const pathWithoutLang = location.pathname.replace(/^\/(en|zh|vi)/, "")
 
@@ -60,126 +72,60 @@ const DesktopCommunityDropdown = ({ navKey }) => {
 
   const handleCommunityClick = () => {
     const currentLang =
-      lang || localStorage.getItem("communityLanguage") || "en"
+      lang || localStorage.getItem("communityLanguage") || "zh"
     navigate(`/${currentLang}/community`)
   }
 
   return (
-    <React.Fragment>
-      <Box
-        sx={{
-          display: "flex",
-          flex: 1,
-          whiteSpace: "nowrap",
-          alignItems: "center",
-          justifyContent: "center",
-          py: 1.5, // 12px
-          pl: 6, // 48px
-          pr: 1, // 8px
-          gap: 1, // 8px
-          fontSize: "0.875rem",
-          fontWeight: 600,
-          textTransform: "uppercase",
-          letterSpacing: "0.025em",
-          borderRadius: "9999px",
-          transition: "all 200ms",
-          cursor: "pointer",
-          userSelect: "none",
-          color:
-            isDropdownOpen || isActive ? "white" : "rgba(255, 255, 255, 0.7)",
-          "&:hover": {
-            color: "white",
-            bgcolor: "transparent",
-          },
-        }}
+    <div className="relative" ref={dropdownRef}>
+      <div
+        className={`flex items-center justify-center gap-1 min-w-[140px] px-6 py-3 text-sm font-semibold uppercase tracking-wide transition-all duration-200 rounded-full cursor-pointer ${
+          isOpen || isActive ? "text-white" : "text-white/70 hover:text-white"
+        }`}
       >
-        <span
-          onClick={handleCommunityClick}
-          style={{ flex: 1, cursor: "pointer" }}
-        >
+        <span onClick={handleCommunityClick}>
           {selectedLabel || t.nav[navKey]}
         </span>
-        <Box
-          component="button"
-          id="community-menu-button"
-          onClick={(e) => {
-            e.stopPropagation()
-            setAnchorEl(e.currentTarget)
-          }}
-          aria-controls={isDropdownOpen ? "community-menu" : undefined}
-          aria-haspopup="true"
-          aria-expanded={isDropdownOpen ? "true" : undefined}
-          sx={{
-            p: 1,
-            borderRadius: "9999px",
-            transition: "background-color 200ms",
-            border: "none",
-            background: "transparent",
-            color: "inherit",
-            cursor: "pointer",
-            display: "flex",
-            alignItems: "center",
-            "&:hover": {
-              bgcolor: "rgba(255, 255, 255, 0.1)",
-            },
-          }}
-        >
-          <FiChevronDown
-            className={`w-4 h-4 transition-transform duration-200 ${
-              isDropdownOpen ? "rotate-180" : "rotate-0"
-            }`}
-          />
-        </Box>
-      </Box>
-      <Menu
-        id="community-menu"
-        anchorEl={anchorEl}
-        open={isDropdownOpen}
-        onClose={() => setAnchorEl(null)}
-        TransitionComponent={Fade}
-        MenuListProps={{
-          "aria-labelledby": "community-menu-button",
-          sx: { py: 1, minWidth: 200 },
-          onMouseLeave: () => setAnchorEl(null),
-        }}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-        transformOrigin={{ vertical: "top", horizontal: "center" }}
-        slotProps={{
-          paper: {
-            elevation: 3,
-            sx: {
-              mt: 1,
-              borderRadius: 2,
-              overflow: "visible",
-              "&:before": {
-                content: '""',
-                display: "block",
-                position: "absolute",
-                top: 0,
-                right: "50%",
-                width: 10,
-                height: 10,
-                bgcolor: "background.paper",
-                transform: "translate(50%, -50%) rotate(45deg)",
-                zIndex: 0,
-              },
-            },
-          },
-        }}
-      >
-        {LANGUAGE_CONFIG.map((config) => (
-          <LanguageMenuItem
-            key={config.code}
-            {...config}
-            label={
-              t.header?.countries?.[config.labelKey] || config.fallbackLabel
-            }
-            soonLabel={t.header?.soon || "Soon"}
-            onSelect={handleLanguageSelect}
-          />
-        ))}
-      </Menu>
-    </React.Fragment>
+        <div className="relative ml-1">
+          <div
+            onClick={(e) => {
+              e.stopPropagation()
+              setIsOpen(!isOpen)
+            }}
+            className="flex items-center justify-center p-1 rounded-full hover:bg-white/10 transition-colors"
+          >
+            <ChevronDown
+              className={`h-4 w-4 transition-transform duration-200 ${
+                isOpen ? "rotate-180" : "rotate-0"
+              }`}
+            />
+          </div>
+
+          {/* Dropdown Menu */}
+          {isOpen && (
+            <div className="absolute left-1/2 top-[calc(100%+8px)] z-50 w-max -translate-x-1/2 rounded-lg bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none whitespace-nowrap">
+              {/* Triangle arrow */}
+              <div className="absolute -top-1.5 left-1/2 h-3 w-3 -translate-x-1/2 rotate-45 bg-white box-content border-t border-l border-black/5"></div>
+
+              <div className="relative bg-white rounded-lg overflow-hidden">
+                {LANGUAGE_CONFIG.map((config) => (
+                  <LanguageMenuItem
+                    key={config.code}
+                    {...config}
+                    label={
+                      t.header?.countries?.[config.labelKey] ||
+                      config.fallbackLabel
+                    }
+                    soonLabel={t.header?.soon || "Soon"}
+                    onSelect={handleLanguageSelect}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
   )
 }
 

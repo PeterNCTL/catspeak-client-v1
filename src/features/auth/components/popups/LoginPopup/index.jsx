@@ -16,7 +16,8 @@ import {
   IconButton,
   InputAdornment,
 } from "@mui/material"
-import { Visibility, VisibilityOff } from "@mui/icons-material"
+import Visibility from "@mui/icons-material/Visibility"
+import VisibilityOff from "@mui/icons-material/VisibilityOff"
 import { useLanguage } from "@/shared/context/LanguageContext.jsx"
 import AuthButton from "../../ui/AuthButton"
 import { useLoginMutation } from "../../../api/authApi"

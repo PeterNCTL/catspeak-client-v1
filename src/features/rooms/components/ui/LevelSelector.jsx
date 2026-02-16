@@ -1,52 +1,35 @@
 import React from "react"
-import { Box, Typography, Stack, Chip } from "@mui/material"
 import { colors } from "@/shared/utils/colors"
 
 const LevelSelector = ({ selectedLevel, onSelect, levels, t }) => {
   return (
-    <Box sx={{ textAlign: "center" }}>
-      <Typography
-        display="block"
-        gutterBottom
-        sx={{ fontWeight: 700, fontSize: "0.875rem" }}
-      >
+    <div className="text-left">
+      <label className="mb-2 block text-sm font-bold">
         {t.rooms.createRoom.requiredLevel}
-      </Typography>
-      <Stack
-        direction="row"
-        spacing={1}
-        justifyContent="center"
-        flexWrap="wrap"
-        useFlexGap
-        sx={{ gap: 1 }}
+      </label>
+      <div
+        className="flex flex-wrap justify-start gap-2"
+        style={{ "--border-color": colors.border }}
       >
         {levels?.map((level) => {
           const isSelected = selectedLevel === level
           return (
-            <Chip
+            <button
               key={level}
-              label={level}
+              type="button"
               onClick={() => onSelect(isSelected ? "" : level)}
-              variant={isSelected ? "filled" : "outlined"}
-              clickable
-              sx={{
-                backgroundColor: isSelected ? colors.red[700] : "transparent",
-                color: isSelected ? "#fff" : "default",
-                borderColor: isSelected ? "transparent" : undefined,
-                "&:hover": {
-                  backgroundColor: isSelected
-                    ? colors.red[800]
-                    : "rgba(0, 0, 0, 0.04)",
-                },
-                "&.MuiChip-filledPrimitive": {
-                  backgroundColor: isSelected ? colors.red[700] : undefined,
-                },
-              }}
-            />
+              className={`inline-flex h-12 items-center rounded-full px-4 text-sm border transition-colors ${
+                isSelected
+                  ? "bg-cath-red-700 border-cath-red-700 text-white hover:bg-cath-red-800 hover:border-cath-red-800"
+                  : "border-[var(--border-color)] hover:bg-gray-100"
+              }`}
+            >
+              {level}
+            </button>
           )
         })}
-      </Stack>
-    </Box>
+      </div>
+    </div>
   )
 }
 

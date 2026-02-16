@@ -93,7 +93,8 @@ export default {
     nameLabel: "Tên phòng",
     requiredLevel: "Trình độ yêu cầu",
     cancel: "Hủy",
-    create: "Tạo phòng",
+    create: "Tham gia phòng",
+    joining: "Đang tham gia...",
     validation: {
       required: "Vui lòng nhập tên phòng",
       minLength: "Sử dụng ít nhất 3 ký tự",
@@ -104,6 +105,7 @@ export default {
       friends: "Kết bạn",
       trending: "Thịnh hành",
     },
+    categoryLimit: "Chọn tối đa 3 danh mục",
   },
   chatBox: {
     title: "Tin nhắn phòng",

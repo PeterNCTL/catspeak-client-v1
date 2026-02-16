@@ -5,10 +5,11 @@ import HeaderBar from "../MainLayout/HeaderBar"
 import Footer from "../MainLayout/Footer"
 import Auth from "@/features/auth/components"
 import { MessageWidget } from "@/features/messages"
+import AuthModalContext from "@/shared/context/AuthModalContext"
 
 const { Content } = Layout
 
-const UserLayout = () => {
+const UserLayout = ({ showFooter = true }) => {
   const [authModal, setAuthModal] = useState({
     isOpen: false,
     mode: "login",
@@ -31,29 +32,31 @@ const UserLayout = () => {
   } = theme.useToken()
 
   return (
-    <Layout className="flex justify-center bg-white">
-      {/* Header full width */}
-      <HeaderBar onGetStarted={() => openAuthModal("login")} />
+    <AuthModalContext.Provider value={{ openAuthModal, closeAuthModal }}>
+      <Layout className="flex justify-center bg-white">
+        {/* Header full width */}
+        <HeaderBar onGetStarted={() => openAuthModal("login")} />
 
-      <Content className="w-full flex justify-center">
-        <Outlet />
-      </Content>
+        <Content className="w-full flex justify-center">
+          <Outlet />
+        </Content>
 
-      {/* Footer full width */}
-      <Footer />
+        {/* Footer full width */}
+        {showFooter && <Footer />}
 
-      <Auth
-        isOpen={authModal.isOpen}
-        mode={authModal.mode}
-        onClose={closeAuthModal}
-        onSwitchMode={openAuthModal}
-      />
+        <Auth
+          isOpen={authModal.isOpen}
+          mode={authModal.mode}
+          onClose={closeAuthModal}
+          onSwitchMode={openAuthModal}
+        />
 
-      {/* Floating message bubble */}
-      <MessageWidget />
+        {/* Floating message bubble */}
+        <MessageWidget />
 
-      <ScrollRestoration />
-    </Layout>
+        <ScrollRestoration />
+      </Layout>
+    </AuthModalContext.Provider>
   )
 }
 

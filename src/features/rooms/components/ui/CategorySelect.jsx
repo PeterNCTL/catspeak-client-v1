@@ -1,102 +1,57 @@
 import React from "react"
-import {
-  Box,
-  Typography,
-  FormControl,
-  Select,
-  MenuItem,
-  Chip,
-} from "@mui/material"
 import { colors } from "@/shared/utils/colors"
 
 const CategorySelect = ({ value, onChange, options, t }) => {
-  const inputColorSx = {
-    "& .MuiOutlinedInput-root": {
-      borderRadius: "50px",
-      "& fieldset": {
-        borderColor: colors.border,
-      },
-      "&:hover fieldset": {
-        borderColor: colors.red[700],
-      },
-      "&.Mui-focused fieldset": {
-        borderColor: colors.red[700],
-      },
-    },
-    "& .MuiInputLabel-root.Mui-focused": {
-      color: colors.red[700],
-    },
+  const handleSelect = (category) => {
+    let newCategories
+    if (value.includes(category)) {
+      newCategories = value.filter((c) => c !== category)
+    } else {
+      if (value.length >= 3) return
+      newCategories = [...value, category]
+    }
+    // Pass the new array directly to match parent's generic handler or custom event
+    onChange({ target: { value: newCategories } })
   }
 
   return (
-    <Box>
-      <Typography
-        display="block"
-        gutterBottom
-        sx={{ fontWeight: 700, fontSize: "0.875rem" }}
-      >
+    <div className="text-left">
+      <label className="mb-2 block text-sm font-bold text-gray-700">
         {t.rooms.createRoom.categoriesLabel}
-      </Typography>
-      <FormControl fullWidth sx={inputColorSx}>
-        <Select
-          labelId="category-select-label"
-          multiple
-          displayEmpty
-          value={value}
-          onChange={onChange}
-          inputProps={{ MenuProps: { disableScrollLock: true } }}
-          renderValue={(selected) => {
-            if (selected.length === 0) {
-              return (
-                <span style={{ color: "#aaa" }}>
-                  {t.rooms.createRoom.categoriesLabel}
-                </span>
-              )
-            }
-            return (
-              <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-                {selected.map((val) => (
-                  <Chip
-                    key={val}
-                    label={
-                      t.rooms.createRoom.categories[val.toLowerCase()] || val
-                    }
-                    size="small"
-                  />
-                ))}
-              </Box>
-            )
-          }}
-        >
-          {options.map((category) => (
-            <MenuItem
+      </label>
+      <div
+        className="flex flex-wrap justify-start gap-2"
+        style={{ "--border-color": colors.border }}
+      >
+        {options.map((category) => {
+          const isSelected = value.includes(category)
+          const isDisabled = !isSelected && value.length >= 3
+
+          return (
+            <button
               key={category}
-              value={category}
-              disabled={value.length >= 3 && !value.includes(category)}
-              sx={{
-                "&.Mui-selected": {
-                  backgroundColor: "rgba(153, 0, 17, 0.1)",
-                  color: colors.red[700],
-                  "&:hover": {
-                    backgroundColor: "rgba(153, 0, 17, 0.2)",
-                  },
-                },
-                "&.Mui-selected.Mui-focusVisible": {
-                  backgroundColor: "rgba(153, 0, 17, 0.2)",
-                },
-                "&:hover": {
-                  backgroundColor: "rgba(153, 0, 17, 0.05)",
-                  color: colors.red[700],
-                },
-              }}
+              type="button"
+              onClick={() => !isDisabled && handleSelect(category)}
+              disabled={isDisabled}
+              className={`inline-flex h-12 items-center rounded-full px-4 text-sm border transition-colors ${
+                isSelected
+                  ? "bg-cath-red-700 border-cath-red-700 text-white hover:bg-cath-red-800 hover:border-cath-red-800"
+                  : "border-[var(--border-color)] hover:bg-gray-100"
+              } ${isDisabled ? "cursor-not-allowed opacity-50" : ""}`}
             >
               {t.rooms.createRoom.categories[category.toLowerCase()] ||
                 category}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-    </Box>
+            </button>
+          )
+        })}
+      </div>
+      <p
+        className={`mt-1 text-xs transition-opacity `}
+        style={{ color: colors.subtext }}
+      >
+        {t.rooms.createRoom.categoryLimit}
+      </p>
+    </div>
   )
 }
 

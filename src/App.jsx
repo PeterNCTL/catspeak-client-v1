@@ -4,11 +4,15 @@ import { store } from "@store"
 import "@styles/app.css"
 import { Toaster } from "react-hot-toast"
 
+import { ConversationSignalRProvider } from "@/features/messages/context/ConversationSignalRContext"
+
 function App() {
   return (
     <Provider store={store}>
-      <Toaster position="top-center" />
-      <AppRouter />
+      <ConversationSignalRProvider>
+        <Toaster position="top-center" />
+        <AppRouter />
+      </ConversationSignalRProvider>
     </Provider>
   )
 }

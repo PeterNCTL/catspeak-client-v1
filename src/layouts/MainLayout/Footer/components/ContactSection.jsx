@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { Send } from "@mui/icons-material"
+import Send from "@mui/icons-material/Send"
 import { useLanguage } from "@/shared/context/LanguageContext.jsx"
 import { Typography, TextField } from "@mui/material"
 import { colors } from "@/shared/utils/colors"

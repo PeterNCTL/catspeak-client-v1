@@ -91,7 +91,8 @@ export default {
     nameLabel: "房间名称",
     requiredLevel: "所需等级",
     cancel: "取消",
-    create: "创建房间",
+    create: "加入房间",
+    joining: "正在加入...",
     validation: {
       required: "请输入房间名称",
       minLength: "请至少使用3个字符",
@@ -102,6 +103,7 @@ export default {
       friends: "交友",
       trending: "热门",
     },
+    categoryLimit: "最多选择3个类别",
   },
   chatBox: {
     title: "房间消息",

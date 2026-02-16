@@ -1,6 +1,5 @@
 import React from "react"
-import { Button, CircularProgress } from "@mui/material"
-import { colors } from "@/shared/utils/colors"
+import { Loader2 } from "lucide-react"
 
 const PillButton = ({
   children,
@@ -11,42 +10,47 @@ const PillButton = ({
   endIcon,
   disabled = false,
   loading = false,
+  loadingText,
   fullWidth = false,
-  sx = {},
+  className = "",
   ...props
 }) => {
   const isRed = variant === "contained" && color === "primary"
+  const isText = variant === "text"
 
-  const baseSx = {
-    borderRadius: "50px",
-    textTransform: "uppercase",
-    boxShadow: "none",
-    padding: "8px 24px",
-    ...(isRed && {
-      backgroundColor: colors.red[700],
-      color: "#fff",
-      "&:hover": {
-        backgroundColor: colors.red[800],
-        boxShadow: "none",
-      },
-    }),
-    ...sx,
-  }
+  const baseClasses = `
+    inline-flex h-12 items-center justify-center gap-2 rounded-full px-6 
+    text-sm font-medium uppercase transition-colors 
+    disabled:cursor-not-allowed disabled:opacity-50
+    ${fullWidth ? "w-full" : ""}
+  `
+
+  const variantClasses = isRed
+    ? "bg-cath-red-700 text-white hover:bg-cath-red-800"
+    : isText
+      ? "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+      : "bg-gray-200 text-gray-800 hover:bg-gray-300"
 
   return (
-    <Button
-      variant={variant}
-      color={color === "primary" ? "primary" : color} // Pass valid MUI color string if not 'primary' mapped to our red
+    <button
       onClick={onClick}
-      startIcon={startIcon}
-      endIcon={endIcon}
       disabled={disabled || loading}
-      fullWidth={fullWidth}
-      sx={baseSx}
+      className={`${baseClasses} ${variantClasses} ${className}`}
       {...props}
     >
-      {loading ? <CircularProgress size={24} color="inherit" /> : children}
-    </Button>
+      {loading ? (
+        <div className="flex items-center gap-2">
+          <Loader2 className="h-5 w-5 animate-spin" />
+          {loadingText && <span>{loadingText}</span>}
+        </div>
+      ) : (
+        <>
+          {startIcon && <span className="mr-1">{startIcon}</span>}
+          {children}
+          {endIcon && <span className="ml-1">{endIcon}</span>}
+        </>
+      )}
+    </button>
   )
 }
 

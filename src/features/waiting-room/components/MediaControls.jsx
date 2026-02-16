@@ -1,6 +1,9 @@
 import React from "react"
 import { Stack, IconButton } from "@mui/material"
-import { Mic, MicOff, Videocam, VideocamOff } from "@mui/icons-material"
+import Mic from "@mui/icons-material/Mic"
+import MicOff from "@mui/icons-material/MicOff"
+import Videocam from "@mui/icons-material/Videocam"
+import VideocamOff from "@mui/icons-material/VideocamOff"
 import { colors } from "@/shared/utils/colors"
 
 const MediaControls = ({ micOn, cameraOn, onToggleMic, onToggleCam }) => {

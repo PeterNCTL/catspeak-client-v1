@@ -118,7 +118,8 @@ export default {
     nameLabel: "Room name",
     requiredLevel: "Required Level",
     cancel: "Cancel",
-    create: "Create room",
+    create: "Join Room",
+    joining: "Joining...",
     validation: {
       required: "Please enter a room name",
       minLength: "Use at least 3 characters",
@@ -129,6 +130,7 @@ export default {
       friends: "Friends",
       trending: "Trending",
     },
+    categoryLimit: "Select up to 3 categories",
   },
   chatBox: {
     title: "Room Message",

@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 import { Menu, MenuItem, Typography, Box } from "@mui/material"
-import { ExpandMore } from "@mui/icons-material"
+import ExpandMore from "@mui/icons-material/ExpandMore"
 import { useLanguage } from "@/shared/context/LanguageContext"
 import colors from "@/shared/utils/colors"
 

@@ -4,7 +4,8 @@ import { Tower, Mountain, FooterBG } from "@/shared/assets/images/home/footer"
 import { IconLogo } from "@/shared/assets/icons/logo"
 import { useLanguage } from "@/shared/context/LanguageContext.jsx"
 
-import { Facebook, YouTube } from "@mui/icons-material"
+import Facebook from "@mui/icons-material/Facebook"
+import YouTube from "@mui/icons-material/YouTube"
 import { SiZalo } from "react-icons/si"
 
 import CommunitySection from "./components/CommunitySection"

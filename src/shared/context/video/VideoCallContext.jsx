@@ -218,7 +218,8 @@ export const VideoCallContent = ({
     // 2. Leave VideoSDK meeting
     leaveMeeting()
 
-    navigate("/community")
+    const communityLanguage = localStorage.getItem("communityLanguage") || "en"
+    navigate(`/${communityLanguage}/community`)
   }
 
   const handleCopyLink = () => {

@@ -14,17 +14,17 @@ const LanguageBar = () => {
       flag: VietNam,
       name: t.home.countries.vietnam,
       code: "vi",
-      param: "vietnamese",
     },
-    { flag: China, name: t.home.countries.china, code: "cn", param: "chinese" },
-    { flag: USA, name: t.home.countries.usa, code: "en", param: "english" },
+    { flag: China, name: t.home.countries.china, code: "zh" },
+    { flag: USA, name: t.home.countries.usa, code: "en" },
   ]
 
-  const handleNavigation = (param) => {
-    if (param === "vietnamese") {
+  const handleNavigation = (code) => {
+    if (code === "vi") {
       setIsDevModalOpen(true)
     } else {
-      navigate(`/community?language=${param}`)
+      localStorage.setItem("communityLanguage", code)
+      navigate(`/${code}/community`)
     }
   }
 
@@ -34,7 +34,7 @@ const LanguageBar = () => {
         {languages.map((lang, idx) => (
           <div
             key={lang.code}
-            onClick={() => handleNavigation(lang.param)}
+            onClick={() => handleNavigation(lang.code)}
             className={`relative flex items-center gap-3 sm:gap-4 rounded-[12px] sm:rounded-[16px] bg-white p-4 sm:p-5 shadow-[0_12px_30px_rgba(0,0,0,0.12)] transition hover:shadow-xl cursor-pointer ${
               idx === 0 ? "md:ml-6" : ""
             }`}

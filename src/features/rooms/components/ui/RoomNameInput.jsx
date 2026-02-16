@@ -1,47 +1,26 @@
 import React from "react"
-import { Box, Typography, TextField } from "@mui/material"
 import { colors } from "@/shared/utils/colors"
 
 const RoomNameInput = ({ value, onChange, t }) => {
-  const inputColorSx = {
-    "& .MuiOutlinedInput-root": {
-      borderRadius: "50px",
-      "& fieldset": {
-        borderColor: colors.border,
-      },
-      "&:hover fieldset": {
-        borderColor: colors.red[700],
-      },
-      "&.Mui-focused fieldset": {
-        borderColor: colors.red[700],
-      },
-    },
-    "& .MuiInputLabel-root.Mui-focused": {
-      color: colors.red[700],
-    },
-  }
-
   return (
-    <Box>
-      <Typography
-        display="block"
-        gutterBottom
-        sx={{ fontWeight: 700, fontSize: "0.875rem" }}
-      >
+    <div className="flex flex-col gap-1.5">
+      <label htmlFor="name" className="text-sm font-bold text-gray-700">
         {t.rooms.createRoom.nameLabel}
-      </Typography>
-      <TextField
+      </label>
+      <input
         autoFocus
         id="name"
+        style={{
+          "--border-color": colors.border,
+          "--placeholder-color": colors.subtext,
+        }}
         placeholder={t.rooms.createRoom.namePlaceholder}
         type="text"
-        fullWidth
-        variant="outlined"
+        className="h-12 w-full rounded-full border border-[var(--border-color)] px-4 text-sm outline-none transition-colors focus:border-cath-red-700 focus:ring-1 focus:ring-cath-red-700 hover:border-cath-red-700 placeholder-[var(--placeholder-color)]"
         value={value}
         onChange={onChange}
-        sx={inputColorSx}
       />
-    </Box>
+    </div>
   )
 }
 

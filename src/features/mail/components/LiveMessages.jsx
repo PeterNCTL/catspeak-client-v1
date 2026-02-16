@@ -1,5 +1,7 @@
 import React, { useState } from "react"
-import { Send, Check, Close } from "@mui/icons-material"
+import Send from "@mui/icons-material/Send"
+import Check from "@mui/icons-material/Check"
+import Close from "@mui/icons-material/Close"
 import PassConfirmationModal from "./PassConfirmationModal"
 import MyStoryModal from "./MyStoryModal"
 import { useLanguage } from "@/shared/context/LanguageContext"

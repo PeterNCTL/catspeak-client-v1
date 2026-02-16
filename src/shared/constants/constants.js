@@ -1,5 +1,4 @@
-import { FiCpu } from "react-icons/fi"
-import { FaUser, FaUsers } from "react-icons/fa"
+import { Cpu, User, Users } from "lucide-react"
 
 export const slides = [
   {
@@ -23,9 +22,9 @@ export const slides = [
 ]
 
 export const badges = [
-  { id: "connect_1_1", label: "Queue 1:1", icon: FaUser },
-  { id: "connect_2_5", label: "Create 2:5 room", icon: FaUsers },
-  { id: "your_ai", label: "AI", icon: FiCpu },
+  { id: "connect_1_1", label: "Queue 1:1", icon: User },
+  { id: "connect_2_5", label: "Create 2:5 room", icon: Users },
+  { id: "your_ai", label: "AI", icon: Cpu },
 ]
 
 export const roomFilters = [

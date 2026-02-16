@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react"
-import { Send as SendIcon } from "@mui/icons-material"
+import SendIcon from "@mui/icons-material/Send"
 import { Typography, Box, IconButton, InputBase, Paper } from "@mui/material"
 import { useLanguage } from "@/shared/context/LanguageContext"
 import { colors } from "@/shared/utils/colors"

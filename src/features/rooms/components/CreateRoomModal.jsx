@@ -1,23 +1,15 @@
 import React, { useState, useEffect } from "react"
 import { useNavigate, useSearchParams } from "react-router-dom"
 import {
-  Button,
-  Stack,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  useTheme,
-  useMediaQuery,
-  Box,
-} from "@mui/material"
-import { useCreateRoomMutation } from "@/features/rooms/api/roomsApi"
+  useCreateRoomMutation,
+  useJoinRoomMutation,
+} from "@/features/rooms/api/roomsApi"
 import { useLanguage } from "@/shared/context/LanguageContext"
-import { colors } from "@/shared/utils/colors"
 import RoomNameInput from "./ui/RoomNameInput"
 import CategorySelect from "./ui/CategorySelect"
 import LevelSelector from "./ui/LevelSelector"
 import PillButton from "@/shared/components/ui/PillButton"
+import Modal from "@/shared/components/ui/Modal"
 
 // Constants from original components
 const CATEGORIES = ["Practice", "Friends", "Trending"]
@@ -31,10 +23,10 @@ const LEVELS = {
 const CreateRoomModal = ({ open, onCancel }) => {
   const { t } = useLanguage()
   const navigate = useNavigate()
-  const [createRoom, { isLoading }] = useCreateRoomMutation()
+  const [joinRoom, { isLoading: isJoining }] = useJoinRoomMutation()
+  const [createRoom, { isLoading: isCreating }] = useCreateRoomMutation()
+  const isLoading = isJoining || isCreating
   const [searchParams] = useSearchParams()
-  const theme = useTheme()
-  const fullScreen = useMediaQuery(theme.breakpoints.down("sm"))
 
   const urlLanguage = searchParams.get("language")
   const defaultLanguage = urlLanguage
@@ -79,104 +71,118 @@ const CreateRoomModal = ({ open, onCancel }) => {
       return
     }
 
-    try {
-      const response = await createRoom({
-        name: name || "",
-        roomType: 2, // Group room
-        languageType: selectedLanguage,
-        requiredLevel: selectedLevel || "",
-        categories: categories.length > 0 ? categories : ["Other"],
-      }).unwrap()
+    const roomData = {
+      name: name || "",
+      roomType: 2, // Group room
+      languageType: selectedLanguage,
+      requiredLevel: selectedLevel || "",
+      categories: categories.length > 0 ? categories : ["Other"],
+    }
 
-      const roomId = response.roomId
+    try {
+      // 1. Try to join an existing room first
+      console.log("Attempting to join existing room...", roomData)
+      try {
+        const joinResult = await joinRoom({
+          topic: roomData.categories[0], // Use first category as topic
+          requiredLevel: roomData.requiredLevel,
+          languageType: roomData.languageType,
+          roomType: roomData.roomType,
+        }).unwrap()
+
+        console.log("Joined existing room:", joinResult)
+        if (joinResult && joinResult.roomId) {
+          handleCancel()
+          navigate(`/room/${joinResult.roomId}`)
+          return
+        }
+      } catch (joinError) {
+        // If 404, it means no room found, so proceed to create
+        if (joinError?.status === 404 || joinError?.originalStatus === 404) {
+          console.log("No room found, creating a new one...")
+        } else {
+          // If it's another error, throw it to outer catch
+          throw joinError
+        }
+      }
+
+      // 2. If join failed (404), create a new room
+      const createResult = await createRoom(roomData).unwrap()
+      console.log("Created new room:", createResult)
+
+      const roomId = createResult.roomId
       handleCancel() // Close modal
 
       if (roomId) {
         navigate(`/room/${roomId}`)
       }
     } catch (err) {
-      console.error("Failed to create room:", err)
+      console.error("Failed to join or create room:", err)
+      // Optional: Add toast notification here
     }
   }
 
   const handleCategoryChange = (event) => {
-    const newValue = event.target.value
-    const newCategories =
-      typeof newValue === "string" ? newValue.split(",") : newValue
+    // Check if event is from custom component (has target.value) or standard event
+    const newValue = event.target ? event.target.value : event
     const maxLimit = 3
 
-    if (newCategories.length <= maxLimit) {
-      setCategories(newCategories)
+    // Safety check for array
+    if (Array.isArray(newValue)) {
+      if (newValue.length <= maxLimit) {
+        setCategories(newValue)
+      }
     }
   }
 
+  if (!open) return null
+
   return (
-    <Dialog
+    <Modal
       open={open}
-      onClose={(event, reason) => {
-        if (reason !== "backdropClick" && handleCancel) {
-          handleCancel()
-        }
-      }}
-      fullScreen={fullScreen}
-      fullWidth
-      maxWidth="sm"
-      PaperProps={{
-        sx: {
-          borderRadius: "24px",
-          padding: 2,
-        },
-      }}
+      onClose={handleCancel}
+      title={t.rooms.createRoom.title}
+      className="max-w-sm sm:max-w-md"
     >
-      <Box component="div">
-        <DialogTitle
-          sx={{
-            textAlign: "center",
-            color: colors.headingColor,
-          }}
+      <div className="flex flex-col gap-5">
+        {/* Room Name */}
+        <RoomNameInput
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          t={t}
+        />
+
+        {/* Categories */}
+        <CategorySelect
+          value={categories}
+          onChange={handleCategoryChange}
+          options={CATEGORIES}
+          t={t}
+        />
+
+        {/* Level Selection */}
+        <LevelSelector
+          selectedLevel={selectedLevel}
+          onSelect={setSelectedLevel}
+          levels={LEVELS[selectedLanguage]}
+          t={t}
+        />
+      </div>
+
+      <div className="mt-8 flex justify-center gap-3">
+        <PillButton onClick={handleCancel} variant="text" color="inherit">
+          {t.rooms.createRoom.cancel}
+        </PillButton>
+        <PillButton
+          onClick={handleSubmit}
+          loading={isLoading}
+          loadingText={t.rooms.createRoom.joining}
+          disabled={!selectedLanguage}
         >
-          {t.rooms.createRoom.title}
-        </DialogTitle>
-        <DialogContent sx={{ pb: 1 }}>
-          <Stack spacing={3} sx={{ mt: 1 }}>
-            {/* Room Name */}
-            <RoomNameInput
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              t={t}
-            />
-
-            {/* Categories */}
-            <CategorySelect
-              value={categories}
-              onChange={handleCategoryChange}
-              options={CATEGORIES}
-              t={t}
-            />
-
-            {/* Level Selection */}
-            <LevelSelector
-              selectedLevel={selectedLevel}
-              onSelect={setSelectedLevel}
-              levels={LEVELS[selectedLanguage]}
-              t={t}
-            />
-          </Stack>
-        </DialogContent>
-        <DialogActions sx={{ p: 3, justifyContent: "center", gap: 1 }}>
-          <PillButton onClick={handleCancel} variant="text" color="inherit">
-            {t.rooms.createRoom.cancel}
-          </PillButton>
-          <PillButton
-            onClick={handleSubmit}
-            loading={isLoading}
-            disabled={!selectedLanguage}
-          >
-            {t.rooms.createRoom.create}
-          </PillButton>
-        </DialogActions>
-      </Box>
-    </Dialog>
+          {t.rooms.createRoom.create}
+        </PillButton>
+      </div>
+    </Modal>
   )
 }
 

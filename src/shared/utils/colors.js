@@ -36,6 +36,7 @@ export const colors = {
   // Custom colors
   headingColor: "#2e2e2e",
   textColor: "#515151",
+  subtext: "#7A7574",
   primary2: "#f3f3f3",
   darkOverlay: "rgba(0,0,0,0.2)",
   lightOverlay: "rgba(255,255,255,0.4)",

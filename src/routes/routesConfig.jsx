@@ -24,7 +24,11 @@ import { ComingSoonPage } from "@/shared/pages"
 
 // User & Admin Pages
 import UserDashboard from "@/features/user/pages/UserDashboard"
-import UserProfile from "@/features/user/pages/UserProfile"
+import ProfileLayout from "@/features/user/layouts/ProfileLayout"
+import PersonalInformationPage from "@/features/user/pages/PersonalInformationPage"
+import LecturerPage from "@/features/user/pages/LecturerPage"
+import OrganizationPage from "@/features/user/pages/OrganizationPage"
+import AccountSettingsPage from "@/features/user/pages/AccountSettingsPage"
 import SettingsPage from "@/features/settings/pages/SettingsPage"
 import { AdminPage } from "@/features/admin/pages/AdminPage"
 
@@ -149,7 +153,6 @@ const routesConfig = [
     element: <PolicyPage />,
   },
   {
-    path: "/app",
     element: (
       <AuthGuard>
         <UserLayout />
@@ -157,16 +160,47 @@ const routesConfig = [
     ),
     children: [
       {
-        index: true,
-        element: <UserDashboard />,
+        path: "app",
+        children: [
+          {
+            index: true,
+            element: <UserDashboard />,
+          },
+          {
+            path: "setting",
+            element: <SettingsPage />,
+          },
+        ],
       },
+    ],
+  },
+  {
+    element: (
+      <AuthGuard>
+        <UserLayout showFooter={false} />
+      </AuthGuard>
+    ),
+    children: [
       {
-        path: "setting",
-        element: <SettingsPage />,
-      },
-      {
-        path: "profile",
-        element: <UserProfile />,
+        element: <ProfileLayout />,
+        children: [
+          {
+            path: "profile",
+            element: <PersonalInformationPage />,
+          },
+          {
+            path: "lecturer",
+            element: <LecturerPage />,
+          },
+          {
+            path: "organization",
+            element: <OrganizationPage />,
+          },
+          {
+            path: "setting",
+            element: <AccountSettingsPage />,
+          },
+        ],
       },
     ],
   },

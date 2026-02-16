@@ -12,7 +12,7 @@ const DesktopNavItem = ({ navKey, noActive }) => {
   let href
   if (navKey === "catSpeak") {
     const currentLang =
-      lang || localStorage.getItem("communityLanguage") || "en"
+      lang || localStorage.getItem("communityLanguage") || "zh"
     href = `/${currentLang}/cat-speak/news`
   } else if (navKey === "cart") {
     href = "/cart"

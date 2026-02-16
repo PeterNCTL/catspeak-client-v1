@@ -1,6 +1,6 @@
 import React from "react"
 import { Box, Paper, Avatar, Chip, styled } from "@mui/material"
-import { MicOff } from "@mui/icons-material"
+import MicOff from "@mui/icons-material/MicOff"
 import { colors } from "@/shared/utils/colors"
 import MediaControls from "./MediaControls"
 import { useLanguage } from "@/shared/context/LanguageContext"

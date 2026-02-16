@@ -1,7 +1,6 @@
 import React from "react"
 import { useNavigate, useSearchParams } from "react-router-dom"
-import { Box, Typography, Stack } from "@mui/material"
-import { ArrowBack } from "@mui/icons-material"
+import { ArrowLeft } from "lucide-react"
 import { colors } from "@/shared/utils/colors"
 import PillButton from "@/shared/components/ui/PillButton"
 import ParticipantList from "./ParticipantList"
@@ -22,53 +21,23 @@ const WaitingScreen = ({
   const [searchParams] = useSearchParams()
   const participants = session?.participants || []
   const { t } = useLanguage()
+  const communityLanguage = localStorage.getItem("communityLanguage") || "en"
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        minHeight: "100vh",
-        width: "100%",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        position: "relative",
-        bgcolor: "background.default",
-        p: { xs: 2, md: 0 },
-      }}
-    >
+    <div className="flex min-h-screen w-full flex-col items-center justify-center relative bg-gray-50 p-4 md:p-0">
       {/* Back Button */}
-      <Box
-        sx={{
-          position: "absolute",
-          top: { xs: 16, md: 32 },
-          left: { xs: 16, md: 32 },
-          zIndex: 10,
-        }}
-      >
+      <div className="absolute top-4 left-4 md:top-8 md:left-8 z-10">
         <PillButton
           variant="text"
           color="inherit"
           startIcon={
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                width: 32,
-                height: 32,
-                borderRadius: "50%",
-                bgcolor: "white",
-                boxShadow: "0px 1px 2px rgba(0,0,0,0.05)",
-                border: `1px solid ${colors.border}`,
-              }}
-            >
-              <ArrowBack sx={{ fontSize: 20 }} />
-            </Box>
+            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-white shadow-sm border border-gray-200">
+              <ArrowLeft size={20} />
+            </div>
           }
           onClick={() =>
             navigate({
-              pathname: "/community",
+              pathname: `/${communityLanguage}/community`,
               search: searchParams.toString(),
             })
           }
@@ -78,29 +47,21 @@ const WaitingScreen = ({
             pl: { xs: 0, md: 2 }, // Adjust padding on mobile if needed
           }}
         >
-          <Typography fontWeight="500">
+          <span className="font-medium">
             {t.rooms.waitingScreen.backToCommunity}
-          </Typography>
+          </span>
         </PillButton>
-      </Box>
+      </div>
 
-      <Box sx={{ mb: 4, textAlign: "center" }}>
-        <Typography
-          variant="h4"
-          sx={{
-            mb: 1,
-            fontWeight: 600,
-            color: colors.headingColor,
-            fontSize: { xs: "1.5rem", md: "2.125rem" }, // Responsive font size
-          }}
-        >
+      <div className="mb-4 text-center">
+        <h4 className="mb-1 font-semibold text-gray-900 text-2xl md:text-4xl">
           {session?.name ||
             session?.roomName ||
             t.rooms.waitingScreen.readyToJoin}
-        </Typography>
+        </h4>
 
         <ParticipantList participants={participants} />
-      </Box>
+      </div>
 
       <VideoPreview
         localStream={localStream}
@@ -111,22 +72,16 @@ const WaitingScreen = ({
         onToggleCam={onToggleCam}
       />
 
-      <Stack alignItems="center" spacing={2}>
+      <div className="flex flex-col items-center gap-2">
         <PillButton onClick={onJoin}>
           {t.rooms.waitingScreen.joinNow}
         </PillButton>
-        <Typography variant="body2" color="text.secondary">
+        <p className="text-sm text-gray-500">
           {t.rooms.waitingScreen.joinedAs}{" "}
-          <Typography
-            component="span"
-            variant="body2"
-            sx={{ fontWeight: 500, color: colors.headingColor }}
-          >
-            {user?.username}
-          </Typography>
-        </Typography>
-      </Stack>
-    </Box>
+          <span className="font-medium text-gray-900">{user?.username}</span>
+        </p>
+      </div>
+    </div>
   )
 }
 
