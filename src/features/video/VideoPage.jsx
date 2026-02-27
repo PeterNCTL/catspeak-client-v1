@@ -8,7 +8,7 @@ const VideoPage = () => {
   const { t } = useLanguage()
 
   return (
-    <div className="rounded-2xl bg-white p-8 shadow-sm">
+    <div className="rounded-2xl bg-white shadow-sm">
       <Title level={2}>{t.catSpeak.video.title}</Title>
       <Paragraph>{t.catSpeak.video.description}</Paragraph>
     </div>

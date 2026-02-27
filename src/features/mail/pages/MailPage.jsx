@@ -11,7 +11,8 @@ import {
 } from "@/store/api/storiesApi"
 import { useDispatch } from "react-redux"
 import { setActiveConversation } from "@/store/slices/messageWidgetSlice"
-import LiveMessages from "@/features/mail/components/LiveMessages"
+import LiveMessages from "@/features/mail/components/story/LiveMessages"
+import MailDashboard from "@/features/mail/components/calendar/MailDashboard"
 
 const MailPage = () => {
   const { t } = useLanguage()
@@ -96,6 +97,10 @@ const MailPage = () => {
         userLetters={myStories.length}
         totalLetters={stories.length + myStories.length}
       />
+
+      {/* <div className="mt-8 mb-12 px-2 md:px-0">
+        <MailDashboard />
+      </div> */}
     </div>
   )
 }

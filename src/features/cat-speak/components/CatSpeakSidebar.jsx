@@ -1,18 +1,17 @@
 import React, { useState, useEffect } from "react"
-import { Drawer, Button, Box, Typography, IconButton } from "@mui/material"
 import { useNavigate, useLocation, useParams } from "react-router-dom"
 import {
-  FiMenu,
-  FiX,
-  FiLayout,
-  FiGlobe,
-  FiVideo,
-  FiMail,
-  FiSettings,
-  FiFlag,
-  FiHelpCircle,
-  FiMessageSquare,
-} from "react-icons/fi"
+  Menu,
+  X,
+  LayoutDashboard,
+  Globe,
+  Video,
+  Mail,
+  Settings,
+  Flag,
+  HelpCircle,
+  MessageSquare,
+} from "lucide-react"
 import { useLanguage } from "@/shared/context/LanguageContext"
 import InDevelopmentModal from "@/shared/components/common/InDevelopmentModal"
 
@@ -39,24 +38,20 @@ const CatSpeakSidebar = () => {
   }, [location.pathname])
 
   const menuItems = [
-    { key: "news", label: t.catSpeak.sidebar.news, icon: FiLayout },
-    { key: "discover", label: t.catSpeak.sidebar.discover, icon: FiGlobe },
-    { key: "video", label: t.catSpeak.sidebar.video, icon: FiVideo },
-    { key: "mail", label: t.catSpeak.sidebar.mail, icon: FiMail },
+    { key: "news", label: t.catSpeak.sidebar.news, icon: LayoutDashboard },
+    { key: "discover", label: t.catSpeak.sidebar.discover, icon: Globe },
+    { key: "video", label: t.catSpeak.sidebar.video, icon: Video },
+    { key: "mail", label: t.catSpeak.sidebar.mail, icon: Mail },
   ]
 
   const bottomItems = [
-    {
-      key: "settings",
-      label: t.catSpeak.sidebar.settings,
-      icon: FiSettings,
-    },
-    { key: "report", label: t.catSpeak.sidebar.report, icon: FiFlag },
-    { key: "help", label: t.catSpeak.sidebar.help, icon: FiHelpCircle },
+    { key: "settings", label: t.catSpeak.sidebar.settings, icon: Settings },
+    { key: "report", label: t.catSpeak.sidebar.report, icon: Flag },
+    { key: "help", label: t.catSpeak.sidebar.help, icon: HelpCircle },
     {
       key: "feedback",
       label: t.catSpeak.sidebar.feedback,
-      icon: FiMessageSquare,
+      icon: MessageSquare,
     },
   ]
 
@@ -77,8 +72,28 @@ const CatSpeakSidebar = () => {
     setMobileOpen(false)
   }
 
+  const MenuItem = ({ item, isActive, onClick }) => {
+    const Icon = item.icon
+    return (
+      <button
+        onClick={onClick}
+        className={`flex w-full items-center gap-3 px-4 py-3 text-sm font-semibold transition-colors ${
+          isActive
+            ? "bg-gray-100/80 text-[#990011]"
+            : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"
+        } rounded-xl`}
+      >
+        <Icon
+          size={20}
+          className={isActive ? "text-[#990011]" : "text-gray-400"}
+        />
+        <span>{item.label}</span>
+      </button>
+    )
+  }
+
   const SidebarContent = () => (
-    <div className="flex h-full flex-col py-4">
+    <div className="flex h-full flex-col">
       <div className="flex flex-col space-y-1">
         {menuItems.map((item) => (
           <MenuItem
@@ -90,7 +105,7 @@ const CatSpeakSidebar = () => {
         ))}
       </div>
 
-      <div className="my-4 h-px w-full bg-gray-100" />
+      <div className="my-6 h-px w-full bg-gray-100" />
 
       <div className="flex flex-col space-y-1">
         {bottomItems.map((item) => (
@@ -105,84 +120,56 @@ const CatSpeakSidebar = () => {
     </div>
   )
 
-  const MenuItem = ({ item, isActive, onClick }) => {
-    const Icon = item.icon
-    return (
-      <button
-        onClick={onClick}
-        className={`flex w-full items-center gap-3 px-4 py-3 text-sm font-semibold transition-colors ${
-          isActive
-            ? "bg-gray-100 text-[#990011]"
-            : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"
-        } rounded-xl`}
-      >
-        <Icon size={20} />
-        <span>{item.label}</span>
-      </button>
-    )
-  }
-
   return (
     <>
-      {/* Desktop Sidebar */}
-      <div className="hidden lg:block w-[240px] shrink-0">
-        <div className="sticky top-24">
+      {/* Mobile Trigger Button (Visible only on smaller screens) */}
+      <div className="lg:hidden p-4 pb-0 shrink-0 w-full mb-2">
+        <button
+          onClick={() => setMobileOpen(true)}
+          className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:border-[#990011] hover:text-[#990011] transition-colors font-medium bg-white"
+        >
+          <Menu size={18} />
+          <span>{t.catSpeak.sidebar.menu}</span>
+        </button>
+      </div>
+
+      {/* Desktop Sidebar Container */}
+      <div className="hidden lg:block w-[300px] shrink-0 p-5 sticky top-[80px] h-[calc(100vh-80px)] overflow-y-auto [&::-webkit-scrollbar]:hidden">
+        <SidebarContent />
+      </div>
+
+      {/* Mobile Drawer Overlay */}
+      {mobileOpen && (
+        <div
+          className="fixed inset-0 bg-black/40 z-40 lg:hidden transition-opacity"
+          onClick={() => setMobileOpen(false)}
+        />
+      )}
+
+      {/* Mobile Drawer Panel */}
+      <div
+        className={`fixed top-0 left-0 h-full w-[280px] bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-in-out lg:hidden pt-4 pb-6 px-4 flex flex-col ${
+          mobileOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        <div className="flex justify-between items-center mb-6 px-2">
+          <span className="text-lg font-bold text-gray-900 tracking-tight">
+            {t.catSpeak.sidebar.menu}
+          </span>
+          <button
+            onClick={() => setMobileOpen(false)}
+            className="p-1.5 text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+          >
+            <X size={20} />
+          </button>
+        </div>
+
+        <div className="flex-1 overflow-y-auto [&::-webkit-scrollbar]:hidden">
           <SidebarContent />
         </div>
       </div>
 
-      {/* Mobile Trigger */}
-      <div className="lg:hidden mb-4">
-        <Button
-          startIcon={<FiMenu />}
-          onClick={() => setMobileOpen(true)}
-          variant="outlined"
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            gap: 1,
-            textTransform: "none",
-            borderRadius: "8px",
-            borderColor: "#d9d9d9",
-            color: "inherit",
-            "&:hover": {
-              borderColor: "#990011",
-              color: "#990011",
-            },
-          }}
-        >
-          {t.catSpeak.sidebar.menu}
-        </Button>
-      </div>
-
-      {/* Mobile Drawer */}
-      <Drawer
-        anchor="left"
-        open={mobileOpen}
-        onClose={() => setMobileOpen(false)}
-        PaperProps={{
-          sx: { width: 280, padding: "10px", borderRadius: "0 16px 16px 0" },
-        }}
-      >
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            mb: 2,
-            px: 1,
-          }}
-        >
-          <Typography variant="h6" fontWeight="bold">
-            {t.catSpeak.sidebar.menu}
-          </Typography>
-          <IconButton onClick={() => setMobileOpen(false)}>
-            <FiX />
-          </IconButton>
-        </Box>
-        <SidebarContent />
-      </Drawer>
-
+      {/* Coming Soon Modal */}
       <InDevelopmentModal
         open={devModalOpen}
         onCancel={() => setDevModalOpen(false)}

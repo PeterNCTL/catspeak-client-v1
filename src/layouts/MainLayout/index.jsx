@@ -14,7 +14,7 @@ import AuthModalContext from "@/shared/context/AuthModalContext"
 
 const { Content } = Layout
 
-const MainLayout = () => {
+const MainLayout = ({ showFooter = true }) => {
   const [authModal, setAuthModal] = useState({
     isOpen: false,
     mode: "login",
@@ -69,7 +69,7 @@ const MainLayout = () => {
         </Content>
 
         {/* Footer full width (bên trong tự giới hạn 1200px) */}
-        <Footer />
+        {showFooter && <Footer />}
 
         <Auth
           isOpen={authModal.isOpen}

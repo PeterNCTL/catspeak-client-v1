@@ -12,7 +12,7 @@ import RoomsPage from "@/features/rooms/pages/RoomsPage"
 import RoomDetailPage from "@/features/rooms/pages/RoomDetailPage"
 
 // Cat Speak Feature Pages
-import CatSpeakLayout from "@/features/cat-speak/pages/CatSpeakLayout"
+import CatSpeakLayout from "@/features/cat-speak/layouts/CatSpeakLayout"
 import NewsPage from "@/features/news/pages/NewsPage"
 import NewsDetailPage from "@/features/news/pages/NewsDetailPage"
 import DiscoverPage from "@/features/discover/DiscoverPage"
@@ -93,7 +93,7 @@ const routesConfig = [
     element: <LanguageLayout />,
     children: [
       {
-        element: <MainLayout />,
+        element: <MainLayout showFooter={false} />,
         children: [
           {
             element: <CatSpeakLayout />,

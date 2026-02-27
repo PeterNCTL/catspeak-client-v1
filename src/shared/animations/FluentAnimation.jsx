@@ -1,0 +1,52 @@
+import React from "react"
+import { motion } from "framer-motion"
+
+/**
+ * Fluent Animation wrapper
+ * - Enter/Exit: slides in from specified direction
+ * - direction: "up" | "down" | "left" | "right" | "none" (default: "up")
+ * - exit: boolean (default: false), configures if an exit animation should play
+ */
+const FluentAnimation = ({
+  children,
+  animationKey,
+  direction = "up",
+  exit = false,
+  className,
+}) => {
+  const getInitialPosition = () => {
+    switch (direction) {
+      case "down":
+        return { y: -60, x: 0 }
+      case "left":
+        return { x: 60, y: 0 }
+      case "right":
+        return { x: -60, y: 0 }
+      case "none":
+        return { x: 0, y: 0 }
+      case "up":
+      default:
+        return { y: 60, x: 0 }
+    }
+  }
+
+  const initialPos = getInitialPosition()
+
+  return (
+    <motion.div
+      key={animationKey}
+      initial={{ y: initialPos.y, x: initialPos.x, opacity: 0 }}
+      animate={{ y: 0, x: 0, opacity: 1 }}
+      exit={exit ? { y: initialPos.y, x: initialPos.x, opacity: 0 } : undefined}
+      transition={{
+        duration: 0.28,
+        ease: [0.16, 1, 0.3, 1], // Strong ease-out (fast → slow)
+      }}
+      className={className || "w-full h-full"}
+    >
+      {children}
+    </motion.div>
+  )
+}
+
+export default FluentAnimation

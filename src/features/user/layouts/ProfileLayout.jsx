@@ -12,7 +12,7 @@ const ProfileLayout = () => {
 
       {/* Main Content */}
       <main className="flex-1 h-full overflow-y-auto">
-        <div className="mx-auto w-[1040px] p-5">
+        <div className="mx-auto w-full max-w-[1040px] min-w-[450px] p-5">
           <Outlet />
         </div>
       </main>
