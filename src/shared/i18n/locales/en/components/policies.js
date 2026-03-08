@@ -1,4 +1,131 @@
+import intellectualPropertyPolicy from "./intellectualProperty"
+
 export default {
+  paymentPolicy: {
+    intro:
+      "Cat Speak - a global community platform connecting languages and cultures - This Payment Policy specifies the conditions applicable to payments when using paid services on the Cat Speak platform. Making a payment means the USER agrees to this Policy and Cat Speak's Terms of Service. Last updated: 02/23/2026",
+    section1: {
+      title: "1. Operating model",
+      intro: "Cat Speak operates on a hybrid model:",
+      items: [
+        "Subscription service - provides access to premium features, AI, supporting tools.",
+        "Intermediary platform (Marketplace) - connects users to communicate and perform paid transactions with each other according to CAT SPEAK's regulations.",
+        "Enterprise solutions (B2B) - provides services, accounts or licenses to use under a separate contract.",
+      ],
+    },
+    section2: {
+      title: "2. Service package payment (Subscription - B2C)",
+      items: [
+        "Service packages are provided on a prepaid model.",
+        "Access is only activated upon successful payment.",
+        "Service packages may self-renew if the user does not cancel before the renewal date.",
+        "Paid fees are non-refundable, except in cases considered under Section V.",
+      ],
+    },
+    section3: {
+      title: "3. Payment on marketplace (P2P)",
+      items: [
+        "Users can make payments to other users through Cat Speak's system.",
+        "Cat Speak acts as an intermediary processing transactions and may deduct a platform fee before transferring the remainder to the service provider.",
+        "Cat Speak is not a direct service provider between Users.",
+      ],
+      rightsTitle: "Cat Speak has the right to:",
+      rights: [
+        "Hold payments for verification;",
+        "Freeze transactions when there is a dispute;",
+        "Require provision of evidence;",
+        "Notify and submit to competent State authorities if detecting any signs of violation of Vietnamese law.",
+      ],
+    },
+    section4: {
+      title: "4. Enterprise payment (B2B)",
+      items: [
+        "Payment terms, deadlines, and refunds for businesses are governed by separate contracts.",
+        "In case of discrepancy between the B2B contract and this Policy, the B2B contract will prevail.",
+      ],
+    },
+    section5: {
+      title: "5. Refund policy - Subscription (B2C)",
+      generalRuleBold: "General principle:",
+      generalRuleText:
+        "Paid fees are non-refundable, unless required by law or in special cases below.",
+      subjectiveRuleBold: "No refund for subjective reasons:",
+      subjectiveRuleText: "Cat Speak will not issue a refund if the User:",
+      reasons: [
+        "Does not like the experience;",
+        "Does not meet personal expectations;",
+        "Does not use the service;",
+        "Changes personal needs.",
+      ],
+      windowTitle: "3. Refund window for new users",
+      windowIntro:
+        "New users may request a refund within 07 (seven) days from the first payment if the User requests and meets all of the following requirements:",
+      windowItems: [
+        "Has not used more than 30% of the benefits;",
+        "Has not violated any Terms and/or regulations;",
+        "Has evidence of a serious technical error.",
+      ],
+      windowNote:
+        "CAT SPEAK has sole discretion in considering, and CAT SPEAK's decision in this case is final, and the User has no right to complain.",
+    },
+    section6: {
+      title: "6. Refunds in marketplace",
+      paragraph1: "Refunds for Users will only be considered when:",
+      items1: [
+        "The service was not performed by the User providing the service;",
+        "There is a request sent to CAT SPEAK from the User;",
+        "There is authentic evidence of payment and violation of CAT SPEAK's regulations and/or relevant legal regulations. All evidence must be sent to CAT SPEAK according to regulations before the User requests a refund.",
+      ],
+      paragraph2: "CAT SPEAK is not responsible for refunding if:",
+      items2: [
+        "The dispute is subjective in nature for the User;",
+        "The transaction and/or service was completed between Users;",
+        "There is no reasonable and authentic evidence of a violation.",
+      ],
+      note: "Cat Speak can support mediation but has no obligation to compensate on behalf of the parties.",
+    },
+    section7: {
+      title: "7. Evidence requirements",
+      intro: "Users may request to provide relevant information:",
+      items: [
+        "Transaction code;",
+        "Invoice;",
+        "Screenshots;",
+        "Exchange history;",
+        "Detailed description of the incident.",
+      ],
+      note: "CAT SPEAK has the sole right to review and refuse processing if there are insufficient grounds or signs of fraud or dishonesty.",
+    },
+    section8: {
+      title: "8. Refunds and fraud",
+      items: [
+        "CAT SPEAK reserves the right to suspend an account if it detects any abuse of refunds or valid refund requests.",
+        "CAT SPEAK will only refund the User to the correct account that transferred money to CAT SPEAK previously and has recorded a successful transaction on the database system.",
+        "Users may have to bear costs incurred related to the resolution of payment disputes.",
+      ],
+    },
+    section9: {
+      title:
+        "9. Limitation of liability regarding AI (Artificial Intelligence)",
+      items: [
+        "Content and responses from AI are for academic support and reference only;",
+        "No absolute guarantee of accuracy in form or content;",
+        "CAT SPEAK assumes no responsibility for any decisions made by the User based on content generated by or provided to the User by AI.",
+      ],
+    },
+    section10: {
+      title: "10. Contact",
+      intro:
+        "If you have any questions or requests related to the payment policy, please contact:",
+      contact: {
+        email: "Email:",
+        website: "Website:",
+        fanpage: "Fanpage:",
+        hotline: "Hotline:",
+      },
+      copyright: "@Copyright 2026 | Cat Speak - I speak you speak we peak",
+    },
+  },
   privacyPolicy: {
     title: "Privacy Policy",
     intro:
@@ -115,6 +242,8 @@ export default {
         fanpage: "Fanpage:",
         hotline: "Hotline:",
       },
+      copyright: "© 2026 | Cat Speak - I speak you speak we peak",
     },
   },
+  intellectualPropertyPolicy,
 }

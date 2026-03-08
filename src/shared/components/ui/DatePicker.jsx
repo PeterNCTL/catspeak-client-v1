@@ -3,8 +3,9 @@ import dayjs from "dayjs"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { AnimatePresence } from "framer-motion"
 import { FluentAnimation } from "@/shared/animations"
+import colors from "@/shared/utils/colors"
 
-const DatePicker = ({ value, onChange, className = "" }) => {
+const DatePicker = ({ value, onChange, color = "#B91264", className = "" }) => {
   const [isOpen, setIsOpen] = useState(false)
   const dropdownRef = useRef(null)
 
@@ -95,7 +96,8 @@ const DatePicker = ({ value, onChange, className = "" }) => {
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center justify-center border border-gray-200 rounded-md px-3 py-1.5 text-[13px] sm:text-sm font-bold text-gray-800 w-[140px] text-center shadow-sm hover:bg-gray-50 transition-colors bg-white outline-none h-full focus:ring-2 focus:ring-[#B91264]/20"
+        className="flex items-center justify-center border rounded-md whitespace-nowrap text-center p-4 shadow-sm hover:bg-gray-50 transition-colors bg-white outline-none h-full text-gray-800"
+        style={{ borderColor: colors.border }}
       >
         <span>{formatVietnameseDate(date)}</span>
       </button>
@@ -106,7 +108,8 @@ const DatePicker = ({ value, onChange, className = "" }) => {
             <FluentAnimation
               direction="down"
               exit={true}
-              className="pointer-events-auto bg-white border border-gray-200 rounded-lg shadow-xl p-4 flex flex-col"
+              className="pointer-events-auto bg-white border rounded-lg shadow-xl p-4 flex flex-col"
+              style={{ borderColor: colors.border }}
             >
               {/* Header with Month Selection and Chevrons */}
               <div className="flex items-center justify-between mb-4">
@@ -162,13 +165,19 @@ const DatePicker = ({ value, onChange, className = "" }) => {
 
                   return (
                     <button
+                      type="button"
                       key={item.key}
                       onClick={() => handleSelectDate(item.day)}
                       className={`
-                    w-8 h-8 flex items-center justify-center text-[13px] rounded-full mx-auto transition-colors font-medium text-gray-700
-                    ${isSelected ? "!bg-[#B91264] !text-white font-bold hover:!bg-pink-800" : "hover:bg-gray-100"}
-                    ${isToday && !isSelected ? "border border-[#B91264] text-[#B91264]" : ""}
+                    w-8 h-8 flex items-center justify-center text-[13px] rounded-full mx-auto transition-colors font-medium
+                    ${isSelected ? "text-white font-bold hover:brightness-90" : "text-gray-700 hover:bg-gray-100"}
                   `}
+                      style={{
+                        ...(isSelected ? { backgroundColor: color } : {}),
+                        ...(isToday && !isSelected
+                          ? { border: `1px solid ${color}`, color: color }
+                          : {}),
+                      }}
                     >
                       {item.day}
                     </button>

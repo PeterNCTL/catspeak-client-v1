@@ -4,50 +4,53 @@ import { Loader2 } from "lucide-react"
 const PillButton = ({
   children,
   onClick,
-  variant = "contained",
-  color = "primary", // can be 'primary' (red) or 'inherit' (gray/text)
   startIcon,
   endIcon,
-  disabled = false,
   loading = false,
-  loadingText,
-  fullWidth = false,
+  disabled = false,
+  bgColor = "#990011",
+  textColor = "white",
   className = "",
+  variant = "primary", // "primary" | "secondary"
   ...props
 }) => {
-  const isRed = variant === "contained" && color === "primary"
-  const isText = variant === "text"
-
-  const baseClasses = `
-    inline-flex h-12 items-center justify-center gap-2 rounded-full px-6 
-    text-sm font-medium uppercase transition-colors 
-    disabled:cursor-not-allowed disabled:opacity-50
-    ${fullWidth ? "w-full" : ""}
-  `
-
-  const variantClasses = isRed
-    ? "bg-cath-red-700 text-white hover:bg-cath-red-800"
-    : isText
-      ? "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
-      : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+  const isSecondary = variant === "secondary"
 
   return (
     <button
       onClick={onClick}
       disabled={disabled || loading}
-      className={`${baseClasses} ${variantClasses} ${className}`}
+      style={!isSecondary ? { backgroundColor: bgColor, color: textColor } : {}}
+      className={`
+        h-12
+        px-4
+        rounded-full
+        font-medium
+        text-sm
+        flex items-center justify-center gap-2
+        transition
+        ${
+          isSecondary
+            ? "bg-white text-black hover:bg-[#E5E5E5] active:bg-[#e0e0e0]"
+            : "hover:brightness-90 active:brightness-75"
+        }
+        disabled:brightness-100
+        disabled:bg-[#BFBFBF]
+        disabled:text-white
+        ${className}
+      `}
       {...props}
     >
       {loading ? (
-        <div className="flex items-center gap-2">
-          <Loader2 className="h-5 w-5 animate-spin" />
-          {loadingText && <span>{loadingText}</span>}
-        </div>
+        <>
+          <Loader2 className="animate-spin w-4 h-4" />
+          <span>{children}</span>
+        </>
       ) : (
         <>
-          {startIcon && <span className="mr-1">{startIcon}</span>}
+          {startIcon}
           {children}
-          {endIcon && <span className="ml-1">{endIcon}</span>}
+          {endIcon}
         </>
       )}
     </button>

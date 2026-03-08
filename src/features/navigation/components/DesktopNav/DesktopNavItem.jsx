@@ -1,6 +1,5 @@
 import React from "react"
 import { NavLink, useParams } from "react-router-dom"
-import { Box } from "@mui/material"
 import { useLanguage } from "@/shared/context/LanguageContext"
 import { useActiveLink } from "../../hooks/useActiveLink"
 
@@ -27,38 +26,21 @@ const DesktopNavItem = ({ navKey, noActive }) => {
   const isActive = useActiveLink(navKey)
 
   return (
-    <Box
-      component={NavLink}
+    <NavLink
       to={href}
-      sx={{
-        display: "flex",
-        flex: 1,
-        whiteSpace: "nowrap",
-        alignItems: "center",
-        justifyContent: "center",
-        py: 1.5, // 12px
-        px: 6, // 48px
-        gap: 1, // 8px
-        fontSize: "0.875rem",
-        fontWeight: 600,
-        textTransform: "uppercase",
-        letterSpacing: "0.025em",
-        borderRadius: "9999px",
-        transition: "all 200ms",
-        textDecoration: "none",
-        color: noActive
-          ? "rgba(255, 255, 255, 0.7)"
-          : isActive
-            ? "white"
-            : "rgba(255, 255, 255, 0.7)",
-        "&:hover": {
-          color: "white",
-          bgcolor: "transparent",
-        },
-      }}
+      className={`
+        flex min-w-max h-12 flex-1 items-center justify-center whitespace-nowrap rounded-full px-6 text-sm font-semibold uppercase tracking-wide transition-colors duration-200 no-underline hover:bg-white/10
+        ${
+          noActive
+            ? "text-white/70 hover:text-white"
+            : isActive
+              ? "text-white hover:text-white"
+              : "text-white/70 hover:text-white"
+        }
+      `}
     >
       {t.nav[navKey]}
-    </Box>
+    </NavLink>
   )
 }
 

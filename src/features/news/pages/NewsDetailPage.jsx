@@ -1,107 +1,144 @@
-import React from "react"
+import React, { useState } from "react"
 import { useParams, useNavigate, Link } from "react-router-dom"
-import { Typography, Breadcrumbs, Button } from "@mui/material"
-import ArrowBackIcon from "@mui/icons-material/ArrowBack"
-import { newsData } from "../data/newsData"
+import {
+  ArrowLeft,
+  ChevronRight,
+  Eye,
+  MessageCircle,
+  ThumbsUp,
+  Heart,
+  Smile,
+} from "lucide-react"
+import {
+  useGetPostByIdQuery,
+  useReactToPostMutation,
+} from "@/store/api/postsApi"
 import { useLanguage } from "@/shared/context/LanguageContext"
+import PostContent from "../components/PostContent"
+import placeholderImg from "@/shared/assets/images/news/placeholder.jpg"
 
 const NewsDetailPage = () => {
   const { id, lang } = useParams()
   const navigate = useNavigate()
   const { t } = useLanguage()
 
-  // Find the news item
-  const newsItem = newsData.find((item) => item.id === parseInt(id))
+  const { data, isLoading, error } = useGetPostByIdQuery(id)
+  const [reactToPost] = useReactToPostMutation()
+  const newsItem = data?.data
 
-  if (!newsItem) {
+  const handleReact = (type) => {
+    if (!newsItem?.postId) return
+    reactToPost({ postId: newsItem.postId, type })
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center p-20">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-e-transparent align-[-0.125em] text-black motion-reduce:animate-[spin_1.5s_linear_infinite]" />
+      </div>
+    )
+  }
+
+  if (error || !newsItem) {
     return (
       <div className="flex min-h-[50vh] flex-col items-center justify-center">
-        <Typography variant="h5" className="mb-4">
-          News not found
-        </Typography>
-        <Button
-          variant="outlined"
-          startIcon={<ArrowBackIcon />}
+        <h5 className="mb-4 text-2xl font-bold">{t.news?.error?.notFound}</h5>
+        <button
+          className="flex items-center gap-2 rounded-md border px-4 py-2 text-sm"
           onClick={() => navigate(`/${lang}/cat-speak/news`)}
         >
-          Back to News
-        </Button>
+          <ArrowLeft className="h-4 w-4" />
+          {t.news?.error?.backToNews}
+        </button>
       </div>
     )
   }
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-8">
-      {/* Breadcrumbs / Back Navigation */}
-      <div className="mb-6">
-        <Breadcrumbs aria-label="breadcrumb" className="text-sm">
-          <Link
-            to={`/${lang}/cat-speak/news`}
-            className="text-gray-500 hover:text-gray-900 transition-colors"
-          >
-            News
-          </Link>
-          <Typography
-            color="text.primary"
-            className="font-medium line-clamp-1 max-w-[200px] sm:max-w-none"
-          >
+    <div className="mx-auto max-w-4xl space-y-5">
+      {/* Header */}
+      <div className="flex flex-col gap-3">
+        <Link
+          to={`/${lang}/cat-speak/news`}
+          className="flex items-center gap-2 h-12 px-3  rounded-xl w-fit text-gray-500 hover:text-gray-900 hover:bg-[#E5E5E5] transition-colors font-medium"
+        >
+          <ArrowLeft className="h-6 w-6" />
+          {t.news?.newsDetail?.back}
+        </Link>
+
+        <div className="space-y-2">
+          <h1 className="text-4xl sm:text-5xl font-bold m-0">
             {newsItem.title}
-          </Typography>
-        </Breadcrumbs>
+          </h1>
+          <div className="text-sm uppercase text-[#7A7574] font-semibold">
+            {new Date(newsItem.createDate).toLocaleDateString()}
+          </div>
+        </div>
       </div>
 
-      {/* Main Content */}
-      <article className="overflow-hidden rounded-3xl bg-white shadow-sm ring-1 ring-gray-100">
-        {/* Hero Image */}
-        <div className="relative h-[300px] w-full md:h-[400px]">
+      {/* Article */}
+      <article className="overflow-hidden bg-white">
+        {/* Hero */}
+        <div className="relative h-[350px] w-full">
           <img
-            src={newsItem.image}
+            src={newsItem.media?.[0]?.mediaUrl || placeholderImg}
             alt={newsItem.title}
-            className="h-full w-full object-cover"
+            className="h-full w-full object-cover rounded-3xl"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-60" />
+        </div>
 
-          <div className="absolute bottom-0 left-0 p-6 md:p-8 text-white">
-            <Typography
-              variant="overline"
-              className="mb-2 block text-gray-200 tracking-wider"
+        {/* Stats & Actions */}
+        <div className="flex flex-col items-start gap-2 py-4 border-b border-[#C6C6C6]">
+          <div className="text-base">
+            {newsItem.totalReactions} {t.news?.newsDetail?.reactions}
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              onClick={() => handleReact("Like")}
+              className={`flex items-center gap-2 h-12 px-3 rounded-xl text-base hover:bg-[#E5E5E5] transition-colors ${newsItem.currentUserReaction === "Like" ? "text-blue-600 font-medium" : ""}`}
             >
-              {newsItem.date}
-            </Typography>
-            <Typography
-              variant="h3"
-              className="font-bold leading-tight md:text-4xl lg:text-5xl"
-              style={{ textShadow: "0 2px 4px rgba(0,0,0,0.3)" }}
+              <ThumbsUp
+                className={`${newsItem.currentUserReaction === "Like" ? "fill-blue-600" : ""}`}
+              />
+              {t.news?.newsDetail?.like}
+            </button>
+            <button
+              onClick={() => handleReact("Love")}
+              className={`flex items-center gap-2 h-12 px-3 rounded-xl text-base hover:bg-[#E5E5E5] transition-colors ${newsItem.currentUserReaction === "Love" ? "text-red-500 font-medium" : ""}`}
             >
-              {newsItem.title}
-            </Typography>
+              <Heart
+                className={`${newsItem.currentUserReaction === "Love" ? "fill-red-500" : ""}`}
+              />
+              {t.news?.newsDetail?.love}
+            </button>
+            <button
+              onClick={() => handleReact("Haha")}
+              className={`flex items-center gap-2 h-12 px-3 rounded-xl text-base hover:bg-[#E5E5E5] transition-colors ${newsItem.currentUserReaction === "Haha" ? "text-yellow-500 font-medium" : ""}`}
+            >
+              <Smile
+                className={`${newsItem.currentUserReaction === "Haha" ? "text-yellow-500" : ""}`}
+              />
+              {t.news?.newsDetail?.haha}
+            </button>
           </div>
         </div>
 
-        {/* Article Body */}
-        <div className="p-6 md:p-10">
-          <Typography
-            variant="body1"
-            className="text-lg leading-relaxed text-gray-700 whitespace-pre-line"
-          >
-            {newsItem.description}
-          </Typography>
+        {/* Body */}
+        <div className="space-y-6 text-gray-700 leading-relaxed p-4 text-base">
+          <PostContent html={newsItem.content} />
 
-          {/* Placeholder for more content since current data only has short description */}
-          <div className="mt-8 space-y-4">
-            <Typography paragraph className="text-gray-600">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-              enim ad minim veniam, quis nostrud exercitation ullamco laboris
-              nisi ut aliquip ex ea commodo consequat.
-            </Typography>
-            <Typography paragraph className="text-gray-600">
-              Duis aute irure dolor in reprehenderit in voluptate velit esse
-              cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
-              cupidatat non proident, sunt in culpa qui officia deserunt mollit
-              anim id est laborum.
-            </Typography>
-          </div>
+          {newsItem.media && newsItem.media.length > 1 && (
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {newsItem.media.slice(1).map((mediaItem) => (
+                <img
+                  key={mediaItem.postMediaId}
+                  src={mediaItem.mediaUrl}
+                  className="rounded-2xl object-cover h-60 w-full"
+                />
+              ))}
+            </div>
+          )}
         </div>
       </article>
     </div>

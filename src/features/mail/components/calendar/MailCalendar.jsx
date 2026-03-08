@@ -4,13 +4,16 @@ import { colors } from "@/shared/utils/colors"
 import { Cat } from "lucide-react"
 import MailCalendarDetail from "./MailCalendarDetail"
 import { motion } from "framer-motion"
+import { useGetEventCountsQuery } from "@/store/api/eventsApi"
 
 const MailCalendar = ({ currentDate = dayjs() }) => {
   const [selectedDate, setSelectedDate] = useState(null)
-  const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+  const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 
-  // Create a realistic-looking calendar view layout for the current month
-  const startDay = currentDate.startOf("month").day()
+  // Create a calendar view layout for the current month (Monday-first)
+  // dayjs .day() returns 0=Sun,1=Mon,...,6=Sat
+  // For a Mon-first grid, offset = (dayOfWeek + 6) % 7
+  const startDay = (currentDate.startOf("month").day() + 6) % 7
   const daysInMonth = currentDate.daysInMonth()
 
   const dates = Array.from({ length: 42 }, (_, i) => {
@@ -19,19 +22,30 @@ const MailCalendar = ({ currentDate = dayjs() }) => {
     return day
   })
 
+  // Fetch event counts from the API for the current month
+  const { data: eventCountsData } = useGetEventCountsQuery({
+    startDate: currentDate.startOf("month").toISOString(),
+    endDate: currentDate.endOf("month").toISOString(),
+  })
+
+  // Build a day-of-month → totalEvents map from the API response
+  const eventCountsByDay = React.useMemo(() => {
+    if (!eventCountsData?.counts) return {}
+    return eventCountsData.counts.reduce((acc, item) => {
+      const day = dayjs(item.date).date()
+      acc[day] = (acc[day] ?? 0) + item.totalEvents
+      return acc
+    }, {})
+  }, [eventCountsData])
+
   const selectedIndex = dates.indexOf(selectedDate)
   const endOfRowIdx =
     selectedIndex !== -1 ? (Math.floor(selectedIndex / 7) + 1) * 7 - 1 : -1
 
-  // Helper to generate fake event counts based on date for demo purposes
+  // Look up event count for a given day from API data
   const getEventCountForDate = (date) => {
     if (!date) return 0
-    if (date === 12) return 50
-    if (date === 18) return 5
-    if (date === 25) return 20
-    if (date === 28) return 50
-    if (date === 3) return 2
-    return 0
+    return eventCountsByDay[date] ?? 0
   }
 
   return (

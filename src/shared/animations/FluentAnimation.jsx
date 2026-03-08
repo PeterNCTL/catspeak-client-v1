@@ -5,28 +5,34 @@ import { motion } from "framer-motion"
  * Fluent Animation wrapper
  * - Enter/Exit: slides in from specified direction
  * - direction: "up" | "down" | "left" | "right" | "none" (default: "up")
+ * - distance: How far it slides from. Default 20 (px). Can be string e.g. "100%"
  * - exit: boolean (default: false), configures if an exit animation should play
  */
 const FluentAnimation = ({
   children,
   animationKey,
   direction = "up",
+  distance = 20,
   exit = false,
   className,
 }) => {
   const getInitialPosition = () => {
+    // Determine negative distance value
+    const negDistance =
+      typeof distance === "number" ? -distance : `-${distance}`
+
     switch (direction) {
       case "down":
-        return { y: -60, x: 0 }
+        return { y: negDistance, x: 0 }
       case "left":
-        return { x: 60, y: 0 }
+        return { x: distance, y: 0 }
       case "right":
-        return { x: -60, y: 0 }
+        return { x: negDistance, y: 0 }
       case "none":
         return { x: 0, y: 0 }
       case "up":
       default:
-        return { y: 60, x: 0 }
+        return { y: distance, x: 0 }
     }
   }
 

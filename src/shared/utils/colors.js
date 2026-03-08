@@ -4,7 +4,17 @@
  * Sử dụng prefix "cath" cho CSS variables
  */
 
+const coreColors = {
+  primaryRed: "#990011", // Cat Speak
+  secondaryGray: "#7A7574", // Fluent UI
+  borderColor: "#E5E5E5", // Fluent UI
+}
+
 export const colors = {
+  // --- Core Theme Colors ---
+  ...coreColors,
+  // -------------------------
+
   // Red gradient palette (từ đậm đến sáng)
   red: {
     50: "#100002", // Đậm nhất
@@ -14,7 +24,7 @@ export const colors = {
     400: "#5e000a",
     500: "#72000d", // Màu chính
     600: "#85000f",
-    700: "#990011",
+    700: coreColors.primaryRed,
     800: "#ad0013",
     900: "#c00015",
     950: "#d40018",
@@ -36,7 +46,7 @@ export const colors = {
   // Custom colors
   headingColor: "#2e2e2e",
   textColor: "#515151",
-  subtext: "#7A7574",
+  subtext: coreColors.secondaryGray,
   primary2: "#f3f3f3",
   darkOverlay: "rgba(0,0,0,0.2)",
   lightOverlay: "rgba(255,255,255,0.4)",
@@ -49,10 +59,10 @@ export const colors = {
   secondary: "#1E1F26",
   primaryText: "#868CA0",
   text555: "#555",
-  textGray: "#7A7574",
+  textGray: coreColors.secondaryGray,
 
   // Border colors
-  border: "#E5E5E5",
+  border: coreColors.borderColor,
 }
 
 // CSS Variables với prefix "cath"

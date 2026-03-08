@@ -1,32 +1,65 @@
-import React from "react"
-import { Drawer, Box } from "@mui/material"
+import React, { useEffect } from "react"
+import { createPortal } from "react-dom"
+import { AnimatePresence } from "framer-motion"
+import { FluentAnimation } from "@/shared/animations"
 import LanguageSwitcher from "@/shared/components/common/LanguageSwitcher"
 import MobileNavLinks from "./MobileNavLinks"
 
 const MobileDrawer = ({ open, onClose }) => {
-  return (
-    <Drawer
-      variant="temporary"
-      open={open}
-      onClose={onClose}
-      ModalProps={{
-        keepMounted: true, // Better open performance on mobile.
-      }}
-      sx={{
-        display: { xs: "block", lg: "none" },
-        "& .MuiDrawer-paper": { boxSizing: "border-box", width: 300 },
-      }}
-    >
-      <Box sx={{ p: 2, display: "flex", flexDirection: "column", gap: 2 }}>
-        {/* Mobile Language Switcher */}
-        <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-          <LanguageSwitcher />
-        </Box>
-        <Box component="nav">
-          <MobileNavLinks onClose={onClose} />
-        </Box>
-      </Box>
-    </Drawer>
+  useEffect(() => {
+    if (open) {
+      const scrollbarWidth =
+        window.innerWidth - document.documentElement.clientWidth
+      document.body.style.paddingRight = `${scrollbarWidth}px`
+      document.body.style.overflow = "hidden"
+    } else {
+      document.body.style.paddingRight = "0px"
+      document.body.style.overflow = "auto"
+    }
+    return () => {
+      document.body.style.paddingRight = "0px"
+      document.body.style.overflow = "auto"
+    }
+  }, [open])
+
+  return createPortal(
+    <div className="fixed inset-0 z-[2000] lg:hidden pointer-events-none">
+      {/* Backdrop - renders instantly and unmounts instantly */}
+      {open && (
+        <div
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm pointer-events-auto"
+          onClick={onClose}
+          aria-hidden="true"
+        />
+      )}
+
+      {/* Drawer - animates in and out */}
+      <AnimatePresence>
+        {open && (
+          <FluentAnimation
+            direction="right"
+            distance="100%"
+            exit={true}
+            className="fixed inset-y-0 left-0 z-[101] w-[320px] h-full pointer-events-auto"
+          >
+            <aside className="w-full h-full bg-white overflow-y-auto">
+              <div className="flex flex-col p-5">
+                {/* Mobile Language Switcher */}
+                <div className="flex justify-end mb-5">
+                  <LanguageSwitcher />
+                </div>
+
+                {/* Navigation Links */}
+                <nav>
+                  <MobileNavLinks onClose={onClose} />
+                </nav>
+              </div>
+            </aside>
+          </FluentAnimation>
+        )}
+      </AnimatePresence>
+    </div>,
+    document.body,
   )
 }
 

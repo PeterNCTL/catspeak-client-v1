@@ -71,10 +71,9 @@ const MailToolbar = () => {
         </div>
       </div>
 
-      <CreateEventModal
-        isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
-      />
+      {isCreateModalOpen && (
+        <CreateEventModal onClose={() => setIsCreateModalOpen(false)} />
+      )}
     </>
   )
 }

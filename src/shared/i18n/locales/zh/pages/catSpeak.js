@@ -14,10 +14,6 @@ export default {
     title: "探索世界",
     description: "即将推出：探索来自世界各地的文化、地点和人物。",
   },
-  news: {
-    title: "新闻",
-    description: "即将推出：随时了解最新消息。",
-  },
   video: {
     title: "视频",
     description: "即将推出：观看精选视频以提高您的听力技巧。",

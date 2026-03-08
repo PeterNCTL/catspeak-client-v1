@@ -16,10 +16,6 @@ export default {
     description:
       "Coming soon: Explore cultures, places, and people from around the world.",
   },
-  news: {
-    title: "News",
-    description: "Coming soon: Stay updated with the latest news.",
-  },
   video: {
     title: "Video",
     description:

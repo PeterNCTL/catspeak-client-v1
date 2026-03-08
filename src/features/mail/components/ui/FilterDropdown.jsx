@@ -33,16 +33,12 @@ const FilterDropdown = ({ label, options = [], onSelect }) => {
     <div className="relative inline-block text-left" ref={dropdownRef}>
       <button
         onClick={handleToggle}
-        className={`flex items-center gap-2 px-4 py-2 rounded-lg bg-white font-bold text-sm border hover:bg-gray-50 transition min-w-[140px] justify-between ${
-          selected
-            ? "border-[#990011] text-[#990011]"
-            : "border-gray-200 text-black"
-        }`}
+        className={`flex items-center px-3 gap-3 rounded-[5px] hover:bg-[#FAFAFA] text-sm leading-5 border border-[#E5E5E5] min-w-[130px] min-h-[32px] justify-between`}
       >
         <span className="truncate">{selected ? selected.label : label}</span>
         <ChevronDown
-          size={16}
-          className={`transition-transform duration-200 ${selected ? "text-[#990011]" : "text-gray-500"} ${
+          size={14}
+          className={`transition-transform duration-200 ${
             isOpen ? "rotate-180" : ""
           }`}
         />
@@ -50,35 +46,35 @@ const FilterDropdown = ({ label, options = [], onSelect }) => {
 
       <AnimatePresence>
         {isOpen && (
-          <div className="absolute z-50 mt-2 min-w-[180px] w-full origin-top-left pointer-events-none">
+          <div className="absolute z-50 mt-2 min-w-[180px] max-w-[280px] whitespace-nowrap w-full">
             <FluentAnimation
               direction="down"
               exit={true}
-              className="pointer-events-auto rounded-xl bg-white shadow-lg border border-gray-100 ring-1 ring-black ring-opacity-5 overflow-hidden"
+              className="rounded-[5px] bg-[#F9F9F9] shadow-lg border border-[#E5E5E5] overflow-hidden"
             >
-              <div className="py-1">
+              <div className="flex flex-col gap-1 p-1">
                 {options.map((option, idx) => (
                   <button
                     key={idx}
                     onClick={() => handleSelect(option)}
-                    className={`block w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors ${
+                    className={`w-full h-[32px] rounded-[5px] text-left px-3 text-sm hover:bg-[#F0F0F0] ${
                       selected?.value === option.value
-                        ? "bg-red-50 text-[#990011] font-semibold"
-                        : "text-gray-700 font-medium"
+                        ? "text-[#990011] bg-[#F0F0F0]"
+                        : ""
                     }`}
                   >
                     {option.label}
                   </button>
                 ))}
                 {/* Added Clear option if something is selected */}
-                {selected && (
+                {/* {selected && (
                   <button
                     onClick={() => handleSelect(null)}
-                    className="block w-full text-left px-4 py-2.5 text-sm text-gray-500 hover:text-gray-700 hover:bg-gray-50 transition-colors border-t border-gray-100 font-medium"
+                    className="w-full h-[32px] rounded-[5px] text-left px-3 text-sm hover:bg-[#F0F0F0]"
                   >
                     Clear selection
                   </button>
-                )}
+                )} */}
               </div>
             </FluentAnimation>
           </div>

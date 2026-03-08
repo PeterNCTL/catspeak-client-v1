@@ -1,80 +1,55 @@
 import React from "react"
-import { useSearchParams } from "react-router-dom"
-import { Checkbox, FormControlLabel } from "@mui/material"
 import { useLanguage } from "@/shared/context/LanguageContext"
-import FilterSection from "./FilterSection"
-
-const TOPIC_KEYS = [
-  "family",
-  "sports",
-  "movies",
-  "travel",
-  "school",
-  "stuff",
-  "other",
-]
+import { useSearchParams } from "react-router-dom"
+import { TOPICS } from "../../config/constants"
 
 const TopicFilter = () => {
   const { t } = useLanguage()
   const [searchParams, setSearchParams] = useSearchParams()
+  const currentTopic = searchParams.get("topic")
 
-  const handleTopicChange = (topicValue, isChecked) => {
+  const handleTopicChange = (topic) => {
     const newParams = new URLSearchParams(searchParams)
-    const topicsParam = searchParams.get("topics")
-    const currentTopicsArray = topicsParam
-      ? topicsParam.split(",").map((s) => s.trim())
-      : []
-
-    let newTopics = [...currentTopicsArray]
-
-    if (isChecked) {
-      if (!newTopics.includes(topicValue)) {
-        newTopics.push(topicValue)
-      }
+    if (currentTopic === topic) {
+      newParams.delete("topic")
     } else {
-      newTopics = newTopics.filter((t) => t !== topicValue)
+      newParams.set("topic", topic)
     }
-
-    // Set as comma-separated string or delete if empty
-    if (newTopics.length > 0) {
-      newParams.set("topics", newTopics.join(","))
-    } else {
-      newParams.delete("topics")
-    }
-
-    // Reset page to 1 when filter changes
     newParams.set("page", "1")
     setSearchParams(newParams, { preventScrollReset: true })
   }
 
   return (
-    <FilterSection heading={t.rooms.filters.topicsHeading}>
-      {TOPIC_KEYS.map((topicKey) => {
-        const topicsParam = searchParams.get("topics")
-        const currentTopicsArray = topicsParam
-          ? topicsParam.split(",").map((s) => s.trim())
-          : []
-        const isChecked = currentTopicsArray.includes(topicKey)
+    <div>
+      <h3 className="font-bold text-lg mb-2">
+        {t.rooms.filters.topicsHeading}
+      </h3>
 
-        return (
-          <FormControlLabel
-            key={topicKey}
-            control={
-              <Checkbox
+      <div className="flex flex-col">
+        {TOPICS.map((topic) => {
+          const isChecked = currentTopic === topic
+
+          return (
+            <label
+              key={topic}
+              className={`h-11 flex items-center gap-3 cursor-pointer rounded-md px-4 transition-colors ${
+                isChecked
+                  ? "bg-[#F2F2F2] hover:bg-[#E5E5E5]"
+                  : "hover:bg-[#F2F2F2]"
+              }`}
+            >
+              <input
+                type="checkbox"
                 checked={isChecked}
-                onChange={(e) => handleTopicChange(topicKey, e.target.checked)}
-                sx={{
-                  "&.Mui-checked": {
-                    color: "#990011",
-                  },
-                }}
+                onChange={() => handleTopicChange(topic)}
+                className="w-4 h-4 text-[#990011] bg-white accent-[#990011] cursor-pointer"
               />
-            }
-            label={t.rooms.filters.topics[topicKey]}
-          />
-        )
-      })}
-    </FilterSection>
+              <span className="text-base">{topic}</span>
+            </label>
+          )
+        })}
+      </div>
+    </div>
   )
 }
 

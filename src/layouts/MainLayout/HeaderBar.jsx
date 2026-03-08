@@ -1,6 +1,5 @@
 import React, { useState } from "react"
-import { AppBar, Toolbar, Box, IconButton, Stack } from "@mui/material"
-import MenuIcon from "@mui/icons-material/Menu"
+import { Menu } from "lucide-react"
 import HeaderLogo from "./Header/HeaderLogo"
 import DesktopNav from "@/features/navigation/components/DesktopNav/DesktopNav"
 import MobileDrawer from "@/features/navigation/components/MobileNav/MobileDrawer"
@@ -18,79 +17,46 @@ const HeaderBar = ({ onGetStarted }) => {
   }
 
   return (
-    <AppBar
-      position="sticky"
-      color="default"
-      elevation={0}
-      sx={{
-        backgroundColor: "rgba(255, 255, 255, 0.95)",
-        backdropFilter: "blur(8px)",
-        borderBottom: "1px solid",
-        borderColor: "divider",
-      }}
-    >
-      <Toolbar
-        disableGutters
-        sx={{
-          px: { xs: 2, md: 4 }, // Match previous padding: px-8 py-5 max-md:px-4 (approx)
-          py: 1.5, // Approx 5 * 4px = 20px, py-5 was likely 1.25rem
-          width: "100%",
-          justifyContent: "space-between",
-        }}
-      >
+    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm">
+      <div className="flex items-center justify-between w-full px-4 md:px-8 py-3">
         {/* Left Section: Burger (Mobile) + Logo */}
-        <Box sx={{ flex: 1, display: "flex", justifyContent: "flex-start" }}>
-          <Stack direction="row" alignItems="center" spacing={2}>
-            <IconButton
-              color="inherit"
-              aria-label="open drawer"
-              edge="start"
-              onClick={handleDrawerToggle}
-              sx={{ display: { lg: "none" } }}
-            >
-              <MenuIcon />
-            </IconButton>
-            {/* Logo with fixed width to prevent shrinking */}
-            <Box
-              sx={{
-                flexShrink: 0,
-                width: "160px", // Fixed width
-                display: "flex",
-                alignItems: "center",
-              }}
-            >
-              <HeaderLogo />
-            </Box>
-          </Stack>
-        </Box>
+        <div className="flex-1 flex justify-start items-center gap-4">
+          <button
+            aria-label="open drawer"
+            onClick={handleDrawerToggle}
+            className="lg:hidden p-2 -ml-2 text-gray-700 hover:bg-black/5 rounded-full transition-colors"
+          >
+            <Menu size={24} />
+          </button>
+          {/* Logo with fixed width to prevent shrinking */}
+          <div className="shrink-0 w-[160px] flex items-center">
+            <HeaderLogo />
+          </div>
+        </div>
 
         {/* Center Section: Desktop Nav */}
-        <Box sx={{ display: { xs: "none", lg: "block" } }}>
+        <div className="hidden lg:block">
           <DesktopNav />
-        </Box>
+        </div>
 
         {/* Right Section: Controls */}
-        <Box sx={{ flex: 1, display: "flex", justifyContent: "flex-end" }}>
-          <Stack
-            direction="row"
-            alignItems="center"
-            spacing={{ xs: 1.5, sm: 2 }}
-          >
-            <Box sx={{ display: { xs: "none", lg: "block" } }}>
+        <div className="flex-1 flex justify-end">
+          <div className="flex items-center gap-1">
+            <div className="hidden lg:block">
               <LanguageSwitcher />
-            </Box>
+            </div>
             {isLoggedIn ? (
               <HeaderUserControls />
             ) : (
               <HeaderGuestControls onGetStarted={onGetStarted} />
             )}
-          </Stack>
-        </Box>
-      </Toolbar>
+          </div>
+        </div>
+      </div>
 
       {/* Mobile Navigation Drawer */}
       <MobileDrawer open={mobileOpen} onClose={handleDrawerToggle} />
-    </AppBar>
+    </header>
   )
 }
 

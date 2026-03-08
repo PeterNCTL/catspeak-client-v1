@@ -48,7 +48,11 @@ const Modal = ({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className={`relative w-full max-w-sm rounded-3xl bg-white p-6 shadow-xl sm:max-w-md ${className}`}
+            className={`relative w-full max-w-sm shadow-xl sm:max-w-md ${
+              /(^|\s)bg-/.test(className) ? "" : "bg-white"
+            } ${/(^|\s)p[xytrbl]?-(0|[1-9]|\[)/.test(className) ? "" : "p-6"} ${
+              /(^|\s)rounded/.test(className) ? "" : "rounded-2xl"
+            } ${className}`}
             role="dialog"
             aria-modal="true"
           >

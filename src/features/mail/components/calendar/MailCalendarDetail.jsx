@@ -1,15 +1,22 @@
-import React, { useRef, useEffect, useState } from "react"
-import { MOCK_EVENTS } from "../../data/mockEvents"
+import React, { useRef, useEffect, useState, useMemo } from "react"
+import { useSelector } from "react-redux"
+import { selectCurrentUser } from "@/store/slices/authSlice"
+import { useGetEventsByDateQuery } from "@/store/api/eventsApi"
 import { processOverlappingEvents } from "./utils/EventUtils"
 import TimelineGrid from "./TimelineGrid"
 import EventBlock from "./EventBlock"
 import EventDetailModal from "./EventDetailModal"
+import dayjs from "dayjs"
 
 const HOUR_HEIGHT = 100 // pixels per hour
+const COL_WIDTH = 180 // minimum px width per overlapping event column
+
+const DEFAULT_COLOR = "#B91264"
 
 const MailCalendarDetail = ({ selectedDate, currentDate, onClose }) => {
   const scrollRef = useRef(null)
   const [selectedEvent, setSelectedEvent] = useState(null)
+  const currentUser = useSelector(selectCurrentUser)
 
   useEffect(() => {
     // Scroll to 8 AM by default when opened
@@ -24,7 +31,42 @@ const MailCalendarDetail = ({ selectedDate, currentDate, onClose }) => {
   const formattedDate = displayDate.format("MMMM D, YYYY")
   const ddMmYyyy = displayDate.format("DD/MM/YYYY")
 
-  const positionedEvents = processOverlappingEvents(MOCK_EVENTS)
+  // Fetch events for the selected date from the API
+  const { data: eventsByDateData, isLoading } = useGetEventsByDateQuery(
+    {
+      date: displayDate.toISOString(),
+      ...(currentUser?.id ? { userId: currentUser.id } : {}),
+    },
+    { skip: selectedDate === null },
+  )
+
+  // Map API events to the shape EventBlock expects
+  const mappedEvents = useMemo(() => {
+    if (!eventsByDateData?.events) return []
+    return eventsByDateData.events.map((ev) => ({
+      id: ev.occurrenceId ?? ev.eventId,
+      eventId: ev.eventId,
+      occurrenceId: ev.occurrenceId,
+      title: ev.title,
+      startTime: dayjs(ev.startTime).format("HH:mm"),
+      endTime: dayjs(ev.endTime).format("HH:mm"),
+      color: ev.color || DEFAULT_COLOR,
+      isRegistered: ev.isRegistered,
+      currentParticipants: ev.currentParticipants,
+      maxParticipants: ev.maxParticipants,
+      // EventBlock shows location; not in API response, leave blank
+      location: "",
+    }))
+  }, [eventsByDateData])
+
+  const positionedEvents = processOverlappingEvents(mappedEvents)
+
+  // Compute canvas width: at least 1 column, grow with max parallel cols
+  const maxCols = positionedEvents.reduce(
+    (m, e) => Math.max(m, e.groupCols ?? 1),
+    1,
+  )
+  const eventsCanvasWidth = maxCols * COL_WIDTH
 
   return (
     <div className="col-span-7 w-full my-2 h-full min-h-[400px] sm:min-h-[500px]">
@@ -32,26 +74,43 @@ const MailCalendarDetail = ({ selectedDate, currentDate, onClose }) => {
         {/* Calendar Day View Scroll Container */}
         <div
           ref={scrollRef}
-          className="flex-1 overflow-y-auto pr-2 bg-gray-50/30 rounded-xl relative border border-gray-100 [&::-webkit-scrollbar]:w-[6px] [&::-webkit-scrollbar-track]:bg-gray-200 [&::-webkit-scrollbar-thumb]:bg-[#990011] [&::-webkit-scrollbar-thumb]:rounded-[3px]"
+          className="flex-1 overflow-y-auto overflow-x-auto pr-2 bg-gray-50/30 rounded-xl relative border border-gray-100 [&::-webkit-scrollbar]:w-[6px] [&::-webkit-scrollbar]:h-[6px] [&::-webkit-scrollbar-track]:bg-gray-200 [&::-webkit-scrollbar-thumb]:bg-[#990011] [&::-webkit-scrollbar-thumb]:rounded-[3px]"
         >
           <div
-            className="relative w-full mt-4"
-            style={{ height: `${24 * HOUR_HEIGHT}px` }}
+            className="relative mt-4"
+            style={{
+              height: `${24 * HOUR_HEIGHT}px`,
+              minWidth: `${eventsCanvasWidth + 64}px`,
+            }}
           >
             {/* Timeline Background Grid */}
             <TimelineGrid hourHeight={HOUR_HEIGHT} />
 
             {/* Events Rendering */}
-            <div className="absolute top-0 bottom-0 left-16 right-4">
-              {positionedEvents.map((event) => (
-                <EventBlock
-                  key={event.id}
-                  event={event}
-                  hourHeight={HOUR_HEIGHT}
-                  ddMmYyyy={ddMmYyyy}
-                  onClick={() => setSelectedEvent(event)}
-                />
-              ))}
+            <div
+              className="absolute top-0 bottom-0 left-16"
+              style={{ width: `${eventsCanvasWidth}px` }}
+            >
+              {isLoading ? (
+                <div className="flex items-center justify-center h-full text-gray-400 text-sm">
+                  Loading events…
+                </div>
+              ) : positionedEvents.length === 0 ? (
+                <div className="flex items-center justify-center h-full text-gray-300 text-sm select-none">
+                  No events for this day
+                </div>
+              ) : (
+                positionedEvents.map((event) => (
+                  <EventBlock
+                    key={event.id}
+                    event={event}
+                    hourHeight={HOUR_HEIGHT}
+                    ddMmYyyy={ddMmYyyy}
+                    colWidth={COL_WIDTH}
+                    onClick={() => setSelectedEvent(event)}
+                  />
+                ))
+              )}
             </div>
           </div>
         </div>

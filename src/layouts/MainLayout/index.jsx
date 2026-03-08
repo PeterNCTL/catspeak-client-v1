@@ -9,8 +9,9 @@ import {
 import HeaderBar from "./HeaderBar"
 import Footer from "./Footer"
 import Auth from "@/features/auth/components"
-import { MessageWidget } from "@/features/messages"
 import AuthModalContext from "@/shared/context/AuthModalContext"
+import { AnimatePresence } from "framer-motion"
+import { FluentAnimation } from "@/shared/animations"
 
 const { Content } = Layout
 
@@ -77,9 +78,6 @@ const MainLayout = ({ showFooter = true }) => {
           onClose={closeAuthModal}
           onSwitchMode={openAuthModal}
         />
-
-        {/* Floating message bubble, hiển thị trên mọi trang */}
-        <MessageWidget />
 
         <ScrollRestoration />
       </Layout>

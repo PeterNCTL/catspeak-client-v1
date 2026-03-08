@@ -1,12 +1,11 @@
 import React from "react"
-import { List } from "@mui/material"
 import { navLinks } from "../../config/navigation"
 import MobileCommunityDropdown from "./MobileCommunityDropdown"
 import MobileNavItem from "./MobileNavItem"
 
 const MobileNavLinks = ({ onClose }) => {
   return (
-    <List component="div" disablePadding>
+    <div className="flex flex-col gap-1 text-sm">
       {navLinks.map(({ key, hasDropdown }) => {
         if (hasDropdown && key === "community") {
           return (
@@ -15,7 +14,7 @@ const MobileNavLinks = ({ onClose }) => {
         }
         return <MobileNavItem key={key} navKey={key} onClose={onClose} />
       })}
-    </List>
+    </div>
   )
 }
 

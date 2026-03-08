@@ -1,169 +1,107 @@
-import React, { useState } from "react"
-import { Menu, MenuItem, Typography, Box } from "@mui/material"
-import ExpandMore from "@mui/icons-material/ExpandMore"
+import React, { useState, useRef, useEffect } from "react"
+import { ChevronDown } from "lucide-react"
+import { AnimatePresence } from "framer-motion"
+import { FluentAnimation } from "@/shared/animations"
 import { useLanguage } from "@/shared/context/LanguageContext"
 import colors from "@/shared/utils/colors"
 
+const LANGUAGES = [
+  { key: "vi", labelKey: "vi" },
+  { key: "viNom", labelKey: "viNom", disabled: true },
+  { key: "zh", labelKey: "zh" },
+  { key: "en", labelKey: "en" },
+]
+
 const LanguageSwitcher = ({ className = "" }) => {
   const { language, setLanguage, t } = useLanguage()
-  const [anchorEl, setAnchorEl] = useState(null)
-  const open = Boolean(anchorEl)
+  const [open, setOpen] = useState(false)
+  const dropdownRef = useRef(null)
 
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget)
-  }
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setOpen(false)
+      }
+    }
 
-  const handleClose = () => {
-    setAnchorEl(null)
-  }
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => document.removeEventListener("mousedown", handleClickOutside)
+  }, [])
+
+  const handleToggle = () => setOpen((prev) => !prev)
 
   const handleLanguageSelect = (lang) => {
     setLanguage(lang)
-    handleClose()
+    setOpen(false)
   }
 
   const getDisplayLabel = () => {
-    switch (language) {
-      case "vi":
-        return t.header?.languages?.vi || "Vietnamese"
-      case "zh":
-        return t.header?.languages?.zh || "Chinese"
-      case "en":
-        return t.header?.languages?.en || "English"
-      default:
-        return t.header?.languages?.en || "English"
-    }
+    return (
+      t.header?.languages?.[language] || t.header?.languages?.en || "English"
+    )
   }
 
   return (
-    <div className={className}>
-      <Box
-        onClick={handleClick}
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          gap: 1,
-          cursor: "pointer",
-        }}
+    <div className={`relative ${className}`} ref={dropdownRef}>
+      {/* Trigger */}
+      <div
+        onClick={handleToggle}
+        className="hover:bg-[#E5E5E5] rounded-full h-12 flex items-center px-4 cursor-pointer"
       >
-        <Typography
-          variant="h6" // Approximate text-lg
-          sx={{
-            fontWeight: "bold",
-            color: "#FFB400",
-            fontSize: "1.125rem", // text-lg
-            lineHeight: "1.75rem",
-            minWidth: "200px",
-            whiteSpace: "nowrap",
-            textAlign: "right",
-          }}
-        >
-          {getDisplayLabel()}
-        </Typography>
-        <ExpandMore
-          sx={{
-            color: "#FFB400",
-            fontSize: "1.25rem", // text-xl
-            transition: "transform 0.2s",
-            transform: open ? "rotate(180deg)" : "rotate(0deg)",
-          }}
-        />
-      </Box>
+        <div className="flex items-center gap-3 text-base font-bold text-[#FFB400] justify-between w-full">
+          <span className="truncate">{getDisplayLabel()}</span>
 
-      <Menu
-        anchorEl={anchorEl}
-        open={open}
-        onClose={handleClose}
-        disableScrollLock
-        MenuListProps={{
-          "aria-labelledby": "language-button",
-        }}
-        PaperProps={{
-          elevation: 3,
-          sx: {
-            borderRadius: 2,
-            mt: 1,
-            minWidth: 300,
-          },
-        }}
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "right",
-        }}
-        transformOrigin={{
-          vertical: "top",
-          horizontal: "right",
-        }}
-      >
-        <MenuItem
-          onClick={() => handleLanguageSelect("vi")}
-          sx={{
-            height: 40,
-            backgroundColor:
-              language === "vi" ? colors.primary2 : "transparent",
-            borderRadius: 1,
-            "&:hover": {
-              backgroundColor: "rgba(0, 0, 0, 0.04)",
-            },
-          }}
-        >
-          <Typography variant="body2">
-            {t.header?.languages?.vi || "Vietnamese"}
-          </Typography>
-        </MenuItem>
-        <MenuItem
-          disabled
-          sx={{
-            height: 40,
-            borderRadius: 1,
-          }}
-        >
-          <Typography
-            variant="body2"
-            sx={{ color: "text.disabled" }} // Removed fontWeight: 600
-          >
-            {t.header?.languages?.viNom || "Vietnamese (Nom) - Coming soon"}
-          </Typography>
-        </MenuItem>
-        <MenuItem
-          onClick={() => handleLanguageSelect("zh")}
-          sx={{
-            height: 40,
-            backgroundColor:
-              language === "zh" ? colors.primary2 : "transparent",
-            borderRadius: 1,
-            "&:hover": {
-              backgroundColor: "rgba(0, 0, 0, 0.04)",
-            },
-          }}
-        >
-          <Typography
-            variant="body2"
-            sx={{ color: "text.primary" }} // Removed fontWeight: 600
-          >
-            {t.header?.languages?.zh || "Chinese"}
-          </Typography>
-        </MenuItem>
-        <MenuItem
-          onClick={() => handleLanguageSelect("en")}
-          sx={{
-            height: 40,
-            backgroundColor:
-              language === "en" ? colors.primary2 : "transparent",
-            borderRadius: 1,
-            "&:hover": {
-              backgroundColor: "rgba(0, 0, 0, 0.04)",
-            },
-          }}
-        >
-          <Typography
-            variant="body2"
-            sx={{ color: "text.primary" }} // Removed fontWeight: 600
-          >
-            {t.header?.languages?.en || "English"}
-          </Typography>
-        </MenuItem>
-      </Menu>
+          <ChevronDown
+            size={20}
+            className={`transition-transform duration-200 ${
+              open ? "rotate-180" : ""
+            }`}
+          />
+        </div>
+      </div>
+
+      <AnimatePresence>
+        {open && (
+          <div className="absolute top-full right-0 mt-2 min-w-[200px] max-w-[280px] z-50">
+            <FluentAnimation
+              direction="down"
+              exit
+              className="rounded-lg shadow-lg bg-white overflow-hidden"
+            >
+              <div className="flex flex-col whitespace-nowrap">
+                {LANGUAGES.map(({ key, labelKey, disabled }) => {
+                  const isActive = language === key
+
+                  const label =
+                    t.header?.languages?.[labelKey] ||
+                    (labelKey === "viNom"
+                      ? "Vietnamese (Nom) - Coming soon"
+                      : labelKey)
+
+                  return (
+                    <button
+                      key={key}
+                      disabled={disabled}
+                      onClick={() => !disabled && handleLanguageSelect(key)}
+                      className={`w-full text-left px-4 h-12 text-base transition-colors
+                        ${
+                          disabled
+                            ? "text-[#7A7574] cursor-default"
+                            : "hover:bg-[#E5E5E5]"
+                        }`}
+                      style={{
+                        backgroundColor: isActive ? "#E5E5E5" : undefined,
+                      }}
+                    >
+                      {label}
+                    </button>
+                  )
+                })}
+              </div>
+            </FluentAnimation>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

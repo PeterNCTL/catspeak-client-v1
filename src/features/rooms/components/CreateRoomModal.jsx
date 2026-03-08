@@ -1,128 +1,122 @@
 import React, { useState, useEffect } from "react"
-import { useNavigate, useSearchParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import {
   useCreateRoomMutation,
   useJoinRoomMutation,
 } from "@/features/rooms/api/roomsApi"
 import { useLanguage } from "@/shared/context/LanguageContext"
-import RoomNameInput from "./ui/RoomNameInput"
-import CategorySelect from "./ui/CategorySelect"
+import TextInput from "@/shared/components/ui/TextInput"
+import TopicSelect from "./ui/TopicSelect"
 import LevelSelector from "./ui/LevelSelector"
 import PillButton from "@/shared/components/ui/PillButton"
 import Modal from "@/shared/components/ui/Modal"
-
-// Constants from original components
-const CATEGORIES = ["Practice", "Friends", "Trending"]
-
-const LEVELS = {
-  English: ["A1", "A2", "B1", "B2", "C1", "C2"],
-  Chinese: ["HSK 1", "HSK 2", "HSK 3", "HSK 4", "HSK 5", "HSK 6"],
-  // Vietnamese: ["Beginner", "Intermediate", "Advanced"],
-}
+import { TOPICS, LEVELS } from "../config/constants"
 
 const CreateRoomModal = ({ open, onCancel }) => {
   const { t } = useLanguage()
   const navigate = useNavigate()
+  const { lang } = useParams()
+
   const [joinRoom, { isLoading: isJoining }] = useJoinRoomMutation()
   const [createRoom, { isLoading: isCreating }] = useCreateRoomMutation()
   const isLoading = isJoining || isCreating
-  const [searchParams] = useSearchParams()
 
-  const urlLanguage = searchParams.get("language")
-  const defaultLanguage = urlLanguage
-    ? urlLanguage.charAt(0).toUpperCase() + urlLanguage.slice(1)
-    : "English"
+  const getLanguageName = (langCode) => {
+    switch (langCode) {
+      case "zh":
+        return "Chinese"
+      case "vi":
+        return "Vietnamese"
+      case "en":
+        return "English"
+      default:
+        return "English" // Default fallback
+    }
+  }
 
-  const [selectedLanguage, setSelectedLanguage] = useState(defaultLanguage)
+  // Derive selectedLanguage directly from URL params
+  const supportedLangCode = ["zh", "vi", "en"].includes(lang) ? lang : "en"
+  const selectedLanguage = getLanguageName(supportedLangCode)
+
   const [selectedLevel, setSelectedLevel] = useState("")
 
   // Form State
   const [name, setName] = useState("")
-  const [categories, setCategories] = useState([])
+  const [topics, setTopics] = useState([])
 
   // Reset form when modal opens
   useEffect(() => {
     if (open) {
       setName("")
-      setCategories([])
-      // Keep selectedLanguage from URL or default
-      if (defaultLanguage) {
-        setSelectedLanguage(defaultLanguage)
-      }
+      setTopics([])
       setSelectedLevel("")
     }
-  }, [open, defaultLanguage])
-
-  // Update selectedLanguage if URL changes while modal is open
-  useEffect(() => {
-    if (urlLanguage) {
-      const lang = urlLanguage.charAt(0).toUpperCase() + urlLanguage.slice(1)
-      setSelectedLanguage(lang)
-    }
-  }, [urlLanguage])
+  }, [open])
 
   const handleCancel = () => {
     onCancel()
   }
 
-  const handleSubmit = async (e) => {
+  const handleJoin = async (e) => {
     if (e) e.preventDefault()
-    if (!selectedLanguage) {
-      return
-    }
+    if (!selectedLanguage) return
 
-    const roomData = {
-      name: name || "",
-      roomType: 2, // Group room
-      languageType: selectedLanguage,
-      requiredLevel: selectedLevel || "",
-      categories: categories.length > 0 ? categories : ["Other"],
-    }
+    const formData = new FormData()
+    formData.append("requiredLevel", selectedLevel || "")
+    formData.append("languageType", selectedLanguage)
+    formData.append("roomType", "Group") // Group room
+    formData.append("topic", topics.length > 0 ? topics[0] : "Other")
 
     try {
-      // 1. Try to join an existing room first
-      console.log("Attempting to join existing room...", roomData)
-      try {
-        const joinResult = await joinRoom({
-          topic: roomData.categories[0], // Use first category as topic
-          requiredLevel: roomData.requiredLevel,
-          languageType: roomData.languageType,
-          roomType: roomData.roomType,
-        }).unwrap()
+      console.log("Attempting to join existing room...")
+      const joinResult = await joinRoom(formData).unwrap()
 
-        console.log("Joined existing room:", joinResult)
-        if (joinResult && joinResult.roomId) {
-          handleCancel()
-          navigate(`/room/${joinResult.roomId}`)
-          return
-        }
-      } catch (joinError) {
-        // If 404, it means no room found, so proceed to create
-        if (joinError?.status === 404 || joinError?.originalStatus === 404) {
-          console.log("No room found, creating a new one...")
-        } else {
-          // If it's another error, throw it to outer catch
-          throw joinError
-        }
+      console.log("Joined existing room:", joinResult)
+      if (joinResult && joinResult.roomId) {
+        handleCancel()
+        navigate(`/room/${joinResult.roomId}`)
       }
+    } catch (err) {
+      if (err?.status === 404 || err?.originalStatus === 404) {
+        console.log("No room found.")
+        // Optionally show toast indicating no room matches
+      } else {
+        console.error("Failed to join room:", err)
+      }
+    }
+  }
 
-      // 2. If join failed (404), create a new room
-      const createResult = await createRoom(roomData).unwrap()
+  const handleCreate = async (e) => {
+    if (e) e.preventDefault()
+    if (!selectedLanguage) return
+
+    const formData = new FormData()
+    formData.append("name", name || "")
+    formData.append("roomType", "Group") // Group room
+    formData.append("languageType", selectedLanguage)
+    formData.append("requiredLevel", selectedLevel || "")
+
+    const categoriesList = topics.length > 0 ? topics : ["Other"]
+    categoriesList.forEach((category) =>
+      formData.append("categories", category),
+    )
+
+    try {
+      const createResult = await createRoom(formData).unwrap()
       console.log("Created new room:", createResult)
 
       const roomId = createResult.roomId
-      handleCancel() // Close modal
+      handleCancel()
 
       if (roomId) {
         navigate(`/room/${roomId}`)
       }
     } catch (err) {
-      console.error("Failed to join or create room:", err)
-      // Optional: Add toast notification here
+      console.error("Failed to create room:", err)
     }
   }
 
-  const handleCategoryChange = (event) => {
+  const handleTopicChange = (event) => {
     // Check if event is from custom component (has target.value) or standard event
     const newValue = event.target ? event.target.value : event
     const maxLimit = 3
@@ -130,7 +124,7 @@ const CreateRoomModal = ({ open, onCancel }) => {
     // Safety check for array
     if (Array.isArray(newValue)) {
       if (newValue.length <= maxLimit) {
-        setCategories(newValue)
+        setTopics(newValue)
       }
     }
   }
@@ -146,17 +140,20 @@ const CreateRoomModal = ({ open, onCancel }) => {
     >
       <div className="flex flex-col gap-5">
         {/* Room Name */}
-        <RoomNameInput
+        <TextInput
+          id="name"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          t={t}
+          label={t.rooms.createRoom.nameLabel}
+          placeholder={t.rooms.createRoom.namePlaceholder}
+          autoFocus
         />
 
-        {/* Categories */}
-        <CategorySelect
-          value={categories}
-          onChange={handleCategoryChange}
-          options={CATEGORIES}
+        {/* Topics */}
+        <TopicSelect
+          value={topics}
+          onChange={handleTopicChange}
+          options={TOPICS}
           t={t}
         />
 
@@ -169,15 +166,23 @@ const CreateRoomModal = ({ open, onCancel }) => {
         />
       </div>
 
-      <div className="mt-8 flex justify-center gap-3">
-        <PillButton onClick={handleCancel} variant="text" color="inherit">
+      <div className="mt-8 flex justify-center gap-2">
+        <PillButton onClick={handleCancel} variant="secondary">
           {t.rooms.createRoom.cancel}
         </PillButton>
         <PillButton
-          onClick={handleSubmit}
-          loading={isLoading}
+          onClick={handleJoin}
+          loading={isJoining}
           loadingText={t.rooms.createRoom.joining}
-          disabled={!selectedLanguage}
+          disabled={!selectedLanguage || isCreating}
+        >
+          {t.rooms.createRoom.join}
+        </PillButton>
+        <PillButton
+          onClick={handleCreate}
+          loading={isCreating}
+          loadingText={t.rooms.createRoom.creating}
+          disabled={!selectedLanguage || isJoining}
         >
           {t.rooms.createRoom.create}
         </PillButton>

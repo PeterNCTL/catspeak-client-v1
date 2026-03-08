@@ -77,16 +77,13 @@ const CatSpeakSidebar = () => {
     return (
       <button
         onClick={onClick}
-        className={`flex w-full items-center gap-3 px-4 py-3 text-sm font-semibold transition-colors ${
+        className={`flex w-full h-12 items-center gap-3 px-4 text-sm ${
           isActive
-            ? "bg-gray-100/80 text-[#990011]"
-            : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"
-        } rounded-xl`}
+            ? "bg-[#F2F2F2] text-[#990011] hover:bg-[#E6E6E6]"
+            : "hover:bg-[#F2F2F2]"
+        } rounded-[5px]`}
       >
-        <Icon
-          size={20}
-          className={isActive ? "text-[#990011]" : "text-gray-400"}
-        />
+        <Icon className={isActive ? "text-[#990011]" : ""} />
         <span>{item.label}</span>
       </button>
     )
@@ -128,13 +125,13 @@ const CatSpeakSidebar = () => {
           onClick={() => setMobileOpen(true)}
           className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:border-[#990011] hover:text-[#990011] transition-colors font-medium bg-white"
         >
-          <Menu size={18} />
+          <Menu />
           <span>{t.catSpeak.sidebar.menu}</span>
         </button>
       </div>
 
       {/* Desktop Sidebar Container */}
-      <div className="hidden lg:block w-[300px] shrink-0 p-5 sticky top-[80px] h-[calc(100vh-80px)] overflow-y-auto [&::-webkit-scrollbar]:hidden">
+      <div className="hidden lg:block w-[320px] shrink-0 p-5 sticky top-[80px] h-[calc(100vh-80px)] overflow-y-auto [&::-webkit-scrollbar]:hidden">
         <SidebarContent />
       </div>
 

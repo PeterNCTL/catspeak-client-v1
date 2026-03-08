@@ -14,11 +14,7 @@ export default {
   discover: {
     title: "Khám phá thế giới",
     description:
-      "Sắp ra mắt: Khám phá văn hóa, địa điểm và con người từ khắp nơi trên thế giới.",
-  },
-  news: {
-    title: "Tin tức",
-    description: "Sắp ra mắt: Cập nhật những tin tức mới nhất.",
+      "Sắp ra mắt: Khám phá các nền văn hóa, địa điểm và con người từ khắp nơi trên thế giới.",
   },
   video: {
     title: "Video",

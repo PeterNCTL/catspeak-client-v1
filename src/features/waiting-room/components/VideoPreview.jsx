@@ -1,17 +1,6 @@
 import React from "react"
-import { Box, Paper, Avatar, Chip, styled } from "@mui/material"
-import MicOff from "@mui/icons-material/MicOff"
-import { colors } from "@/shared/utils/colors"
-import MediaControls from "./MediaControls"
+import { Mic, MicOff, Video, VideoOff } from "lucide-react"
 import { useLanguage } from "@/shared/context/LanguageContext"
-
-// Styled Video component
-const StyledVideo = styled("video")({
-  width: "100%",
-  height: "100%",
-  objectFit: "cover",
-  transform: "scaleX(-1)", // Mirror effect
-})
 
 const VideoPreview = ({
   localStream,
@@ -23,24 +12,10 @@ const VideoPreview = ({
 }) => {
   const { t } = useLanguage()
   return (
-    <Paper
-      elevation={0}
-      sx={{
-        position: "relative",
-        mb: 4,
-        height: { xs: 300, sm: 350, md: 400 },
-        width: { xs: "100%", sm: "90%", md: 700 }, // Responsive width
-        overflow: "hidden",
-        borderRadius: "24px",
-        bgcolor: "white",
-        boxShadow:
-          "0px 20px 25px -5px rgba(0, 0, 0, 0.1), 0px 8px 10px -6px rgba(0, 0, 0, 0.1)", // shadow-xl equivalent
-        border: `1px solid ${colors.border}`,
-      }}
-    >
+    <div className="relative mb-4 h-[300px] w-full max-w-full overflow-hidden rounded-[24px] border border-gray-200 bg-white shadow-xl sm:h-[350px] sm:w-[90%] md:h-[400px] md:w-[700px]">
       {/* Video Preview */}
       {localStream && (
-        <StyledVideo
+        <video
           ref={(video) => {
             if (video) {
               video.srcObject = localStream
@@ -50,72 +25,43 @@ const VideoPreview = ({
           autoPlay
           playsInline
           muted // Always mute local video preview purely for UI
-          className={!cameraOn ? "hidden" : ""}
+          className={`h-full w-full object-cover -scale-x-100 ${!cameraOn ? "hidden" : ""}`}
         />
       )}
 
       {!cameraOn && (
-        <Box
-          sx={{
-            display: "flex",
-            height: "100%",
-            width: "100%",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <Avatar
-            sx={{
-              width: { xs: 64, md: 96 },
-              height: { xs: 64, md: 96 },
-              bgcolor: "white",
-              color: colors.red[600],
-              fontSize: { xs: 24, md: 36 },
-              fontWeight: "bold",
-              boxShadow: 3,
-              border: "1px solid #f3f4f6",
-            }}
-          >
+        <div className="flex h-full w-full items-center justify-center">
+          <div className="flex h-16 w-16 items-center justify-center rounded-full border border-gray-100 bg-white text-2xl font-bold text-red-600 shadow-lg md:h-24 md:w-24 md:text-3xl">
             {user?.username?.[0]?.toUpperCase() || "U"}
-          </Avatar>
-        </Box>
+          </div>
+        </div>
       )}
 
       {/* Controls Overlay */}
-      <MediaControls
-        micOn={micOn}
-        cameraOn={cameraOn}
-        onToggleMic={onToggleMic}
-        onToggleCam={onToggleCam}
-      />
-
-      {/* Mic Status Indicator */}
-      {!micOn && (
-        <Box
-          sx={{
-            position: "absolute",
-            top: { xs: 12, md: 16 },
-            right: { xs: 12, md: 16 },
-            zIndex: 10,
-          }}
+      <div className="absolute bottom-6 left-1/2 z-10 flex -translate-x-1/2 flex-row gap-6">
+        <button
+          onClick={onToggleMic}
+          className={`flex h-14 w-14 items-center justify-center rounded-full shadow-lg transition-all duration-200 ${
+            micOn
+              ? "bg-red-600 text-white hover:bg-red-700"
+              : "border border-gray-200 bg-white text-red-400 hover:bg-red-50"
+          }`}
         >
-          <Chip
-            icon={<MicOff sx={{ width: 16, height: 16 }} />}
-            label={t.rooms.waitingScreen.micOff}
-            sx={{
-              bgcolor: "rgba(255, 255, 255, 0.9)",
-              backdropFilter: "blur(4px)",
-              color: colors.red[500],
-              fontWeight: 500,
-              border: "1px solid #f3f4f6",
-              "& .MuiChip-icon": {
-                color: colors.red[500],
-              },
-            }}
-          />
-        </Box>
-      )}
-    </Paper>
+          {micOn ? <Mic /> : <MicOff />}
+        </button>
+
+        <button
+          onClick={onToggleCam}
+          className={`flex h-14 w-14 items-center justify-center rounded-full shadow-lg transition-all duration-200 ${
+            cameraOn
+              ? "bg-red-600 text-white hover:bg-red-700"
+              : "border border-gray-200 bg-white text-red-400 hover:bg-red-50"
+          }`}
+        >
+          {cameraOn ? <Video /> : <VideoOff />}
+        </button>
+      </div>
+    </div>
   )
 }
 

@@ -3,28 +3,23 @@ import { colors } from "@/shared/utils/colors"
 
 const LevelSelector = ({ selectedLevel, onSelect, levels, t }) => {
   return (
-    <div className="text-left">
-      <label className="mb-2 block text-sm font-bold">
-        {t.rooms.createRoom.requiredLevel}
-      </label>
-      <div
-        className="flex flex-wrap justify-start gap-2"
-        style={{ "--border-color": colors.border }}
-      >
+    <div className="text-left flex flex-col gap-1.5">
+      <label className="text-sm">{t.rooms.createRoom.requiredLevel}</label>
+      <div className="flex flex-wrap justify-start gap-2">
         {levels?.map((level) => {
-          const isSelected = selectedLevel === level
+          const isSelected = selectedLevel === level.value
           return (
             <button
-              key={level}
+              key={level.value}
               type="button"
-              onClick={() => onSelect(isSelected ? "" : level)}
+              onClick={() => onSelect(isSelected ? "" : level.value)}
               className={`inline-flex h-12 items-center rounded-full px-4 text-sm border transition-colors ${
                 isSelected
                   ? "bg-cath-red-700 border-cath-red-700 text-white hover:bg-cath-red-800 hover:border-cath-red-800"
-                  : "border-[var(--border-color)] hover:bg-gray-100"
+                  : "border-[#C6C6C6] hover:bg-[#F2F2F2]"
               }`}
             >
-              {level}
+              {level.label}
             </button>
           )
         })}

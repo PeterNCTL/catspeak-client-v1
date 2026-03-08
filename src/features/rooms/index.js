@@ -6,7 +6,8 @@ export { default as CategoryRoomSection } from "./components/CategoryRoomSection
 export { default as ClassSidebar } from "./components/ClassSidebar"
 export { default as EmptyRoomState } from "./components/EmptyRoomState"
 export { default as HeroCarousel } from "./components/HeroCarousel"
-export { default as RoomTabs } from "./components/RoomTabs"
+export { default as RoomsTabs } from "./components/RoomsTabs"
+export { default as RoomsMobileDrawer } from "./components/RoomsMobileDrawer"
 export { default as SessionActionButtons } from "./components/SessionActionButtons"
 export { default as WelcomeSection } from "./components/WelcomeSection"
 

@@ -4,7 +4,6 @@ import { Outlet, ScrollRestoration } from "react-router-dom"
 import HeaderBar from "../MainLayout/HeaderBar"
 import Footer from "../MainLayout/Footer"
 import Auth from "@/features/auth/components"
-import { MessageWidget } from "@/features/messages"
 import AuthModalContext from "@/shared/context/AuthModalContext"
 
 const { Content } = Layout
@@ -50,9 +49,6 @@ const UserLayout = ({ showFooter = true }) => {
           onClose={closeAuthModal}
           onSwitchMode={openAuthModal}
         />
-
-        {/* Floating message bubble */}
-        <MessageWidget />
 
         <ScrollRestoration />
       </Layout>

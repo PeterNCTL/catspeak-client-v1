@@ -3,7 +3,7 @@ import { Carousel, ConfigProvider } from "antd"
 import {
   BubbleChevronLeft,
   BubbleChevronRight,
-} from "@/shared/components/ui/button"
+} from "@/shared/components/ui/button/index"
 import { useLanguage } from "@/shared/context/LanguageContext"
 import InDevelopmentModal from "@/shared/components/common/InDevelopmentModal"
 

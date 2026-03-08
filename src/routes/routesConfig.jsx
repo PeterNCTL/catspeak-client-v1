@@ -18,6 +18,7 @@ import NewsDetailPage from "@/features/news/pages/NewsDetailPage"
 import DiscoverPage from "@/features/discover/DiscoverPage"
 import VideoPage from "@/features/video/VideoPage"
 import MailPage from "@/features/mail/pages/MailPage"
+import SharedEventPage from "@/features/mail/pages/SharedEventPage"
 
 // Shared Pages
 import { ComingSoonPage } from "@/shared/pages"
@@ -245,6 +246,10 @@ const routesConfig = [
         element: <ComingSoonPage />,
       },
     ],
+  },
+  {
+    path: "/events/shared/:token",
+    element: <SharedEventPage />,
   },
   {
     path: "/403",

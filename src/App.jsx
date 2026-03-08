@@ -3,6 +3,7 @@ import AppRouter from "@routes"
 import { store } from "@store"
 import "@styles/app.css"
 import { Toaster } from "react-hot-toast"
+import "@/styles/theme.css"
 
 import { ConversationSignalRProvider } from "@/features/messages/context/ConversationSignalRContext"
 

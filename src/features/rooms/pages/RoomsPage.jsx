@@ -1,13 +1,5 @@
 import React, { useState } from "react"
-import { Tabs, Tab, Box } from "@mui/material"
-import {
-  FiMessageCircle,
-  FiMonitor,
-  FiUsers,
-  FiLayers,
-  FiFilter,
-} from "react-icons/fi"
-import { Drawer } from "antd"
+import { MessageCircle, Monitor, Users, Layers, Filter } from "lucide-react"
 import { useSearchParams, useParams } from "react-router-dom"
 import {
   RoomFilterSidebar,
@@ -20,11 +12,15 @@ import {
   GroupTab,
   ClassTab,
   CreateRoomModal,
+  RoomsTabs,
+  RoomsMobileDrawer,
   useRoomsPageLogic,
   useGetRoomsQuery,
 } from "@/features/rooms"
 import { useLanguage } from "@/shared/context/LanguageContext"
 import { PageNotFound } from "@/shared/pages"
+import { AnimatePresence } from "framer-motion"
+import { FadeAnimation, FluentAnimation } from "@/shared/animations"
 
 const RoomsPage = () => {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
@@ -94,176 +90,106 @@ const RoomsPage = () => {
   // --------------------------------------
 
   return (
-    <div className="w-full">
-      {/* Hero Section - Improved mobile spacing */}
-      <div className="mx-auto flex max-w-screen-xl flex-col gap-6 px-4 py-6 sm:px-6 sm:py-8 md:gap-10 md:py-12 lg:flex-row lg:items-start">
-        {/* Left column - Welcome Section */}
-        <div className="w-full lg:w-1/2">
-          <WelcomeSection
-            allowConnect={allowConnect}
-            setAllowConnect={setAllowConnect}
-          />
+    <AnimatePresence mode="wait">
+      <FluentAnimation
+        animationKey="rooms-page"
+        direction="up"
+        className="w-full"
+      >
+        {/* Hero Section - Improved mobile spacing */}
+        <div className="flex flex-col gap-5 p-5 sm:px-6 sm:py-8 md:gap-10 md:py-12 lg:flex-row lg:items-start">
+          {/* Left column - Welcome Section */}
+          <div className="w-full lg:w-1/2">
+            <WelcomeSection
+              allowConnect={allowConnect}
+              setAllowConnect={setAllowConnect}
+            />
 
-          {/* Session Creation Buttons */}
-          <SessionActionButtons
-            handleCreateOneOnOneSession={handleCreateOneOnOneSession}
-            handleCreateStudyGroupSession={handleCreateStudyGroupSession}
-            isCreatingOneOnOne={state.isCreatingOneOnOne}
-            isCreatingStudyGroup={state.isCreatingStudyGroup}
-          />
-        </div>
-
-        {/* Right column - Hero Carousel */}
-        <div className="w-full lg:w-1/2">
-          <HeroCarousel slides={slides} />
-        </div>
-      </div>
-
-      {/* Lower section with content & sidebar */}
-      <div className="mx-auto max-w-screen-xl px-4 pb-6 sm:px-6 sm:pb-12">
-        <div className="flex flex-col gap-6 lg:grid lg:grid-cols-[300px_1fr] xl:grid-cols-[360px_1fr]">
-          {/* Sidebar - Hidden on mobile by default, shown on tablet+ */}
-          <div className="hidden lg:block">
-            {tab === "class" ? <ClassSidebar /> : <RoomFilterSidebar />}
+            {/* Session Creation Buttons */}
+            <SessionActionButtons
+              handleCreateOneOnOneSession={handleCreateOneOnOneSession}
+              handleCreateStudyGroupSession={handleCreateStudyGroupSession}
+              isCreatingOneOnOne={state.isCreatingOneOnOne}
+              isCreatingStudyGroup={state.isCreatingStudyGroup}
+            />
           </div>
 
-          {/* Content area */}
-          <div className="flex flex-col min-w-0">
-            <Box sx={{ width: "100%" }}>
-              <div className="flex items-start justify-between gap-2 overflow-hidden">
-                <Box sx={{ flex: 1, minWidth: 0 }}>
-                  <Tabs
-                    value={tab}
-                    onChange={(event, newValue) => setTab(newValue)}
-                    variant="scrollable"
-                    scrollButtons
-                    allowScrollButtonsMobile
-                    aria-label="room tabs"
-                    sx={{
-                      "& .MuiTabs-indicator": {
-                        backgroundColor: "#990011",
-                      },
-                      "& .MuiTab-root": {
-                        color: "#666",
-                        textTransform: "none",
-                        minHeight: "48px",
-                        fontSize: { xs: "0.75rem", sm: "0.875rem" },
-                        "&.Mui-selected": {
-                          color: "#990011",
-                        },
-                      },
-                      "& .MuiTabs-scrollButtons": {
-                        color: "#990011",
-                        "&.Mui-disabled": {
-                          opacity: 0.3,
-                        },
-                      },
-                    }}
+          {/* Right column - Hero Carousel */}
+          <div className="w-full lg:w-1/2">
+            <HeroCarousel slides={slides} />
+          </div>
+        </div>
+
+        {/* Lower section with content & sidebar */}
+        <div className="px-5 sm:px-6 sm:pb-12">
+          <div className="flex flex-col gap-6 lg:grid lg:grid-cols-[320px_1fr]">
+            {/* Sidebar - Hidden on mobile by default, shown on tablet+ */}
+            <div className="hidden lg:block">
+              {tab === "class" ? <ClassSidebar /> : <RoomFilterSidebar />}
+            </div>
+
+            {/* Content area */}
+            <div className="flex flex-col min-w-0">
+              <div className="w-full">
+                <div className="flex items-start justify-between gap-2 overflow-hidden">
+                  <div className="flex-1 min-w-0">
+                    <RoomsTabs tab={tab} setTab={setTab} />
+                  </div>
+
+                  {/* Mobile Filter Button */}
+                  <button
+                    onClick={() => setMobileFiltersOpen(true)}
+                    className="lg:hidden flex items-center gap-3 rounded-full bg-white h-12 px-4 text-base font-medium hover:bg-[#E5E5E5]"
                   >
-                    <Tab
-                      value="communicate"
-                      label={
-                        <span className="flex items-center gap-1.5 sm:gap-2">
-                          <FiMessageCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                          <span className="text-xs sm:text-sm">
-                            {t.rooms.tabs.communicate}
-                          </span>
-                        </span>
-                      }
-                    />
-                    <Tab
-                      value="teaching"
-                      label={
-                        <span className="flex items-center gap-1.5 sm:gap-2">
-                          <FiMonitor className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                          <span className="text-xs sm:text-sm">
-                            {t.rooms.tabs.teaching}
-                          </span>
-                        </span>
-                      }
-                    />
-                    <Tab
-                      value="group"
-                      label={
-                        <span className="flex items-center gap-1.5 sm:gap-2">
-                          <FiUsers className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                          <span className="text-xs sm:text-sm">
-                            {t.rooms.tabs.group}
-                          </span>
-                        </span>
-                      }
-                    />
-                    <Tab
-                      value="class"
-                      label={
-                        <span className="flex items-center gap-1.5 sm:gap-2">
-                          <FiLayers className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                          <span className="text-xs sm:text-sm">
-                            {t.rooms.tabs.class}
-                          </span>
-                        </span>
-                      }
-                    />
-                  </Tabs>
-                </Box>
-
-                {/* Mobile Filter Button */}
-                <button
-                  onClick={() => setMobileFiltersOpen(true)}
-                  className="lg:hidden mt-1.5 flex flex-shrink-0 items-center gap-2 rounded-full border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 hover:text-[#990011] transition-colors shadow-sm"
-                >
-                  <FiFilter className="h-3.5 w-3.5" />
-                  <span>{t.rooms?.filters?.title || "Filters"}</span>
-                </button>
-              </div>
-
-              {/* Mobile Sidebar Drawer */}
-              <Drawer
-                title={
-                  tab === "class"
-                    ? t.rooms?.tabs?.class || "Class List"
-                    : t.rooms?.filters?.title || "Filters"
-                }
-                placement="right"
-                onClose={() => setMobileFiltersOpen(false)}
-                open={mobileFiltersOpen}
-                styles={{
-                  body: { padding: 0 },
-                  wrapper: { width: 320 },
-                }}
-                zIndex={1300}
-              >
-                <div className="p-4">
-                  {tab === "class" ? <ClassSidebar /> : <RoomFilterSidebar />}
+                    <Filter />
+                    <span>{t.rooms?.filters?.title || "Filters"}</span>
+                  </button>
                 </div>
-              </Drawer>
 
-              {/* Tab Panels */}
-              <Box sx={{ mt: 2 }}>
-                {tab === "communicate" && (
-                  <CommunicateTab
-                    rooms={rooms}
-                    selectedCategories={categories}
-                    page={page}
-                    totalPages={totalPages}
-                    setPage={setPage}
-                    languageType={languageType}
-                    requiredLevels={requiredLevelsArg}
-                  />
-                )}
-                {tab === "teaching" && <TeachingTab />}
-                {tab === "group" && <GroupTab />}
-                {tab === "class" && <ClassTab />}
-              </Box>
-            </Box>
+                {/* Mobile Sidebar Drawer */}
+                <RoomsMobileDrawer
+                  isOpen={mobileFiltersOpen}
+                  onClose={() => setMobileFiltersOpen(false)}
+                  title={
+                    tab === "class"
+                      ? t.rooms?.tabs?.class || "Class List"
+                      : t.rooms?.filters?.title || "Filters"
+                  }
+                >
+                  {tab === "class" ? <ClassSidebar /> : <RoomFilterSidebar />}
+                </RoomsMobileDrawer>
+
+                {/* Tab Panels */}
+                <div className="mt-4 sm:mt-6 overflow-hidden">
+                  <AnimatePresence mode="wait">
+                    <FadeAnimation key={tab} className="w-full">
+                      {tab === "communicate" && (
+                        <CommunicateTab
+                          rooms={rooms}
+                          selectedCategories={categories}
+                          page={page}
+                          totalPages={totalPages}
+                          setPage={setPage}
+                          languageType={languageType}
+                          requiredLevels={requiredLevelsArg}
+                        />
+                      )}
+                      {tab === "teaching" && <TeachingTab />}
+                      {tab === "group" && <GroupTab />}
+                      {tab === "class" && <ClassTab />}
+                    </FadeAnimation>
+                  </AnimatePresence>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-      <CreateRoomModal
-        open={state.isCreateRoomModalOpen}
-        onCancel={() => actions.setCreateRoomModalOpen(false)}
-      />
-    </div>
+        <CreateRoomModal
+          open={state.isCreateRoomModalOpen}
+          onCancel={() => actions.setCreateRoomModalOpen(false)}
+        />
+      </FluentAnimation>
+    </AnimatePresence>
   )
 }
 

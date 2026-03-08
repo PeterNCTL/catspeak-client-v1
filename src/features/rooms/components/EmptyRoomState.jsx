@@ -1,19 +1,12 @@
 import React from "react"
-import { Box, Typography } from "@mui/material"
 
-const EmptyRoomState = ({ message, height = "h-32" }) => {
+const EmptyRoomState = ({ message, height = "h-48" }) => {
   return (
-    <Box
-      className={`flex ${height} w-full flex-col items-center justify-center rounded-[20px] bg-white`}
-      sx={{
-        border: 1,
-        borderColor: "divider",
-      }}
+    <div
+      className={`flex ${height} w-full flex-col items-center justify-center rounded-[20px] bg-white border border-[#C6C6C6]`}
     >
-      <Typography variant="body2" color="textSecondary">
-        {message}
-      </Typography>
-    </Box>
+      <p className="m-0 text-base text-[#7A7574]">{message}</p>
+    </div>
   )
 }
 

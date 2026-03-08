@@ -13,9 +13,7 @@ const HeaderGuestControls = ({ onGetStarted }) => {
 
   return (
     <>
-      <PillButton onClick={handleLogin} style={{ whiteSpace: "nowrap" }}>
-        {t.auth.loginButton}
-      </PillButton>
+      <PillButton onClick={handleLogin}>{t.auth.loginButton}</PillButton>
     </>
   )
 }

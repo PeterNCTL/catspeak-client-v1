@@ -3,31 +3,34 @@ import { Clock, Calendar, MapPin } from "lucide-react"
 import { parseTime } from "./utils/EventUtils"
 import { IconLogo } from "../../../../shared/assets/icons/logo"
 
-const EventBlock = ({ event, hourHeight, ddMmYyyy, onClick }) => {
+const EventBlock = ({
+  event,
+  hourHeight,
+  ddMmYyyy,
+  onClick,
+  colWidth = 180,
+}) => {
   const start = parseTime(event.startTime)
   const end = parseTime(event.endTime)
   // Minimum height of 70px to fit contents neatly
   const blockHeight = Math.max((end - start) * hourHeight, 70)
   const topPos = start * hourHeight
 
-  // Adjust for overlap width and left offset
-  const widthPercentage = 100 / event.groupCols
-  const leftPercentage = event.colIdx * widthPercentage
-
-  // Minor deduction in width to allow small gap between overlapping items
+  // Fixed pixel-based positioning so events never squish
+  const GAP = 4
   const styleObj = {
     top: `${topPos}px`,
     height: `${blockHeight}px`,
-    left: `calc(${leftPercentage}% + ${event.colIdx > 0 ? 4 : 0}px)`,
-    width: `calc(${widthPercentage}% - ${event.groupCols > 1 ? 4 : 0}px)`,
+    left: `${event.colIdx * colWidth + (event.colIdx > 0 ? GAP : 0)}px`,
+    width: `${colWidth - (event.groupCols > 1 ? GAP : 0)}px`,
     zIndex: 10 + event.colIdx,
   }
 
   return (
     <div
       onClick={onClick}
-      className={`absolute rounded-xl p-3 shadow-sm hover:shadow-md transition-all cursor-pointer overflow-hidden flex flex-col justify-start group text-white ${event.color}`}
-      style={styleObj}
+      className="absolute rounded-xl p-3 shadow-sm hover:shadow-md transition-all cursor-pointer overflow-hidden flex flex-col justify-start group text-white"
+      style={{ ...styleObj, backgroundColor: event.color || "#B91264" }}
     >
       <div className="flex items-center gap-2 mb-2 shrink-0">
         <div className="p-1 rounded-md">

@@ -1,72 +1,53 @@
 import React from "react"
-import { useSearchParams } from "react-router-dom"
-import { Checkbox, FormControlLabel } from "@mui/material"
+import { useParams } from "react-router-dom"
 import { useLanguage } from "@/shared/context/LanguageContext"
-import FilterSection from "./FilterSection"
+import { useUrlFilter } from "../../hooks/useUrlFilter"
+import { LEVELS } from "../../config/constants"
 
-const LevelFilter = ({ currentLevels }) => {
+const LevelFilter = () => {
+  const { lang } = useParams()
   const { t } = useLanguage()
-  const [searchParams, setSearchParams] = useSearchParams()
+  const { toggleValue, isSelected } = useUrlFilter("requiredLevels")
 
-  const handleLevelChange = (levelValue, isChecked) => {
-    const newParams = new URLSearchParams(searchParams)
-    const requiredLevelsParam = searchParams.get("requiredLevels")
-    const currentLevelsArray = requiredLevelsParam
-      ? requiredLevelsParam.split(",").map((s) => s.trim())
-      : []
-
-    let newLevels = [...currentLevelsArray]
-
-    if (isChecked) {
-      if (!newLevels.includes(levelValue)) {
-        newLevels.push(levelValue)
-      }
-    } else {
-      newLevels = newLevels.filter((l) => l !== levelValue)
-    }
-
-    // Set as comma-separated string or delete if empty
-    if (newLevels.length > 0) {
-      newParams.set("requiredLevels", newLevels.join(","))
-    } else {
-      newParams.delete("requiredLevels")
-    }
-
-    // Reset page to 1 when filter changes
-    newParams.set("page", "1")
-    setSearchParams(newParams, { preventScrollReset: true })
+  const langMap = {
+    en: "English",
+    zh: "Chinese",
+    vi: "Vietnamese",
   }
+  const currentLanguage = lang ? langMap[lang] : "English"
+  const currentLevels = LEVELS[currentLanguage] || LEVELS.English
 
   return (
-    <FilterSection heading={t.rooms.filters.levelsHeading}>
-      {currentLevels.map((levelObj) => {
-        const requiredLevelsParam = searchParams.get("requiredLevels")
-        const currentLevelsArray = requiredLevelsParam
-          ? requiredLevelsParam.split(",").map((s) => s.trim())
-          : []
-        const isChecked = currentLevelsArray.includes(levelObj.value)
+    <>
+      <div>
+        <h3 className="font-bold text-lg mb-2">
+          {t.rooms.filters.levelsHeading}
+        </h3>
+        <div className="flex flex-col">
+          {currentLevels.map((levelObj) => {
+            const isChecked = isSelected(levelObj.value)
 
-        return (
-          <FormControlLabel
-            key={levelObj.value}
-            control={
-              <Checkbox
-                checked={isChecked}
-                onChange={(e) =>
-                  handleLevelChange(levelObj.value, e.target.checked)
-                }
-                sx={{
-                  "&.Mui-checked": {
-                    color: "#990011",
-                  },
-                }}
-              />
-            }
-            label={levelObj.label}
-          />
-        )
-      })}
-    </FilterSection>
+            return (
+              <label
+                key={levelObj.value}
+                className={`h-11 flex items-center gap-3 cursor-pointer rounded-md px-4 transition-colors ${isChecked ? "bg-[#F2F2F2] hover:bg-[#E5E5E5]" : "hover:bg-[#F2F2F2]"}`}
+              >
+                <input
+                  type="checkbox"
+                  checked={isChecked}
+                  onChange={(e) =>
+                    toggleValue(levelObj.value, e.target.checked)
+                  }
+                  className="w-4 h-4 text-[#990011] bg-white accent-[#990011] cursor-pointer"
+                />
+                <span className="text-base">{levelObj.label}</span>
+              </label>
+            )
+          })}
+        </div>
+      </div>
+      <hr className="my-5 border-[#C6C6C6]" />
+    </>
   )
 }
 

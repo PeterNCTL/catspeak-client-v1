@@ -1,5 +1,4 @@
 import React from "react"
-import { Typography } from "@mui/material"
 import { useGetRoomsQuery } from "@/features/rooms/api/roomsApi"
 import RoomCard from "./RoomCard"
 import EmptyRoomState from "./EmptyRoomState"
@@ -30,37 +29,18 @@ const CategoryRoomSection = ({
   const renderHeader = () => (
     <div className="flex h-8 items-center justify-between">
       <div className="flex items-end gap-3">
-        <Typography
-          variant="h6"
-          sx={{
-            mb: 0,
-            fontWeight: "bold",
-            textTransform: "uppercase",
-            letterSpacing: "0.05em",
-            color: colors.headingColor,
-          }}
+        <h6
+          className="mb-0 text-xl font-bold"
+          style={{ color: colors.headingColor }}
         >
           {title}
-        </Typography>
-        <Typography
-          component="button"
-          variant="body2"
+        </h6>
+        <button
           onClick={() => onSeeMore(categoryKey)}
-          sx={{
-            mb: "2px",
-            cursor: "pointer",
-            border: 0,
-            backgroundColor: "transparent",
-            fontWeight: 500,
-            color: "text.secondary",
-            textDecoration: "none",
-            "&:hover": {
-              color: "text.primary",
-            },
-          }}
+          className="mb-[2px] cursor-pointer text-sm text-[#7A7574] no-underline hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
         >
           {t.rooms.filters.seeMore}
-        </Typography>
+        </button>
       </div>
     </div>
   )

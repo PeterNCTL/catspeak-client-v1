@@ -1,21 +1,50 @@
-import React, { useEffect, useState, useRef } from "react"
+import React, { useEffect, useState, useRef, useMemo } from "react"
 import { useNavigate, useParams, useLocation } from "react-router-dom"
 import { ChevronDown } from "lucide-react"
+import { AnimatePresence } from "framer-motion"
+import { FluentAnimation } from "@/shared/animations"
 import { useLanguage } from "@/shared/context/LanguageContext"
 import { useActiveLink } from "../../hooks/useActiveLink"
 import { LANGUAGE_CONFIG } from "../../config/languages"
 import LanguageMenuItem from "./LanguageMenuItem"
 
+const DEFAULT_COMMUNITY = "zh"
+
 const DesktopCommunityDropdown = ({ navKey }) => {
   const { t } = useLanguage()
+  const { lang } = useParams()
   const location = useLocation()
   const navigate = useNavigate()
-  const { lang } = useParams()
-  const [isOpen, setIsOpen] = useState(false)
-  const dropdownRef = useRef(null)
   const isActive = useActiveLink(navKey)
 
-  // Close dropdown when clicking outside
+  const [isOpen, setIsOpen] = useState(false)
+  const dropdownRef = useRef(null)
+
+  // ---- Supported codes (dynamic, scalable) ----
+  const supportedCodes = useMemo(() => LANGUAGE_CONFIG.map((c) => c.code), [])
+
+  // ---- Determine current community (URL first, then localStorage) ----
+  const currentCommunity = useMemo(() => {
+    if (supportedCodes.includes(lang)) {
+      localStorage.setItem("communityLanguage", lang)
+      return lang
+    }
+
+    return localStorage.getItem("communityLanguage") || DEFAULT_COMMUNITY
+  }, [lang, supportedCodes])
+
+  // ---- Derive label (no state needed) ----
+  const selectedLabel = useMemo(() => {
+    const config = LANGUAGE_CONFIG.find((c) => c.code === currentCommunity)
+
+    return (
+      t.header?.countries?.[config?.labelKey] ||
+      config?.fallbackLabel ||
+      "Community"
+    )
+  }, [currentCommunity, t])
+
+  // ---- Close dropdown on outside click ----
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -24,105 +53,98 @@ const DesktopCommunityDropdown = ({ navKey }) => {
     }
 
     document.addEventListener("mousedown", handleClickOutside)
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside)
-    }
+    return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [])
 
-  // Helper to get label from config
-  const getLabel = (code) => {
-    const config = LANGUAGE_CONFIG.find((c) => c.code === code)
-    return (
-      t.header?.countries?.[config?.labelKey] || config?.fallbackLabel || "Anh"
-    )
-  }
-
-  // Initialize label state
-  const [selectedLabel, setSelectedLabel] = useState(() => {
-    const savedLang = localStorage.getItem("communityLanguage")
-    return getLabel(savedLang || "zh")
-  })
-
-  // Sync label with URL param or localStorage
-  useEffect(() => {
-    const targetLang = lang || localStorage.getItem("communityLanguage") || "zh"
-    const label = getLabel(targetLang)
-    setSelectedLabel(label)
-
-    // Only update localStorage if lang comes from URL
-    if (lang) {
-      localStorage.setItem("communityLanguage", lang)
+  // ---- Switch community ----
+  const handleCommunitySelect = (newCode) => {
+    if (newCode === currentCommunity) {
+      setIsOpen(false)
+      return
     }
-  }, [lang, t])
 
-  const handleLanguageSelect = (newLang, label) => {
-    setSelectedLabel(label)
+    localStorage.setItem("communityLanguage", newCode)
     setIsOpen(false)
 
-    const pathWithoutLang = location.pathname.replace(/^\/(en|zh|vi)/, "")
+    const isInsideEcosystem =
+      location.pathname.startsWith(`/${currentCommunity}/community`) ||
+      location.pathname.startsWith(`/${currentCommunity}/cat-speak`)
 
-    // Determine if we should preserve the sub-path
-    const shouldPreservePath =
-      pathWithoutLang.startsWith("/community") ||
-      pathWithoutLang.startsWith("/cat-speak")
-
-    const targetPath = shouldPreservePath ? pathWithoutLang : "/community"
-    navigate(`/${newLang}${targetPath}`)
+    if (isInsideEcosystem) {
+      // Replace only the first segment
+      const newPath = location.pathname.replace(
+        `/${currentCommunity}`,
+        `/${newCode}`,
+      )
+      navigate(newPath)
+    } else {
+      navigate(`/${newCode}/community`)
+    }
   }
 
+  // ---- Navigate to current community root ----
   const handleCommunityClick = () => {
-    const currentLang =
-      lang || localStorage.getItem("communityLanguage") || "zh"
-    navigate(`/${currentLang}/community`)
+    navigate(`/${currentCommunity}/community`)
   }
 
   return (
     <div className="relative" ref={dropdownRef}>
       <div
-        className={`flex items-center justify-center gap-1 min-w-[140px] px-6 py-3 text-sm font-semibold uppercase tracking-wide transition-all duration-200 rounded-full cursor-pointer ${
+        className={`flex items-center justify-center text-sm tracking-wide font-semibold uppercase transition-colors duration-200 ${
           isOpen || isActive ? "text-white" : "text-white/70 hover:text-white"
         }`}
       >
-        <span onClick={handleCommunityClick}>
-          {selectedLabel || t.nav[navKey]}
-        </span>
-        <div className="relative ml-1">
+        {/* Community navigation */}
+        <div
+          onClick={handleCommunityClick}
+          className="h-12 flex items-center pl-6 pr-3 rounded-l-full cursor-pointer hover:bg-white/10 transition-colors"
+        >
+          {selectedLabel || t.nav?.[navKey]}
+        </div>
+
+        {/* Dropdown toggle */}
+        <div className="relative">
           <div
             onClick={(e) => {
               e.stopPropagation()
-              setIsOpen(!isOpen)
+              setIsOpen((prev) => !prev)
             }}
-            className="flex items-center justify-center p-1 rounded-full hover:bg-white/10 transition-colors"
+            className="h-12 w-12 flex items-center justify-center rounded-r-full hover:bg-white/10 transition-colors cursor-pointer"
           >
             <ChevronDown
-              className={`h-4 w-4 transition-transform duration-200 ${
+              className={`transition-transform duration-200 ${
                 isOpen ? "rotate-180" : "rotate-0"
               }`}
             />
           </div>
 
-          {/* Dropdown Menu */}
-          {isOpen && (
-            <div className="absolute left-1/2 top-[calc(100%+8px)] z-50 w-max -translate-x-1/2 rounded-lg bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none whitespace-nowrap">
-              {/* Triangle arrow */}
-              <div className="absolute -top-1.5 left-1/2 h-3 w-3 -translate-x-1/2 rotate-45 bg-white box-content border-t border-l border-black/5"></div>
-
-              <div className="relative bg-white rounded-lg overflow-hidden">
-                {LANGUAGE_CONFIG.map((config) => (
-                  <LanguageMenuItem
-                    key={config.code}
-                    {...config}
-                    label={
-                      t.header?.countries?.[config.labelKey] ||
-                      config.fallbackLabel
-                    }
-                    soonLabel={t.header?.soon || "Soon"}
-                    onSelect={handleLanguageSelect}
-                  />
-                ))}
+          <AnimatePresence>
+            {isOpen && (
+              <div className="absolute top-full right-0 mt-2 min-w-[240px] z-50">
+                <FluentAnimation
+                  direction="down"
+                  exit
+                  className="rounded-lg shadow-lg bg-white overflow-hidden"
+                >
+                  <div className="flex flex-col whitespace-nowrap">
+                    {LANGUAGE_CONFIG.map((config) => (
+                      <LanguageMenuItem
+                        key={config.code}
+                        {...config}
+                        isActive={currentCommunity === config.code}
+                        label={
+                          t.header?.countries?.[config.labelKey] ||
+                          config.fallbackLabel
+                        }
+                        soonLabel={t.header?.soon || "Soon"}
+                        onSelect={() => handleCommunitySelect(config.code)}
+                      />
+                    ))}
+                  </div>
+                </FluentAnimation>
               </div>
-            </div>
-          )}
+            )}
+          </AnimatePresence>
         </div>
       </div>
     </div>

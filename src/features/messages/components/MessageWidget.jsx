@@ -15,7 +15,7 @@ import {
   setView,
   toggleWidget,
 } from "@/store/slices/messageWidgetSlice"
-import FloatingButton from "./FloatingButton"
+import { MessageCircle } from "lucide-react"
 import MessageModal from "./MessageModal"
 import ConversationListHeader from "./headers/ConversationListHeader"
 import ConversationDetailHeader from "./headers/ConversationDetailHeader"
@@ -30,6 +30,26 @@ const MessageWidget = () => {
     (state) => state.messageWidget,
   )
   const [input, setInput] = React.useState("")
+  const widgetRef = React.useRef(null)
+
+  // Handle click outside to close
+  React.useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (widgetRef.current && !widgetRef.current.contains(event.target)) {
+        if (isOpen) {
+          dispatch(closeWidget())
+        }
+      }
+    }
+
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [isOpen, dispatch])
 
   // Fetch conversations from API
   const {
@@ -159,7 +179,7 @@ const MessageWidget = () => {
   }
 
   return (
-    <div className="fixed bottom-4 right-4 z-[1200] flex flex-col items-end gap-3">
+    <div className="relative flex items-center" ref={widgetRef}>
       <MessageModal isOpen={isOpen}>
         {/* Header */}
         {view === "detail" && selected ? (
@@ -197,7 +217,7 @@ const MessageWidget = () => {
         )}
       </MessageModal>
 
-      <FloatingButton
+      <button
         onClick={() => {
           if (!isAuthenticated) {
             openAuthModal("login")
@@ -205,7 +225,11 @@ const MessageWidget = () => {
           }
           dispatch(toggleWidget())
         }}
-      />
+        className={`flex h-12 w-12 items-center justify-center rounded-full transition-colors hover:bg-[#E5E5E5] ${isOpen ? "bg-[#E5E5E5]" : ""}`}
+        aria-label="Tin nhắn"
+      >
+        <MessageCircle />
+      </button>
     </div>
   )
 }

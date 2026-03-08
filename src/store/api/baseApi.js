@@ -93,6 +93,8 @@ export const baseApi = createApi({
     "MyStories",
     "Conversations",
     "Messages",
+    "Events",
+    "Post",
   ], // Define tag types for cache invalidation
   endpoints: () => ({}),
 })
