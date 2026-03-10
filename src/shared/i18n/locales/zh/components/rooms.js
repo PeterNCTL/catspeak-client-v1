@@ -70,6 +70,11 @@ export default {
       trending: "趋势",
       practice: "备考",
       others: "其他",
+      knowledge: "学习新事物",
+      culture: "探索文化与创意",
+      lifestyle: "享受日常生活",
+      growth: "建设你的未来",
+      other: "包罗万象",
     },
     seeMore: "查看更多",
     noRoomsFound: "未找到这些类别的房间",
@@ -161,12 +166,20 @@ export default {
     isHere: "在这里",
     loading: "加载中...",
     roomNotFound: "未找到房间",
+    roomFull: "房间已满（最多 5 人）。",
     joinError: "加入房间时出错。",
     createSessionError: "无法创建会话。请重试。",
     cameraAccessError: "无法访问摄像头。请检查权限或是否被其他应用占用。",
     micAccessError: "无法访问麦克风。请检查权限或是否被其他应用占用。",
   },
   videoCall: {
+    provider: {
+      loadingSession: "正在加载会话...",
+      failedToLoad: "无法加载会话",
+      unknownError: "发生未知错误",
+      retry: "重试",
+      connecting: "正在连接到会议...",
+    },
     error: {
       micPermission:
         "创建音频轨道时出错，无法启动音频源。请验证浏览器的音频权限设置。",

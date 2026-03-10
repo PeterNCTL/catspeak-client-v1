@@ -43,7 +43,7 @@ const MailToolbar = () => {
               key={idx}
               label={filter.label}
               options={filter.options}
-              onSelect={(val) => console.log("Selected:", val)}
+              onSelect={(val) => {}}
             />
           ))}
         </div>

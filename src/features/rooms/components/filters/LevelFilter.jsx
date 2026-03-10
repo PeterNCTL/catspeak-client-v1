@@ -4,6 +4,8 @@ import { useLanguage } from "@/shared/context/LanguageContext"
 import { useUrlFilter } from "../../hooks/useUrlFilter"
 import { LEVELS } from "../../config/constants"
 
+import Collapsible from "@/shared/components/ui/Collapsible"
+
 const LevelFilter = () => {
   const { lang } = useParams()
   const { t } = useLanguage()
@@ -19,10 +21,7 @@ const LevelFilter = () => {
 
   return (
     <>
-      <div>
-        <h3 className="font-bold text-lg mb-2">
-          {t.rooms.filters.levelsHeading}
-        </h3>
+      <Collapsible title={t.rooms.filters.levelsHeading}>
         <div className="flex flex-col">
           {currentLevels.map((levelObj) => {
             const isChecked = isSelected(levelObj.value)
@@ -45,7 +44,7 @@ const LevelFilter = () => {
             )
           })}
         </div>
-      </div>
+      </Collapsible>
       <hr className="my-5 border-[#C6C6C6]" />
     </>
   )

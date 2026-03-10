@@ -90,7 +90,6 @@ export const useVideoCall = (
     if (!canJoin) return
     if (hasJoinedRef.current) return
 
-    console.log("[useVideoCall] Joining VideoSDK meeting (gated)")
     hasJoinedRef.current = true
     join()
   }, [shouldJoin, meetingId, token, providerMounted, join])

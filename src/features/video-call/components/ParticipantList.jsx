@@ -1,17 +1,4 @@
-import MicIcon from "@mui/icons-material/Mic"
-import MicOffIcon from "@mui/icons-material/MicOff"
-import VideocamIcon from "@mui/icons-material/Videocam"
-import VideocamOffIcon from "@mui/icons-material/VideocamOff"
-import {
-  Avatar,
-  Box,
-  List,
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
-  Stack,
-  Typography,
-} from "@mui/material"
+import { Mic, MicOff, Video, VideoOff } from "lucide-react"
 import useAudioLevel from "../hooks/useAudioLevel"
 import { useVideoCallContext } from "@/shared/context/video/VideoCallContext"
 
@@ -30,82 +17,51 @@ const ParticipantItem = ({
   const initial = username.charAt(0).toUpperCase()
 
   return (
-    <ListItem
-      sx={{
-        pl: 1.5,
-        pr: 10, // reserve space for secondaryAction icons
-        py: 1,
-        borderRadius: 1,
-        "&:hover": {
-          backgroundColor: "grey.100",
-        },
-      }}
-      secondaryAction={
-        <Stack direction="row" spacing={1} alignItems="center">
-          {isCameraOn ? (
-            <VideocamIcon sx={{ fontSize: 18, color: "grey.500" }} />
+    <div className="flex items-center justify-between pl-1.5 pr-2 py-1 rounded">
+      <div className="flex items-center gap-3">
+        <div className="relative w-10 h-10">
+          {participant.avatarImageUrl ? (
+            <img
+              src={participant.avatarImageUrl}
+              alt={username}
+              className="w-10 h-10 rounded-full border border-[#C6C6C6] bg-gray-100 object-cover text-gray-900 text-sm font-semibold"
+            />
           ) : (
-            <VideocamOffIcon sx={{ fontSize: 18, color: "error.light" }} />
+            <div className="w-10 h-10 rounded-full border border-[#C6C6C6] bg-gray-300 flex items-center justify-center text-gray-800 text-sm font-semibold">
+              {initial}
+            </div>
           )}
-          {isMicOn ? (
-            <MicIcon sx={{ fontSize: 18, color: "grey.500" }} />
-          ) : (
-            <MicOffIcon sx={{ fontSize: 18, color: "error.light" }} />
-          )}
-        </Stack>
-      }
-    >
-      <ListItemAvatar>
-        <Box sx={{ position: "relative", width: 40, height: 40 }}>
-          <Avatar
-            src={participant.avatarImageUrl || undefined}
-            alt={username}
-            sx={{
-              width: 40,
-              height: 40,
-              border: 1,
-              borderColor: "grey.200",
-              bgcolor: participant.avatarImageUrl ? "grey.100" : "grey.300",
-              color: participant.avatarImageUrl ? "text.primary" : "grey.800",
-              fontSize: 14,
-              fontWeight: 600,
-            }}
-          >
-            {initial}
-          </Avatar>
+
           {isMicOn && audioLevel > 5 && (
-            <Box
-              sx={{
-                position: "absolute",
-                inset: 0,
-                borderRadius: "50%",
-                borderWidth: 2,
-                borderStyle: "solid",
-                borderColor: "success.main",
-                opacity: 0.8,
+            <div
+              className="absolute inset-0 rounded-full border-2 border-[#C6C6C6] opacity-80"
+              style={{
                 boxShadow: "0 0 10px rgba(46, 125, 50, 0.6)",
                 transform: `scale(${1 + Math.min(audioLevel / 50, 0.3)})`,
                 transition: "transform 100ms ease-out",
               }}
             />
           )}
-        </Box>
-      </ListItemAvatar>
-      <ListItemText
-        primary={
-          <Typography
-            variant="body2"
-            noWrap
-            sx={{
-              fontWeight: 500,
-              color: "text.primary",
-            }}
-          >
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-medium truncate m-0">
             {username} {isMe && "(You)"}
-          </Typography>
-        }
-      />
-    </ListItem>
+          </p>
+        </div>
+      </div>
+      <div className="flex items-center gap-2">
+        {isCameraOn ? (
+          <Video className="w-[18px] h-[18px] text-gray-500" />
+        ) : (
+          <VideoOff className="w-[18px] h-[18px] text-[#990011]" />
+        )}
+        {isMicOn ? (
+          <Mic className="w-[18px] h-[18px] text-gray-500" />
+        ) : (
+          <MicOff className="w-[18px] h-[18px] text-[#990011]" />
+        )}
+      </div>
+    </div>
   )
 }
 
@@ -114,36 +70,13 @@ const ParticipantList = ({ participants, currentUserId }) => {
   const count = Array.isArray(participants) ? participants.length : 0
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        height: "100%",
-        width: "100%",
-        bgcolor: "background.paper",
-      }}
-    >
-      <Box
-        sx={{
-          px: 2,
-          py: 1.5,
-          borderBottom: 1,
-          borderColor: "divider",
-        }}
-      >
-        <Typography variant="subtitle2" fontWeight={600}>
-          Participants ({count})
-        </Typography>
-      </Box>
+    <div className="flex flex-col h-full w-full bg-white">
+      <div className="px-4 py-3 border-b border-[#C6C6C6]">
+        <h3 className="text-sm font-semibold m-0">Participants ({count})</h3>
+      </div>
 
-      <Box
-        sx={{
-          flex: 1,
-          overflowY: "auto",
-          p: 1,
-        }}
-      >
-        <List dense disablePadding>
+      <div className="flex-1 overflow-y-auto p-2">
+        <ul className="flex flex-col">
           {participants?.map((p) => {
             const currentId = String(currentUserId)
             const isMe =
@@ -152,19 +85,20 @@ const ParticipantList = ({ participants, currentUserId }) => {
               String(p.id ?? "") === currentId
 
             return (
-              <ParticipantItem
-                key={p.accountId ?? p.id ?? p.userId}
-                participant={p}
-                isMe={isMe}
-                stream={p.stream}
-                localMicOn={micOn}
-                localCameraOn={cameraOn}
-              />
+              <li key={p.accountId ?? p.id ?? p.userId}>
+                <ParticipantItem
+                  participant={p}
+                  isMe={isMe}
+                  stream={p.stream}
+                  localMicOn={micOn}
+                  localCameraOn={cameraOn}
+                />
+              </li>
             )
           })}
-        </List>
-      </Box>
-    </Box>
+        </ul>
+      </div>
+    </div>
   )
 }
 

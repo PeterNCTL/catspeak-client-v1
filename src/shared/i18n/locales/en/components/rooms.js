@@ -71,6 +71,11 @@ export default {
       trending: "Trending",
       practice: "Exam Prep",
       others: "Others",
+      knowledge: "Learn something new",
+      culture: "Explore culture and creativity",
+      lifestyle: "Enjoy everyday life",
+      growth: "Build your future",
+      other: "Anything & Everything",
     },
     seeMore: "See more",
     noRoomsFound: "No rooms found for these categories",
@@ -188,6 +193,7 @@ export default {
     isHere: "is here",
     loading: "Loading...",
     roomNotFound: "Room not found",
+    roomFull: "This room is full (max 5 people).",
     joinError: "Something went wrong joining the room.",
     createSessionError: "Failed to create session. Please try again.",
     cameraAccessError:
@@ -196,6 +202,13 @@ export default {
       "Cannot access microphone. Check permissions or if used by another app.",
   },
   videoCall: {
+    provider: {
+      loadingSession: "Loading Session...",
+      failedToLoad: "Failed to load session",
+      unknownError: "Unknown error occurred",
+      retry: "Retry",
+      connecting: "Connecting to meeting...",
+    },
     error: {
       micPermission:
         "An error occurred in creating audio track, Unable to initiate audio source. Please verify browser settings for audio permissions.",

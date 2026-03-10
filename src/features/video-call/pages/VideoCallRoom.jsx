@@ -1,7 +1,6 @@
 import React from "react"
 import { Navigate } from "react-router-dom"
-import { FiChevronRight } from "react-icons/fi"
-import { Box, Typography } from "@mui/material"
+import { ChevronRight } from "lucide-react"
 import HeaderLogo from "@/layouts/MainLayout/Header/HeaderLogo"
 
 import {
@@ -85,52 +84,27 @@ const VideoCallRoomContent = () => {
   return (
     <div className="flex h-full w-full flex-col bg-primary2 text-textColor font-sans">
       {/* Top Bar */}
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          borderBottom: 1,
-          borderColor: "divider",
-          bgcolor: "background.paper",
-          px: 3,
-          py: 2,
-          boxShadow: 1,
-        }}
-      >
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-          <Box
-            sx={{
-              flexShrink: 0,
-              width: 160,
-              display: "flex",
-              alignItems: "center",
-            }}
-          >
+      <div className="flex items-center justify-between border-b border-[#C6C6C6] bg-white px-6 py-4 shadow-sm">
+        <div className="flex items-center gap-4">
+          <div className="flex w-40 shrink-0 items-center">
             <HeaderLogo />
-          </Box>
-          <Box>
-            <Typography
-              variant="body2"
-              sx={{ fontWeight: 600, color: "text.primary" }}
-            >
-              Topic : {session?.name || session?.roomName || "General"}
-            </Typography>
-            <Typography variant="caption" sx={{ color: "text.secondary" }}>
+          </div>
+          <div>
+            <div className="text-sm font-semibold text-gray-900">
+              {session?.name || session?.roomName || "General"}
+            </div>
+            <div className="text-xs text-gray-500">
               {formatDate(new Date())}
-            </Typography>
-          </Box>
-        </Box>
-        <Box>
-          <Typography
-            variant="caption"
-            sx={{ color: "text.secondary", fontWeight: 500 }}
-          >
+            </div>
+          </div>
+        </div>
+        <div>
+          <div className="text-xs font-medium text-gray-500">
             {formattedElapsed}
             {formattedMax ? ` / ${formattedMax}` : ""}
-          </Typography>
-        </Box>
-      </Box>
+          </div>
+        </div>
+      </div>
 
       {/* Main Content Area */}
       <div className="flex flex-1 flex-col overflow-hidden md:flex-row">
@@ -147,7 +121,7 @@ const VideoCallRoomContent = () => {
 
         {/* Desktop Side Panel (Chat or Participants) */}
         {isSidePanelOpen && (
-          <div className="hidden w-80 flex-col border-l border-gray-200 bg-white md:flex">
+          <div className="hidden w-80 flex-col border-l border-[#C6C6C6] bg-white md:flex">
             {showParticipants && (
               <ParticipantList
                 participants={activeParticipants}
@@ -185,21 +159,18 @@ const VideoCallRoomContent = () => {
               >
                 <button
                   type="button"
-                  className="flex w-full items-center gap-2 border-b border-gray-200 px-4 py-3 text-left hover:bg-gray-50"
+                  className="flex w-full items-center gap-2 border-b border-[#C6C6C6] px-4 py-3 text-left hover:bg-gray-50"
                   onClick={() => {
                     setShowChat(false)
                     setShowParticipants(false)
                   }}
                 >
                   <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-primary2/10 text-primary1">
-                    <FiChevronRight className="h-4 w-4 rotate-180" />
+                    <ChevronRight className="h-4 w-4 rotate-180" />
                   </span>
-                  <Typography
-                    variant="subtitle2"
-                    sx={{ fontWeight: 600, fontSize: "0.9rem" }}
-                  >
+                  <div className="text-[0.9rem] font-semibold text-gray-900">
                     {sidePanelTitle}
-                  </Typography>
+                  </div>
                 </button>
 
                 <div className="flex-1 overflow-y-auto">

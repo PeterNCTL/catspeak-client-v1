@@ -28,6 +28,8 @@ export default {
     yours: "yours",
     total: "total",
   },
+  newsLoginPrompt:
+    "Please log in to see the latest posts from the community.",
   sidebar: {
     news: "Cat's News",
     discover: "Discover World",

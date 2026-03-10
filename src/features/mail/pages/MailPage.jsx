@@ -98,9 +98,9 @@ const MailPage = () => {
         totalLetters={stories.length + myStories.length}
       />
 
-      <div className="mt-8 mb-12 px-2 md:px-0">
+      {/* <div className="mt-8 mb-12 px-2 md:px-0">
         <MailDashboard />
-      </div>
+      </div> */}
     </div>
   )
 }

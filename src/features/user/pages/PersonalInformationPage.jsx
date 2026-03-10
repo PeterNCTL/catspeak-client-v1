@@ -14,7 +14,6 @@ const PersonalInformationPage = () => {
   const { user } = useAuth()
   const { t } = useLanguage()
   const { data: profileData, isLoading } = useGetUserProfileQuery()
-  console.log(profileData)
 
   const [updateProfile, { isLoading: isUpdating }] =
     useUpdateUserProfileMutation()

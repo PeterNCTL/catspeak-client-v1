@@ -94,7 +94,7 @@ const routesConfig = [
     element: <LanguageLayout />,
     children: [
       {
-        element: <MainLayout showFooter={false} />,
+        element: <MainLayout />,
         children: [
           {
             element: <CatSpeakLayout />,

@@ -1,16 +1,9 @@
 import React, { useState } from "react"
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Typography,
-  Box,
-} from "@mui/material"
 import dayjs from "dayjs"
 import { useLanguage } from "@/shared/context/LanguageContext"
 
 import PillButton from "@/shared/components/ui/PillButton"
+import Modal from "@/shared/components/ui/Modal"
 
 const MyStoryModal = ({ open, story, onClose, onDelete }) => {
   const { t } = useLanguage()
@@ -40,72 +33,48 @@ const MyStoryModal = ({ open, story, onClose, onDelete }) => {
   const minutesRemaining = timeRemaining % 60
 
   return (
-    <Dialog
+    <Modal
       open={open}
       onClose={handleClose}
-      maxWidth="sm"
-      fullWidth
-      PaperProps={{
-        sx: {
-          borderRadius: 3,
-          padding: 2,
-        },
-      }}
+      title={t.story?.myStory || "My Story"}
     >
-      <DialogTitle sx={{ pb: 1, fontWeight: "bold" }}>
-        {t.catSpeak?.myStory || "My Story"}
-      </DialogTitle>
-
-      <DialogContent>
-        <Box sx={{ mb: 3 }}>
-          <Typography
-            variant="body1"
-            sx={{
-              backgroundColor: "#f5f5f5",
-              padding: 2,
-              borderRadius: 2,
-              minHeight: 60,
-              lineHeight: 1.6,
-            }}
-          >
+      <div className="space-y-4">
+        <div>
+          <div className="min-h-[60px] rounded-xl bg-gray-100 p-4 text-sm leading-relaxed text-gray-800">
             {story.storyContent}
-          </Typography>
-        </Box>
+          </div>
+        </div>
 
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-          <Box>
-            <Typography variant="body2" color="text.secondary" fontWeight="500">
-              {t.catSpeak?.created || "Created"}:
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              {createdAt.format("MMM D, YYYY h:mm A")}
-            </Typography>
-          </Box>
+        <div className="space-y-3 text-sm text-gray-600">
+          <div>
+            <p className="font-medium">
+              {t.story?.created || "Created"}:
+            </p>
+            <p>{createdAt.format("MMM D, YYYY h:mm A")}</p>
+          </div>
 
-          <Box>
-            <Typography variant="body2" color="text.secondary" fontWeight="500">
-              {t.catSpeak?.expiresIn || "Expires in"}:{" "}
+          <div>
+            <p className="font-medium">
+              {t.story?.expiresIn || "Expires in"}:{" "}
               {hoursRemaining > 0 && `${hoursRemaining}h `}
               {minutesRemaining}m
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              {expiresAt.format("MMM D, YYYY h:mm A")}
-            </Typography>
-          </Box>
-        </Box>
-      </DialogContent>
+            </p>
+            <p>{expiresAt.format("MMM D, YYYY h:mm A")}</p>
+          </div>
+        </div>
 
-      <DialogActions sx={{ gap: 1 }}>
-        <PillButton onClick={handleClose} variant="text" color="inherit">
-          {t.common?.close || "Close"}
-        </PillButton>
-        <PillButton onClick={handleDelete}>
-          {confirmDelete
-            ? t.catSpeak?.confirmDelete || "Confirm Delete"
-            : t.catSpeak?.deleteStory || "Delete Story"}
-        </PillButton>
-      </DialogActions>
-    </Dialog>
+        <div className="mt-6 flex justify-end gap-3">
+          <PillButton variant="secondary" onClick={handleClose}>
+            {t.messages?.close || "Close"}
+          </PillButton>
+          <PillButton onClick={handleDelete}>
+            {confirmDelete
+              ? t.story?.confirmDelete || "Confirm Delete"
+              : t.story?.deleteStory || "Delete Story"}
+          </PillButton>
+        </div>
+      </div>
+    </Modal>
   )
 }
 

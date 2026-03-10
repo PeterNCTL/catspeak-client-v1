@@ -23,10 +23,10 @@ const MicButton = ({ micOn, onToggle, stream, className = "" }) => {
 
       <button
         onClick={onToggle}
-        className={`relative z-10 flex h-12 w-12 items-center justify-center rounded-full transition shadow-lg ${
+        className={`relative z-10 flex h-12 w-12 items-center justify-center rounded-full transition shadow-sm ${
           micOn
             ? "bg-cath-red-600 text-white hover:bg-cath-red-700"
-            : "bg-gray-700 text-gray-400 hover:bg-gray-600"
+            : "bg-[#F2F2F2] text-gray-600 hover:bg-[#D9D9D9] hover:text-gray-900"
         }`}
       >
         {micOn ? (

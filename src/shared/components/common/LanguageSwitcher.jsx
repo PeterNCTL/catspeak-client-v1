@@ -66,7 +66,7 @@ const LanguageSwitcher = ({ className = "" }) => {
             <FluentAnimation
               direction="down"
               exit
-              className="rounded-lg shadow-lg bg-white overflow-hidden"
+              className="rounded-xl shadow-lg bg-white overflow-hidden"
             >
               <div className="flex flex-col whitespace-nowrap">
                 {LANGUAGES.map(({ key, labelKey, disabled }) => {

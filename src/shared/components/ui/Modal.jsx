@@ -12,18 +12,22 @@ const Modal = ({
   showCloseButton = true,
 }) => {
   useEffect(() => {
+    let timeoutId
     if (open) {
       const scrollbarWidth =
         window.innerWidth - document.documentElement.clientWidth
       document.body.style.paddingRight = `${scrollbarWidth}px`
       document.body.style.overflow = "hidden"
     } else {
-      document.body.style.overflow = "unset"
-      document.body.style.paddingRight = "0px"
+      // Delay reverting the styles so the exit animation finishes before layout shift
+      timeoutId = setTimeout(() => {
+        document.body.style.overflow = "unset"
+        document.body.style.paddingRight = "0px"
+      }, 200) // matches transition duration (0.2s)
     }
+
     return () => {
-      document.body.style.overflow = "unset"
-      document.body.style.paddingRight = "0px"
+      if (timeoutId) clearTimeout(timeoutId)
     }
   }, [open])
 
@@ -56,19 +60,22 @@ const Modal = ({
             role="dialog"
             aria-modal="true"
           >
-            {showCloseButton && (
-              <button
-                onClick={onClose}
-                className="absolute right-4 top-4 rounded-full p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
+            {(title || showCloseButton) && (
+              <div
+                className={`mb-6 flex items-center gap-4 ${title ? "justify-between" : "justify-end"}`}
               >
-                <X size={24} />
-              </button>
-            )}
-
-            {title && (
-              <h2 className="mb-6 text-center text-xl font-bold text-gray-900">
-                {title}
-              </h2>
+                {title && (
+                  <h2 className="text-xl font-bold text-gray-900">{title}</h2>
+                )}
+                {showCloseButton && (
+                  <button
+                    onClick={onClose}
+                    className="rounded-full p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
+                  >
+                    <X size={24} />
+                  </button>
+                )}
+              </div>
             )}
 
             {children}

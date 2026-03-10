@@ -25,8 +25,6 @@ export const useQueueSignaling = (handlers = {}) => {
     const baseUrl = apiUrl.replace(/\/api\/?$/, "")
     const hubUrl = `${baseUrl}/hubs/queue`
 
-    console.log("[QueueSignalR] Connecting to:", hubUrl)
-
     const newConnection = new signalR.HubConnectionBuilder()
       .withUrl(hubUrl, {
         accessTokenFactory: () => token,
@@ -62,7 +60,6 @@ export const useQueueSignaling = (handlers = {}) => {
     const start = async () => {
       try {
         await newConnection.start()
-        console.log("[QueueSignalR] Connected, ID:", newConnection.connectionId)
         setIsConnected(true)
         setConnectionId(newConnection.connectionId)
 
@@ -89,7 +86,6 @@ export const useQueueSignaling = (handlers = {}) => {
     })
 
     newConnection.onreconnected((connectionId) => {
-      console.log("[QueueSignalR] Reconnected. ID:", connectionId)
       setIsConnected(true)
       setConnectionId(connectionId)
       if (handlersRef.current.OnReconnected) {

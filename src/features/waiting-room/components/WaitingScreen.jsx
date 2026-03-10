@@ -15,6 +15,8 @@ const WaitingScreen = ({
   onToggleMic,
   onToggleCam,
   onJoin,
+  isFull = false,
+  maxParticipants = 5,
 }) => {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
@@ -35,7 +37,7 @@ const WaitingScreen = ({
           }
           className="flex items-center gap-2 h-12 px-3 rounded-xl w-fit text-gray-500 hover:text-gray-900 hover:bg-[#E5E5E5] transition-colors font-medium"
         >
-          <ArrowLeft className="h-6 w-6" />
+          <ArrowLeft />
           {t.rooms.waitingScreen.backToCommunity}
         </button>
       </div>
@@ -59,10 +61,21 @@ const WaitingScreen = ({
         onToggleCam={onToggleCam}
       />
 
-      <div className="flex flex-col items-center gap-2">
-        <PillButton onClick={onJoin}>
+      <div className="flex flex-col items-center gap-4">
+        <PillButton
+          onClick={onJoin}
+          disabled={isFull}
+          aria-disabled={isFull}
+          title={isFull ? t.rooms.waitingScreen.roomFull : undefined}
+        >
           {t.rooms.waitingScreen.joinNow}
         </PillButton>
+        {isFull && (
+          <p className="text-sm text-red-600">
+            {t.rooms.waitingScreen.roomFull} ({participants.length}/
+            {maxParticipants})
+          </p>
+        )}
         <p className="text-sm text-gray-500">
           {t.rooms.waitingScreen.joinedAs}{" "}
           <span className="font-medium text-gray-900">{user?.username}</span>

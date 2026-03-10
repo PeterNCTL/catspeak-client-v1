@@ -1,9 +1,13 @@
+import { Loader2 } from "lucide-react"
 import React from "react"
 
-const LoadingSpinner = ({ className = "p-10" }) => {
+const LoadingSpinner = ({
+  className = "flex flex-col items-center justify-center p-10",
+}) => {
   return (
-    <div className={`flex justify-center ${className}`}>
-      <div className="h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-e-transparent align-[-0.125em] text-black motion-reduce:animate-[spin_1.5s_linear_infinite]" />
+    <div className={className}>
+      <Loader2 className="h-8 w-8 animate-spin text-[#990011]" />
+      <span className="mt-3 text-sm">Loading...</span>
     </div>
   )
 }

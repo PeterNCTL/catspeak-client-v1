@@ -1,6 +1,4 @@
-import MicOffIcon from "@mui/icons-material/MicOff"
-import VideocamOffIcon from "@mui/icons-material/VideocamOff"
-import { Box, Avatar, Typography } from "@mui/material"
+import { MicOff, VideoOff } from "lucide-react"
 import useAudioLevel from "../../hooks/useAudioLevel"
 import { useEffect, useRef, useMemo } from "react"
 import { useParticipant } from "@videosdk.live/react-sdk"
@@ -65,37 +63,21 @@ const VideoTile = ({
   }, [stream])
 
   return (
-    <Box
-      sx={{
-        position: "relative",
-        height: "100%",
-        width: "100%",
-        overflow: "hidden",
-        borderRadius: 2,
-        bgcolor: "common.white",
-        borderWidth: 1,
-        borderStyle: "solid",
-        borderColor: isSpeaking ? "success.main" : "divider",
-        boxShadow: isSpeaking
-          ? "0 0 15px rgba(46,125,50,0.4)"
-          : "0 1px 3px rgba(15,23,42,0.08)",
-        transition: "border-color 200ms ease, box-shadow 200ms ease",
-      }}
+    <div
+      className={`relative h-full w-full overflow-hidden rounded-lg bg-white border border-solid transition-[border-color,box-shadow] duration-200 ease-in-out ${
+        isSpeaking
+          ? "border-green-600 shadow-[0_0_15px_rgba(46,125,50,0.4)]"
+          : "border-[#C6C6C6] shadow-sm"
+      }`}
     >
       {/* Always render video if stream exists to ensure audio plays, hide if videoOn is false */}
       {stream && (
-        <Box
-          component="video"
+        <video
           autoPlay
           playsInline
           muted={isLocal}
           ref={videoRef}
-          sx={{
-            height: "100%",
-            width: "100%",
-            objectFit: "cover",
-            display: isVideoVisible ? "block" : "none",
-          }}
+          className={`h-full w-full object-cover ${isVideoVisible ? "block" : "hidden"}`}
           onLoadedMetadata={() => {
             if (videoRef.current) {
               videoRef.current.play().catch(() => {})
@@ -109,142 +91,56 @@ const VideoTile = ({
 
       {/* Show Avatar if no stream OR video is off */}
       {(!stream || !isVideoVisible) && (
-        <Box
-          sx={{
-            height: "100%",
-            width: "100%",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
+        <div className="flex h-full w-full items-center justify-center">
           {propAvatar ? (
-            <Avatar
+            <img
               src={propAvatar}
               alt={name}
-              sx={{
-                width: { xs: 64, sm: 80, md: 96 },
-                height: { xs: 64, sm: 80, md: 96 },
-                borderWidth: 4,
-                borderStyle: "solid",
-                borderColor: isSpeaking ? "success.main" : "grey.300",
-                boxShadow: isSpeaking ? "0 0 15px rgba(46,125,50,0.4)" : "none",
-              }}
-              imgProps={{
-                onError: (e) => {
-                  // Hide if fails
-                  e.target.style.display = "none"
-                },
+              className={`h-16 w-16 sm:h-20 sm:w-20 md:h-24 md:w-24 rounded-full border-4 border-solid object-cover ${
+                isSpeaking
+                  ? "border-green-600 shadow-[0_0_15px_rgba(46,125,50,0.4)]"
+                  : "border-[#C6C6C6] shadow-none"
+              }`}
+              onError={(e) => {
+                // Hide if fails
+                e.target.style.display = "none"
               }}
             />
           ) : (
-            <Avatar
-              sx={{
-                width: { xs: 64, sm: 80, md: 96 },
-                height: { xs: 64, sm: 80, md: 96 },
-                bgcolor: "grey.200",
-                color: "grey.600",
-                borderWidth: 4,
-                borderStyle: "solid",
-                borderColor: isSpeaking ? "success.main" : "grey.300",
-                fontSize: 24,
-                fontWeight: 700,
-              }}
+            <div
+              className={`flex h-16 w-16 sm:h-20 sm:w-20 md:h-24 md:w-24 items-center justify-center rounded-full bg-gray-200 text-2xl font-bold text-gray-600 border-4 border-solid ${
+                isSpeaking
+                  ? "border-green-600 shadow-[0_0_15px_rgba(46,125,50,0.4)]"
+                  : "border-[#C6C6C6]"
+              }`}
             >
               {(name || "?").charAt(0).toUpperCase()}
-            </Avatar>
+            </div>
           )}
-        </Box>
+        </div>
       )}
 
       {/* Overlay Info */}
-      <Box
-        sx={{
-          position: "absolute",
-          left: 12,
-          bottom: 12,
-          display: "flex",
-          alignItems: "center",
-          gap: 1,
-          maxWidth: "70%", // leave room for status icons on small tiles
-        }}
-      >
-        <Typography
-          variant="body2"
-          sx={{
-            fontWeight: 500,
-            color: "text.primary",
-            display: "flex",
-            alignItems: "center",
-            gap: 1,
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            whiteSpace: "nowrap",
-            fontSize: { xs: "0.75rem", sm: "0.8rem", md: "0.875rem" },
-          }}
-        >
+      <div className="absolute bottom-3 left-3 flex max-w-[70%] items-center gap-2">
+        <div className="flex items-center gap-2 overflow-hidden text-ellipsis whitespace-nowrap text-xs font-medium text-gray-900 sm:text-[0.8rem] md:text-sm">
           {name} {isLocal && "(You)"}
-        </Typography>
+        </div>
 
         {isSpeaking && (
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "flex-end",
-              gap: 0.25,
-              height: 12,
-            }}
-          >
-            <Box
-              sx={{
-                width: 3,
-                bgcolor: "success.main",
-                borderRadius: "999px",
-                animation: "pulse 1s ease-in-out infinite",
-                height: 8,
-              }}
-            />
-            <Box
-              sx={{
-                width: 3,
-                bgcolor: "success.main",
-                borderRadius: "999px",
-                animation: "pulse 1s ease-in-out infinite",
-                animationDelay: "100ms",
-                height: 12,
-              }}
-            />
-            <Box
-              sx={{
-                width: 3,
-                bgcolor: "success.main",
-                borderRadius: "999px",
-                animation: "pulse 1s ease-in-out infinite",
-                animationDelay: "200ms",
-                height: 6,
-              }}
-            />
-          </Box>
+          <div className="flex h-3 items-end gap-[2px]">
+            <div className="h-2 w-[3px] animate-[pulse_1s_ease-in-out_infinite] rounded-full bg-green-600" />
+            <div className="h-3 w-[3px] animate-[pulse_1s_ease-in-out_infinite] rounded-full bg-green-600 delay-100" />
+            <div className="h-[6px] w-[3px] animate-[pulse_1s_ease-in-out_infinite] rounded-full bg-green-600 delay-200" />
+          </div>
         )}
-      </Box>
+      </div>
 
       {/* Status Icons */}
-      <Box
-        sx={{
-          position: "absolute",
-          right: 12,
-          bottom: 12,
-          display: "flex",
-          gap: 1,
-          alignItems: "center",
-        }}
-      >
-        {!micOn && <MicOffIcon sx={{ fontSize: 18, color: "error.light" }} />}
-        {!videoOn && (
-          <VideocamOffIcon sx={{ fontSize: 18, color: "error.light" }} />
-        )}
-      </Box>
-    </Box>
+      <div className="absolute bottom-3 right-3 flex items-center gap-2">
+        {!micOn && <MicOff className="h-[18px] w-[18px] text-red-500" />}
+        {!videoOn && <VideoOff className="h-[18px] w-[18px] text-red-500" />}
+      </div>
+    </div>
   )
 }
 

@@ -1,11 +1,6 @@
 import React from "react"
-import { useNavigate, useSearchParams } from "react-router-dom"
-import { Typography, Box } from "@mui/material"
-import AccessTimeIcon from "@mui/icons-material/AccessTime"
-import PeopleIcon from "@mui/icons-material/People"
-import LinkIcon from "@mui/icons-material/Link"
-import BookmarkIcon from "@mui/icons-material/Bookmark"
-import colors from "@/shared/utils/colors"
+import { useSearchParams } from "react-router-dom"
+import { Clock, Users, Link, Bookmark } from "lucide-react"
 import { useLanguage } from "@/shared/context/LanguageContext"
 import {
   formatDate,
@@ -15,7 +10,6 @@ import {
 import InDevelopmentModal from "@/shared/components/common/InDevelopmentModal"
 
 const RoomCard = ({ room }) => {
-  const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const { language } = useLanguage()
 
@@ -23,12 +17,9 @@ const RoomCard = ({ room }) => {
     e.stopPropagation()
 
     // Update searchParams with the current language
-    const newSearchParams = new URLSearchParams(searchParams)
+    const url = `/room/${room.roomId}`
 
-    navigate({
-      pathname: `/room/${room.roomId}`,
-      search: newSearchParams.toString(),
-    })
+    window.open(url, "_blank")
   }
 
   // Date and time formatting using locale-aware utilities
@@ -53,14 +44,10 @@ const RoomCard = ({ room }) => {
 
   return (
     <>
-      <Box
+      <div
         onClick={handleJoinRoom}
-        className="group relative flex w-full flex-col overflow-hidden rounded-[20px] bg-white shadow-sm transition-all duration-300 hover:shadow-xl cursor-pointer"
-        sx={{
-          fontFamily: "'Inter', sans-serif",
-          border: 1,
-          borderColor: "divider",
-        }}
+        style={{ fontFamily: "'Inter', sans-serif" }}
+        className="group relative flex w-full flex-col overflow-hidden rounded-xl bg-white shadow-sm transition-all duration-300 hover:shadow-xl cursor-pointer border border-[#C6C6C6]"
       >
         {/* Cover Image Section */}
         <div className="relative h-48 w-full overflow-hidden">
@@ -79,86 +66,61 @@ const RoomCard = ({ room }) => {
             )}
           </div>
 
-          <div className="absolute right-4 -top-1">
-            <div
-              onClick={handleBookmarkClick}
-              className="cursor-pointer transition-transform duration-200 origin-top hover:scale-y-125 active:scale-y-95"
-            >
-              <BookmarkIcon
-                sx={{
-                  fontSize: 32,
-                  color: "#990011",
-                  filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.3))",
-                }}
-              />
-            </div>
+          <div
+            className="absolute right-2 top-2 z-20 transition-all duration-300"
+            onClick={handleBookmarkClick}
+          >
+            <Bookmark
+              className="drop-shadow-md transition-all duration-200 text-white hover:text-gray-200"
+              size={32}
+            />
           </div>
         </div>
 
         {/* Content Section */}
         <div className="flex flex-1 flex-col p-5">
           {/* Title */}
-          <Typography
-            variant="h6"
-            className="mb-2 font-bold text-gray-900 line-clamp-1"
-          >
+          <h3 className="mb-2 text-lg font-bold text-gray-900 line-clamp-1">
             {room.name}
-          </Typography>
+          </h3>
 
           {/* Room Link/Code */}
           <div className="mb-4 flex items-center gap-2">
-            <LinkIcon sx={{ fontSize: 20, color: "#eab308" }} />
+            <Link className="h-5 w-5 text-yellow-500" />
             <span className="h-4 w-[1px] bg-gray-300"></span>
-            <Typography variant="body2" className="font-medium text-yellow-500">
+            <span className="text-sm font-medium text-yellow-500">
               {roomCode}
-            </Typography>
+            </span>
           </div>
 
           {/* Divider */}
-          <Box
-            sx={{
-              height: "1px",
-              width: "100%",
-              backgroundColor: "divider",
-              mb: 2,
-            }}
-          />
+          <div className="mb-4 h-px w-full bg-gray-200" />
 
           {/* Footer Info */}
           <div className="flex items-center justify-between">
             {/* Participants */}
             <div className="flex items-center gap-3">
-              <Box
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-sm"
-                sx={{ border: 1, borderColor: "divider" }}
-              >
-                <PeopleIcon sx={{ color: "#990011" }} />
-              </Box>
-              <Typography variant="body1" fontWeight="bold">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-sm border border-gray-200">
+                <Users className="h-5 w-5 text-[#990011]" />
+              </div>
+              <span className="text-base font-bold">
                 {room.currentParticipantCount || 0}/{room.maxParticipants}
-              </Typography>
+              </span>
             </div>
 
             {/* Date/Time */}
             <div className="flex items-center gap-3">
-              <Box
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-sm"
-                sx={{ border: 1, borderColor: "divider" }}
-              >
-                <AccessTimeIcon sx={{ color: "#990011" }} />
-              </Box>
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-sm border border-gray-200">
+                <Clock className="h-5 w-5 text-[#990011]" />
+              </div>
               <div className="flex flex-col text-left">
-                <Typography variant="body2" fontWeight="bold">
-                  {dateStr}
-                </Typography>
-                <Typography variant="caption" color="text.secondary">
-                  {timeStr}
-                </Typography>
+                <span className="text-sm font-bold">{dateStr}</span>
+                <span className="text-xs text-gray-500">{timeStr}</span>
               </div>
             </div>
           </div>
         </div>
-      </Box>
+      </div>
 
       <InDevelopmentModal
         open={showDevModal}

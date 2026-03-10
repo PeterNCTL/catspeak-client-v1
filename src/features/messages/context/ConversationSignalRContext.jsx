@@ -74,8 +74,6 @@ export const ConversationSignalRProvider = ({ children }) => {
     const baseUrl = apiUrl.replace(/\/api\/?$/, "")
     const hubUrl = `${baseUrl}/hubs/chat`
 
-    console.log("[ConversationSignalR] Connecting to:", hubUrl)
-
     const newConnection = new signalR.HubConnectionBuilder()
       .withUrl(hubUrl, {
         accessTokenFactory: () => token,
@@ -100,10 +98,6 @@ export const ConversationSignalRProvider = ({ children }) => {
     const start = async () => {
       try {
         await newConnection.start()
-        console.log(
-          "[ConversationSignalR] Connected, ID:",
-          newConnection.connectionId,
-        )
         setIsConnected(true)
         setConnectionId(newConnection.connectionId)
         notifySubscribers("OnConnected", newConnection)
@@ -129,7 +123,6 @@ export const ConversationSignalRProvider = ({ children }) => {
     })
 
     newConnection.onreconnected((id) => {
-      console.log("[ConversationSignalR] Reconnected. ID:", id)
       setIsConnected(true)
       setConnectionId(id)
       notifySubscribers("OnReconnected", id)

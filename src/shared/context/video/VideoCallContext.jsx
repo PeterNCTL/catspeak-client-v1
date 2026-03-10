@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react"
 import { useParams, useNavigate, useLocation } from "react-router-dom"
 import { useGetProfileQuery } from "@/features/auth"
-import { useVideoCall } from "@/features/video-call"
+import { useVideoCall } from "@/features/video-call/hooks/useVideoCall"
 import toast from "react-hot-toast"
 import { useLanguage } from "@/shared/context/LanguageContext"
 

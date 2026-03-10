@@ -12,7 +12,7 @@ const VideoPreview = ({
 }) => {
   const { t } = useLanguage()
   return (
-    <div className="relative mb-4 h-[300px] w-full max-w-full overflow-hidden rounded-[24px] border border-gray-200 bg-white shadow-xl sm:h-[350px] sm:w-[90%] md:h-[400px] md:w-[700px]">
+    <div className="relative mb-6 h-[300px] w-full max-w-full overflow-hidden rounded-[24px] border border-gray-200 bg-white shadow-xl sm:h-[350px] sm:w-[90%] md:h-[400px] md:w-[700px]">
       {/* Video Preview */}
       {localStream && (
         <video
@@ -31,7 +31,7 @@ const VideoPreview = ({
 
       {!cameraOn && (
         <div className="flex h-full w-full items-center justify-center">
-          <div className="flex h-16 w-16 items-center justify-center rounded-full border border-gray-100 bg-white text-2xl font-bold text-red-600 shadow-lg md:h-24 md:w-24 md:text-3xl">
+          <div className="flex h-16 w-16 items-center justify-center rounded-full border border-gray-100 bg-white text-2xl font-bold text-[#990011] shadow-lg md:h-24 md:w-24 md:text-3xl">
             {user?.username?.[0]?.toUpperCase() || "U"}
           </div>
         </div>
@@ -43,8 +43,8 @@ const VideoPreview = ({
           onClick={onToggleMic}
           className={`flex h-14 w-14 items-center justify-center rounded-full shadow-lg transition-all duration-200 ${
             micOn
-              ? "bg-red-600 text-white hover:bg-red-700"
-              : "border border-gray-200 bg-white text-red-400 hover:bg-red-50"
+              ? "bg-[#990011] text-white hover:bg-[#7a000e]"
+              : "border border-gray-200 bg-white text-[#990011/80] hover:bg-[#E5E5E5]"
           }`}
         >
           {micOn ? <Mic /> : <MicOff />}
@@ -54,8 +54,8 @@ const VideoPreview = ({
           onClick={onToggleCam}
           className={`flex h-14 w-14 items-center justify-center rounded-full shadow-lg transition-all duration-200 ${
             cameraOn
-              ? "bg-red-600 text-white hover:bg-red-700"
-              : "border border-gray-200 bg-white text-red-400 hover:bg-red-50"
+              ? "bg-[#990011] text-white hover:bg-[#7a000e]"
+              : "border border-gray-200 bg-white text-[#990011/80] hover:bg-[#E5E5E5]"
           }`}
         >
           {cameraOn ? <Video /> : <VideoOff />}

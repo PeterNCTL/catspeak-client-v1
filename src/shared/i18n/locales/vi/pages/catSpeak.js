@@ -28,6 +28,8 @@ export default {
     yours: "của bạn",
     total: "tổng cộng",
   },
+  newsLoginPrompt:
+    "Vui lòng đăng nhập để xem những bài viết mới nhất từ cộng đồng.",
   sidebar: {
     news: "Bản tin của Cat",
     discover: "Khám phá thế giới",

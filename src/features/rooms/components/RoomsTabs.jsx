@@ -20,17 +20,21 @@ const RoomsTabs = ({ tab, setTab }) => {
     <div className="flex gap-2 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
       {tabs.map((tItem) => {
         const isSelected = tab === tItem.value
+        const isDisabled = tItem.value !== "communicate"
         const Icon = tItem.icon
         return (
           <button
             key={tItem.value}
-            onClick={() => setTab(tItem.value)}
+            onClick={() => !isDisabled && setTab(tItem.value)}
+            disabled={isDisabled}
             className={`
-              flex text-sm items-center gap-3 px-4 min-h-[48px] hover:bg-[#E5E5E5] whitespace-nowrap rounded-lg
+              flex text-sm items-center gap-3 px-4 min-h-[48px] whitespace-nowrap rounded-lg transition-colors
               ${
                 isSelected
                   ? "bg-[#F2F2F2] text-[#990011]"
-                  : "hover:text-[#990011]"
+                  : isDisabled
+                    ? "text-gray-400 opacity-60 cursor-not-allowed"
+                    : "hover:bg-[#E5E5E5] hover:text-[#990011] text-gray-700"
               }
             `}
           >

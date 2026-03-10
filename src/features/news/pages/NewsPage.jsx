@@ -14,7 +14,11 @@ const NewsPage = () => {
   const { data, isLoading, error } = useGetPostsQuery({ page, pageSize })
 
   if (isLoading) {
-    return <LoadingSpinner />
+    return (
+      <div className="flex min-h-[50vh] items-center justify-center">
+        <LoadingSpinner />
+      </div>
+    )
   }
 
   if (error) {
@@ -22,17 +26,22 @@ const NewsPage = () => {
       return <EmptyState message="No posts found" />
     }
 
+    if (error?.status === 401) {
+      return (
+        <EmptyState message={t.catSpeak.newsLoginPrompt} />
+      )
+    }
+
     return <ErrorMessage message="Error loading posts" />
   }
 
-  const posts = data?.data || []
+  const posts = data?.data?.filter((post) => post.privacy === "Public") || []
 
   return (
     <div className="columns-1 gap-4 sm:columns-2 md:columns-3 lg:columns-4 xl:columns-5 2xl:columns-6">
       {posts.map((post) => (
         <NewsCard key={post.postId} news={post} />
       ))}
-      <p className="text-gray-600 mt-2">{t.news?.description}</p>
     </div>
   )
 }

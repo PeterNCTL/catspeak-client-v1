@@ -25,6 +25,7 @@ export default {
     yours: "你的",
     total: "总数",
   },
+  newsLoginPrompt: "请登录后查看社区的最新帖子。",
   sidebar: {
     news: "猫的动态",
     discover: "探索世界",

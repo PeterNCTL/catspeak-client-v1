@@ -16,6 +16,7 @@ import {
 import { useLanguage } from "@/shared/context/LanguageContext"
 import PostContent from "../components/PostContent"
 import placeholderImg from "@/shared/assets/images/news/placeholder.jpg"
+import LoadingSpinner from "@/shared/components/ui/LoadingSpinner"
 
 const NewsDetailPage = () => {
   const { id, lang } = useParams()
@@ -33,13 +34,13 @@ const NewsDetailPage = () => {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center p-20">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-e-transparent align-[-0.125em] text-black motion-reduce:animate-[spin_1.5s_linear_infinite]" />
+      <div className="flex min-h-[50vh] items-center justify-center">
+        <LoadingSpinner />
       </div>
     )
   }
 
-  if (error || !newsItem) {
+  if (error || !newsItem || newsItem.privacy !== "Public") {
     return (
       <div className="flex min-h-[50vh] flex-col items-center justify-center">
         <h5 className="mb-4 text-2xl font-bold">{t.news?.error?.notFound}</h5>
@@ -66,12 +67,30 @@ const NewsDetailPage = () => {
           {t.news?.newsDetail?.back}
         </Link>
 
-        <div className="space-y-2">
+        <div className="space-y-3">
           <h1 className="text-4xl sm:text-5xl font-bold m-0">
             {newsItem.title}
           </h1>
-          <div className="text-sm uppercase text-[#7A7574] font-semibold">
-            {new Date(newsItem.createDate).toLocaleDateString()}
+          <div className="flex items-center gap-3">
+            {newsItem.avatarUrl ? (
+              <img
+                src={newsItem.avatarUrl}
+                alt={newsItem.authorName}
+                className="w-10 h-10 rounded-full object-cover"
+              />
+            ) : (
+              <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 font-bold">
+                {newsItem.authorName?.charAt(0)?.toUpperCase() || "?"}
+              </div>
+            )}
+            <div className="flex flex-col">
+              <span className="font-semibold text-gray-900">
+                {newsItem.authorName}
+              </span>
+              <span className="text-xs uppercase text-[#7A7574] font-semibold">
+                {new Date(newsItem.createDate).toLocaleDateString()}
+              </span>
+            </div>
           </div>
         </div>
       </div>

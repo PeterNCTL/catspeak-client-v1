@@ -53,19 +53,18 @@ const RoomsPage = () => {
     return <PageNotFound />
   }
 
-  const requiredLevelsParam = searchParams.get("requiredLevels")
-  const requiredLevels = requiredLevelsParam
-    ? requiredLevelsParam
-        .split(",")
-        .map((s) => s.trim())
-        .filter(Boolean)
-    : []
+  const requiredLevels = searchParams.getAll("requiredLevels")
   const requiredLevelsArg =
     requiredLevels.length > 0 ? requiredLevels : undefined
+
   const categoriesParam = searchParams.get("categories")
   const categories = categoriesParam
     ? categoriesParam.split(",").map((c) => c.trim())
     : undefined
+
+  const topicsValues = searchParams.getAll("topics")
+  const topicsArg = topicsValues.length > 0 ? topicsValues : undefined
+
   const pageSize = 12
 
   // Only fetch data in RoomsPage if we are in a specific category (Filtered View)
@@ -79,6 +78,7 @@ const RoomsPage = () => {
       languageType,
       requiredLevels: requiredLevelsArg,
       categories,
+      topics: topicsArg,
     },
     { skip: !shouldFetch },
   )
@@ -94,7 +94,7 @@ const RoomsPage = () => {
       <FluentAnimation
         animationKey="rooms-page"
         direction="up"
-        className="w-full"
+        className="w-full overflow-x-hidden"
       >
         {/* Hero Section - Improved mobile spacing */}
         <div className="flex flex-col gap-5 p-5 sm:px-6 sm:py-8 md:gap-10 md:py-12 lg:flex-row lg:items-start">
@@ -172,6 +172,7 @@ const RoomsPage = () => {
                           setPage={setPage}
                           languageType={languageType}
                           requiredLevels={requiredLevelsArg}
+                          topics={topicsArg}
                         />
                       )}
                       {tab === "teaching" && <TeachingTab />}

@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom"
 import {
   useCreateRoomMutation,
   useJoinRoomMutation,
-} from "@/features/rooms/api/roomsApi"
+} from "@/store/api/roomsApi"
 import { useLanguage } from "@/shared/context/LanguageContext"
 import TextInput from "@/shared/components/ui/TextInput"
 import TopicSelect from "./ui/TopicSelect"
@@ -68,17 +68,14 @@ const CreateRoomModal = ({ open, onCancel }) => {
     formData.append("topic", topics.length > 0 ? topics[0] : "Other")
 
     try {
-      console.log("Attempting to join existing room...")
       const joinResult = await joinRoom(formData).unwrap()
 
-      console.log("Joined existing room:", joinResult)
       if (joinResult && joinResult.roomId) {
         handleCancel()
         navigate(`/room/${joinResult.roomId}`)
       }
     } catch (err) {
       if (err?.status === 404 || err?.originalStatus === 404) {
-        console.log("No room found.")
         // Optionally show toast indicating no room matches
       } else {
         console.error("Failed to join room:", err)
@@ -91,19 +88,16 @@ const CreateRoomModal = ({ open, onCancel }) => {
     if (!selectedLanguage) return
 
     const formData = new FormData()
-    formData.append("name", name || "")
-    formData.append("roomType", "Group") // Group room
-    formData.append("languageType", selectedLanguage)
-    formData.append("requiredLevel", selectedLevel || "")
+    formData.append("Name", name || "")
+    formData.append("RoomType", "Group") // Group room
+    formData.append("LanguageType", selectedLanguage)
+    formData.append("RequiredLevel", selectedLevel || "")
 
-    const categoriesList = topics.length > 0 ? topics : ["Other"]
-    categoriesList.forEach((category) =>
-      formData.append("categories", category),
-    )
+    const topicsList = topics.length > 0 ? topics : ["Other"]
+    topicsList.forEach((topic) => formData.append("Topics", topic))
 
     try {
       const createResult = await createRoom(formData).unwrap()
-      console.log("Created new room:", createResult)
 
       const roomId = createResult.roomId
       handleCancel()

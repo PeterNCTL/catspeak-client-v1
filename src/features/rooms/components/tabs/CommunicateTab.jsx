@@ -18,6 +18,7 @@ const CommunicateTab = ({
   setPage, // Global setPage (only for filtered view)
   languageType,
   requiredLevels,
+  topics,
 }) => {
   const [searchParams, setSearchParams] = useSearchParams()
   const { t } = useLanguage()
@@ -42,23 +43,40 @@ const CommunicateTab = ({
 
   const isFilteredView = selectedCategories && selectedCategories.length > 0
 
-  // Define section configuration
+  const categoryFriendlyNames = {
+    Knowledge: "Learn something new",
+    Culture: "Explore culture and creativity",
+    Lifestyle: "Enjoy everyday life",
+    Growth: "Build your future",
+    Other: "Anything & Everything",
+  }
+
+  // Supported categories: Other, Knowledge, Culture, Lifestyle, Growth
   const sections = [
     {
-      key: "practice",
-      title: t.rooms.filters.categories.practice,
+      key: "Knowledge",
+      title:
+        t.rooms.filters.categories?.knowledge ||
+        categoryFriendlyNames.Knowledge,
     },
     {
-      key: "friends",
-      title: t.rooms.filters.categories.friends,
+      key: "Culture",
+      title:
+        t.rooms.filters.categories?.culture || categoryFriendlyNames.Culture,
     },
     {
-      key: "trending",
-      title: t.rooms.filters.categories.trending,
+      key: "Lifestyle",
+      title:
+        t.rooms.filters.categories?.lifestyle ||
+        categoryFriendlyNames.Lifestyle,
     },
     {
-      key: "other",
-      title: t.rooms.filters.categories.others,
+      key: "Growth",
+      title: t.rooms.filters.categories?.growth || categoryFriendlyNames.Growth,
+    },
+    {
+      key: "Other",
+      title: t.rooms.filters.categories?.other || categoryFriendlyNames.Other,
     },
   ]
 
@@ -82,10 +100,15 @@ const CommunicateTab = ({
                   <span className="text-[#7A7574]">&gt;</span>
                   <span style={{ color: colors.headingColor }}>
                     {selectedCategories
-                      .map(
-                        (catKey) =>
-                          t.rooms.filters.categories[catKey] || catKey,
-                      )
+                      .map((catKey) => {
+                        const lowerKey = catKey.toLowerCase()
+                        return (
+                          t.rooms.filters.categories?.[lowerKey] ||
+                          t.rooms.filters.categories?.others ||
+                          categoryFriendlyNames[catKey] ||
+                          catKey
+                        )
+                      })
                       .join(", ")}
                   </span>
                 </div>
@@ -122,6 +145,7 @@ const CommunicateTab = ({
                   title={section.title}
                   languageType={languageType}
                   requiredLevels={requiredLevels}
+                  topics={topics}
                   onSeeMore={handleCategoryClick}
                 />
               ))}

@@ -72,6 +72,11 @@ export default {
       trending: "Trending",
       practice: "Luyện thi",
       others: "Khác",
+      knowledge: "Học hỏi điều mới",
+      culture: "Khám phá văn hóa và sáng tạo",
+      lifestyle: "Tận hưởng cuộc sống thường nhật",
+      growth: "Xây dựng tương lai của bạn",
+      other: "Bất cứ điều gì",
     },
     seeMore: "Xem thêm",
     noRoomsFound: "Không tìm thấy phòng nào cho các danh mục này",
@@ -164,6 +169,7 @@ export default {
     isHere: "đang ở đây",
     loading: "Đang tải...",
     roomNotFound: "Không tìm thấy phòng",
+    roomFull: "Phòng đã đủ người (tối đa 5).",
     joinError: "Có lỗi xảy ra khi tham gia phòng.",
     createSessionError: "Không thể tạo phiên. Vui lòng thử lại.",
     cameraAccessError:
@@ -172,6 +178,13 @@ export default {
       "Không thể truy cập micro. Kiểm tra quyền hoặc thiết bị đang được sử dụng.",
   },
   videoCall: {
+    provider: {
+      loadingSession: "Đang tải phiên...",
+      failedToLoad: "Không thể tải phiên",
+      unknownError: "Đã xảy ra lỗi không xác định",
+      retry: "Thử lại",
+      connecting: "Đang kết nối vào cuộc họp...",
+    },
     error: {
       micPermission:
         "Đã xảy ra lỗi khi tạo track âm thanh. Không thể khởi tạo nguồn âm thanh. Vui lòng kiểm tra cài đặt quyền âm thanh của trình duyệt.",

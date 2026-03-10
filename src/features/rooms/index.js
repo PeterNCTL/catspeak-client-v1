@@ -29,4 +29,4 @@ export {
   useGetRoomByIdQuery,
   useCreateRoomMutation,
   useDeleteRoomMutation,
-} from "./api/roomsApi"
+} from "@/store/api/roomsApi"

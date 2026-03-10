@@ -1,28 +1,22 @@
 import React from "react"
-import { Stack, AvatarGroup, Avatar, Typography } from "@mui/material"
+import { useLanguage } from "@/shared/context/LanguageContext"
 
 const ParticipantList = ({ participants = [] }) => {
+  const { t } = useLanguage()
+
   if (participants.length === 0) {
-    return (
-      <Typography color="text.secondary">No one else is here yet</Typography>
-    )
+    return <p className="text-gray-500">{t.rooms.waitingScreen.noOneHere}</p>
   }
 
+  // Cap at 5 for AvatarGroup display equivalent
+  const displayParticipants = participants.slice(0, 5)
+  const remainingCount = Math.max(0, participants.length - 5)
+
   return (
-    <Stack alignItems="center" spacing={1} mt={2}>
-      <AvatarGroup
-        max={5}
-        sx={{
-          "& .MuiAvatar-root": {
-            width: { xs: 32, md: 40 },
-            height: { xs: 32, md: 40 },
-            fontSize: { xs: 12, md: 14 },
-            border: "2px solid white",
-          },
-        }}
-      >
-        {participants.map((p) => (
-          <Avatar
+    <div className="mt-2 flex flex-col items-center gap-1">
+      <div className="flex -space-x-3">
+        {displayParticipants.map((p) => (
+          <img
             key={p.participantId}
             alt={p.username}
             src={
@@ -31,13 +25,20 @@ const ParticipantList = ({ participants = [] }) => {
                 p.username,
               )}&background=random`
             }
+            className="inline-block h-8 w-8 rounded-full border-2 border-white object-cover md:h-10 md:w-10 text-[12px] md:text-[14px]"
           />
         ))}
-      </AvatarGroup>
-      <Typography variant="body2" color="text.secondary">
-        {participants.length} is here
-      </Typography>
-    </Stack>
+        {remainingCount > 0 && (
+          <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-gray-200 text-xs font-medium text-gray-600 md:h-10 md:w-10">
+            +{remainingCount}
+          </div>
+        )}
+      </div>
+      <p className="text-sm text-gray-500">
+        <span className="font-semibold">{participants.length}</span>{" "}
+        {t.rooms.waitingScreen.isHere}
+      </p>
+    </div>
   )
 }
 

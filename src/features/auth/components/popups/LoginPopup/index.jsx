@@ -73,12 +73,10 @@ const LoginPopup = ({ open, onClose, onSwitchMode }) => {
     }
 
     try {
-      console.log("Calling login API...", { email, password })
       const result = await login({
         email,
         password,
       }).unwrap()
-      console.log("Login successful:", result)
       onClose()
     } catch (err) {
       console.error("Login failed:", err)

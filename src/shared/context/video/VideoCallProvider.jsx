@@ -10,10 +10,12 @@ import {
   useGetVideoSdkTokenMutation,
 } from "@/store/api/videoSessionsApi"
 import { meetingConfig } from "@/shared/utils/videoSdkConfig"
+import { useLanguage } from "@/shared/context/LanguageContext"
 
 import { VideoCallContent } from "./VideoCallContext"
 
 export const VideoCallProvider = ({ children }) => {
+  const { t } = useLanguage()
   const [sdkToken, setSdkToken] = useState(null)
   const [sdkReady, setSdkReady] = useState(false)
 
@@ -69,7 +71,7 @@ export const VideoCallProvider = ({ children }) => {
   if (isLoadingSession || !userData) {
     return (
       <div className="flex items-center justify-center h-screen bg-neutral-950 text-white">
-        <p>Loading Session...</p>
+        <p>{t.rooms.videoCall.provider.loadingSession}</p>
       </div>
     )
   }
@@ -79,15 +81,18 @@ export const VideoCallProvider = ({ children }) => {
     console.error("Failed to load session:", sessionError)
     return (
       <div className="flex items-center justify-center h-screen bg-neutral-950 text-white flex-col gap-4">
-        <p className="text-red-500 text-xl">Failed to load session</p>
+        <p className="text-red-500 text-xl">
+          {t.rooms.videoCall.provider.failedToLoad}
+        </p>
         <p className="text-gray-400 text-sm">
-          {sessionError?.data?.message || "Unknown error occurred"}
+          {sessionError?.data?.message ||
+            t.rooms.videoCall.provider.unknownError}
         </p>
         <button
           onClick={() => window.location.reload()}
           className="px-4 py-2 bg-neutral-800 rounded hover:bg-neutral-700 transition"
         >
-          Retry
+          {t.rooms.videoCall.provider.retry}
         </button>
       </div>
     )
@@ -96,7 +101,7 @@ export const VideoCallProvider = ({ children }) => {
   if (!sdkReady) {
     return (
       <div className="flex items-center justify-center h-screen bg-neutral-950 text-white">
-        <p>Connecting to meeting…</p>
+        <p>{t.rooms.videoCall.provider.connecting}</p>
       </div>
     )
   }

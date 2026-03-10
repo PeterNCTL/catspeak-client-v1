@@ -11,7 +11,6 @@ const RoomFilterSidebar = () => {
 
   const handleSearch = () => {
     // Add search functionality here
-    console.log("Search clicked:", searchValue)
   }
 
   return (

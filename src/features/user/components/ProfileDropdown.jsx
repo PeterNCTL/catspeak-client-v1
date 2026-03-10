@@ -51,10 +51,10 @@ const ProfileDropdown = () => {
   }
 
   const menuItemClass =
-    "flex w-full items-center rounded-[5px] gap-3 px-3 h-[32px] text-sm hover:bg-[#F0F0F0] transition-colors"
+    "flex w-full items-center gap-3 px-4 h-12 text-base hover:bg-[#E5E5E5] transition-colors"
 
   const menuItemDisabledClass =
-    "flex w-full items-center rounded-[5px] gap-3 px-3 h-[32px] text-sm text-[#7A7574] cursor-not-allowed"
+    "flex w-full items-center gap-3 px-4 h-12 text-base text-[#7A7574] cursor-not-allowed"
 
   return (
     <div className="relative" ref={menuRef}>
@@ -92,8 +92,8 @@ const ProfileDropdown = () => {
             exit={true}
             className="absolute right-0 mt-2 w-64 origin-top-right z-50"
           >
-            <div className="rounded-[5px] border border-[#E5E5E5] bg-[#F9F9F9] shadow-lg focus:outline-none">
-              <div className="flex items-center gap-3 p-3">
+            <div className="rounded-xl bg-white shadow-lg focus:outline-none overflow-hidden">
+              <div className="flex items-center gap-3 p-4">
                 {user?.avatarImageUrl ? (
                   <img
                     src={user.avatarImageUrl}
@@ -110,7 +110,7 @@ const ProfileDropdown = () => {
                   <p className="m-0 truncate text-base font-medium">
                     {user?.username || "User"}
                   </p>
-                  <p className="m-0 truncate text-xs text-[#7A7574]">
+                  <p className="m-0 truncate text-sm text-[#7A7574]">
                     {user?.email || ""}
                   </p>
                 </div>
@@ -118,7 +118,7 @@ const ProfileDropdown = () => {
 
               <div className="border-t border-[#F0F0F0]" />
 
-              <div className="p-1 space-y-1">
+              <div className="flex flex-col">
                 <button
                   onClick={() => {
                     handleCloseMenu()
@@ -126,17 +126,17 @@ const ProfileDropdown = () => {
                   }}
                   className={menuItemClass}
                 >
-                  <User size={20} />
+                  <User />
                   <span>{t.header.profile || "Profile"}</span>
                 </button>
 
                 <button disabled className={menuItemDisabledClass}>
-                  <Settings size={20} />
+                  <Settings />
                   <span className="flex-1 text-left">{t.header.settings}</span>
                 </button>
 
                 <button onClick={handleLogout} className={menuItemClass}>
-                  <LogOut size={20} />
+                  <LogOut />
                   <span>{t.header.logout}</span>
                 </button>
               </div>

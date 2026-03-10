@@ -8,6 +8,7 @@ const coreColors = {
   primaryRed: "#990011", // Cat Speak
   secondaryGray: "#7A7574", // Fluent UI
   borderColor: "#E5E5E5", // Fluent UI
+  youtubeBorderColor: "#C6C6C6", // Youtube border color
 }
 
 export const colors = {

@@ -1,9 +1,9 @@
 import React, { useState, useRef, useEffect } from "react"
-import SendIcon from "@mui/icons-material/Send"
-import { Typography, Box, IconButton, InputBase, Paper } from "@mui/material"
+import { Send } from "lucide-react"
 import { useLanguage } from "@/shared/context/LanguageContext"
 import { colors } from "@/shared/utils/colors"
 import { formatTime } from "@/shared/utils/dateFormatter"
+import TextInput from "@/shared/components/ui/TextInput"
 
 const ChatBox = ({
   messages,
@@ -37,36 +37,27 @@ const ChatBox = ({
 
   return (
     <div className={`flex h-full flex-col bg-white ${className}`}>
-      <div className="border-b border-gray-200 px-4 py-3">
-        <Typography
-          variant="subtitle2"
-          className="text-headingColor"
-          fontWeight="bold"
-        >
+      <div className="border-b border-[#C6C6C6] px-4 py-3">
+        <h3 className="text-sm font-bold text-headingColor m-0">
           {t.rooms.chatBox.title}
-        </Typography>
+        </h3>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent">
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-[#C6C6C6] scrollbar-track-transparent">
         {messages.length === 0 ? (
-          <Typography
-            variant="body2"
-            className="text-center text-gray-400 mt-10"
-          >
+          <p className="text-sm text-center text-[#7A7574] mt-10 m-0">
             {t.rooms.chatBox.empty}
-          </Typography>
+          </p>
         ) : (
           messages.map((msg) => {
             if (msg.type === "system") {
               return (
-                <Typography
+                <span
                   key={msg.id}
-                  variant="caption"
-                  display="block"
-                  className="text-center text-gray-400 italic my-2"
+                  className="block text-xs text-center text-[#7A7574] italic my-2"
                 >
                   {msg.content}
-                </Typography>
+                </span>
               )
             }
 
@@ -93,32 +84,24 @@ const ChatBox = ({
                 }`}
               >
                 <div className="flex items-center gap-2 mb-1">
-                  <Typography
-                    variant="caption"
-                    fontWeight="bold"
-                    color="text.secondary"
-                  >
+                  <span className="text-xs font-bold text-[#7A7574]">
                     {senderName}
-                  </Typography>
-                  <Typography
-                    variant="caption"
-                    color="text.disabled"
-                    sx={{ fontSize: "0.65rem" }}
-                  >
+                  </span>
+                  <span className="text-[10px] text-[#7A7574]">
                     {formatTime(msg.timestamp)}
-                  </Typography>
+                  </span>
                 </div>
                 <div
-                  className={`px-3 py-2 rounded-full max-w-[85%] break-words shadow-sm ${
+                  className={`px-3 py-2 rounded-2xl max-w-[85%] break-words shadow-sm ${
                     isMe
                       ? "text-white"
-                      : "bg-gray-100 text-textColor border border-gray-100"
+                      : "bg-gray-100 text-[#7A7574] border border-[#C6C6C6]"
                   }`}
                   style={
                     isMe ? { backgroundColor: colors.red[700] } : undefined
                   }
                 >
-                  <Typography variant="body2">{msg.content}</Typography>
+                  <p className="text-sm m-0">{msg.content}</p>
                 </div>
               </div>
             )
@@ -128,48 +111,32 @@ const ChatBox = ({
         <div ref={scrollRef} />
       </div>
 
-      <div className="border-t border-gray-200 p-4">
-        <Paper
-          component="div"
-          className="flex items-center gap-2 p-1 border rounded-lg focus-within:ring-1 focus-within:ring-[var(--cath-primary)] focus-within:border-[var(--cath-primary)]"
-          elevation={0}
-          sx={{ borderColor: "divider" }}
+      <div className="border-t border-[#C6C6C6] p-4 flex items-center gap-2">
+        <TextInput
+          disabled={!isConnected}
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          onKeyDown={handleKeyPress}
+          placeholder={
+            isConnected
+              ? t.rooms.chatBox.inputPlaceholder
+              : t.rooms.chatBox.connectingPlaceholder
+          }
+          containerClassName="flex-1 min-w-0"
+          className="disabled:opacity-50"
+        />
+        <button
+          onClick={handleSend}
+          disabled={!isConnected || !message.trim()}
+          className="flex items-center justify-center w-12 h-12 rounded-full shrink-0 transition-colors disabled:bg-black/10 disabled:text-black/25 disabled:cursor-not-allowed hover:opacity-90"
+          style={
+            isConnected && message.trim()
+              ? { backgroundColor: colors.red[700], color: "white" }
+              : {}
+          }
         >
-          <InputBase
-            disabled={!isConnected}
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            onKeyPress={handleKeyPress}
-            placeholder={
-              isConnected
-                ? t.rooms.chatBox.inputPlaceholder
-                : t.rooms.chatBox.connectingPlaceholder
-            }
-            className="flex-1 text-sm text-headingColor placeholder:text-gray-400"
-            sx={{ ml: 1, flex: 1, fontSize: "0.875rem" }}
-          />
-          <IconButton
-            onClick={handleSend}
-            disabled={!isConnected || !message.trim()}
-            size="small"
-            sx={{
-              bgcolor: colors.red[700],
-              color: "white",
-              "&:hover": {
-                bgcolor: colors.red[800],
-              },
-              "&.Mui-disabled": {
-                bgcolor: "rgba(0, 0, 0, 0.12)",
-                color: "rgba(0, 0, 0, 0.26)",
-              },
-              width: 32,
-              height: 32,
-              borderRadius: 2,
-            }}
-          >
-            <SendIcon fontSize="small" />
-          </IconButton>
-        </Paper>
+          <Send className="w-5 h-5 ml-[-2px] mt-[1px]" />
+        </button>
       </div>
     </div>
   )

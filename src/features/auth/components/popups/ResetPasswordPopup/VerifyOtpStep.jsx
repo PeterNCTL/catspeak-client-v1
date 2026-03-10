@@ -11,7 +11,6 @@ const VerifyOtpStep = ({ email, onSuccess, onBack }) => {
   const handleVerifyOtp = async (values) => {
     try {
       const otpValue = values.otp.trim()
-      console.log("Verifying OTP for:", email, otpValue)
 
       await verifyResetOtp({
         email,

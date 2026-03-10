@@ -1,5 +1,5 @@
 import React from "react"
-import { useGetRoomsQuery } from "@/features/rooms/api/roomsApi"
+import { useGetRoomsQuery } from "@/store/api/roomsApi"
 import RoomCard from "./RoomCard"
 import EmptyRoomState from "./EmptyRoomState"
 import colors from "@/shared/utils/colors"
@@ -10,6 +10,7 @@ const CategoryRoomSection = ({
   title,
   languageType,
   requiredLevels,
+  topics,
   onSeeMore,
 }) => {
   const { t } = useLanguage()
@@ -20,6 +21,7 @@ const CategoryRoomSection = ({
     pageSize,
     languageType,
     requiredLevels,
+    topics,
     categories: [categoryKey],
   })
 

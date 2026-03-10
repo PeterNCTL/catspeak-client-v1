@@ -16,7 +16,6 @@ const QueuePage = () => {
   const handlers = useMemo(
     () => ({
       MatchFound: (data) => {
-        console.log("MATCH FOUND EVENT:", data)
         setQueueState({ type: "MATCHED" })
         if (data.sessionId) {
           // Play notification sound?
@@ -26,7 +25,6 @@ const QueuePage = () => {
         }
       },
       QueueJoined: (data) => {
-        console.log("QueueJoined event received!", data)
         setQueueState({ type: "WAITING" })
         if (data && data.position) setPosition(data.position)
         setHasJoinedSignalR(true)
@@ -43,7 +41,6 @@ const QueuePage = () => {
         setQueueState({ type: "ERROR", message: msg })
       },
       OnReconnected: () => {
-        console.log("Reconnected to SignalR. Re-joining queue...")
         // Explicitly re-join because server removes user on disconnect
         // We can't call joinQueue() directly here because it's not in scope of useMemo
         // But we can trigger a state change or dependency.
@@ -72,7 +69,6 @@ const QueuePage = () => {
 
       const initQueue = async () => {
         try {
-          console.log("Invoking SignalR JoinQueue...")
           await joinQueue()
           // Success handled in 'QueueJoined' event
         } catch (err) {
@@ -86,7 +82,6 @@ const QueuePage = () => {
 
   const handleCancel = async () => {
     try {
-      console.log("Leaving queue...")
       await leaveQueue() // SignalR leave
       navigate(-1)
     } catch (err) {
