@@ -1,8 +1,8 @@
 import React, { useState } from "react"
 import SearchInput from "@/shared/components/ui/SearchInput"
 import { useLanguage } from "@/shared/context/LanguageContext"
-import LevelFilter from "./filters/LevelFilter"
-import TopicFilter from "./filters/TopicFilter"
+import LevelFilter from "../filters/LevelFilter"
+import TopicFilter from "../filters/TopicFilter"
 
 const RoomFilterSidebar = () => {
   const { t } = useLanguage()

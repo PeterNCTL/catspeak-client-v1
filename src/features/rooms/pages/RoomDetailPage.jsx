@@ -11,8 +11,6 @@ import { WaitingScreen } from "@/features/waiting-room"
 import { useLanguage } from "@/shared/context/LanguageContext"
 import { Snackbar, Alert } from "@mui/material"
 
-const MAX_ROOM_PARTICIPANTS = 5
-
 const RoomDetailPage = () => {
   const { id } = useParams()
   const navigate = useNavigate()
@@ -46,9 +44,9 @@ const RoomDetailPage = () => {
     useCreateVideoSessionMutation()
 
   const activeSession = activeSessions?.find((s) => s.roomId === parseInt(id))
-  const currentParticipantCount =
-    activeSession?.participants?.length ?? room?.currentParticipantCount ?? 0
-  const isRoomFull = currentParticipantCount >= MAX_ROOM_PARTICIPANTS
+  const currentParticipantCount = room?.currentParticipantCount ?? 0
+  const maxParticipants = room?.maxParticipants ?? 5
+  const isRoomFull = currentParticipantCount >= maxParticipants
 
   // -- Media Preview State --
   const [micOn, setMicOn] = useState(false)
@@ -291,6 +289,7 @@ const RoomDetailPage = () => {
     <>
       <WaitingScreen
         session={displaySession}
+        participantCount={currentParticipantCount}
         localStream={localStream}
         micOn={micOn}
         cameraOn={cameraOn}
@@ -299,7 +298,7 @@ const RoomDetailPage = () => {
         onToggleCam={() => setCameraOn(!cameraOn)}
         onJoin={handleJoin}
         isFull={isRoomFull}
-        maxParticipants={MAX_ROOM_PARTICIPANTS}
+        maxParticipants={maxParticipants}
       />
       <Snackbar
         open={snackbar.open}

@@ -123,8 +123,6 @@ const CreateRoomModal = ({ open, onCancel }) => {
     }
   }
 
-  if (!open) return null
-
   return (
     <Modal
       open={open}
@@ -132,7 +130,7 @@ const CreateRoomModal = ({ open, onCancel }) => {
       title={t.rooms.createRoom.title}
       className="max-w-sm sm:max-w-md"
     >
-      <div className="flex flex-col gap-5">
+      <div className="flex flex-col gap-5 max-h-[60vh] overflow-y-auto px-1 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#990011] [&::-webkit-scrollbar-track]:bg-gray-200 [&::-webkit-scrollbar]:w-1.5">
         {/* Room Name */}
         <TextInput
           id="name"

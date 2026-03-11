@@ -2,21 +2,35 @@ import React from "react"
 import { useSearchParams } from "react-router-dom"
 import { Clock, Users, Link, Bookmark } from "lucide-react"
 import { useLanguage } from "@/shared/context/LanguageContext"
+import { useAuth } from "@/features/auth"
+import { useAuthModal } from "@/shared/context/AuthModalContext"
 import {
   formatDate,
   formatTimeRange,
   calculateEndDate,
 } from "@/shared/utils/dateFormatter"
 import InDevelopmentModal from "@/shared/components/common/InDevelopmentModal"
+import Modal from "@/shared/components/ui/Modal"
 
 const RoomCard = ({ room }) => {
   const [searchParams] = useSearchParams()
   const { language } = useLanguage()
+  const { isAuthenticated } = useAuth()
+  const { openAuthModal } = useAuthModal()
+
+  const isRoomFull =
+    (room.currentParticipantCount || 0) >= (room.maxParticipants || 0)
 
   const handleJoinRoom = (e) => {
     e.stopPropagation()
 
-    // Update searchParams with the current language
+    // If user is not authenticated, open login modal instead of navigating
+    if (!isAuthenticated) {
+      openAuthModal("login")
+      return
+    }
+
+    // If authenticated, open room in new tab
     const url = `/room/${room.roomId}`
 
     window.open(url, "_blank")
@@ -36,6 +50,17 @@ const RoomCard = ({ room }) => {
   const roomCode = `room-${room.roomId}`.toLowerCase()
 
   const [showDevModal, setShowDevModal] = React.useState(false)
+  const [showFullModal, setShowFullModal] = React.useState(false)
+
+  const handleRoomClick = (e) => {
+    if (isRoomFull) {
+      e.stopPropagation()
+      setShowFullModal(true)
+      return
+    }
+
+    handleJoinRoom(e)
+  }
 
   const handleBookmarkClick = (e) => {
     e.stopPropagation()
@@ -45,7 +70,7 @@ const RoomCard = ({ room }) => {
   return (
     <>
       <div
-        onClick={handleJoinRoom}
+        onClick={handleRoomClick}
         style={{ fontFamily: "'Inter', sans-serif" }}
         className="group relative flex w-full flex-col overflow-hidden rounded-xl bg-white shadow-sm transition-all duration-300 hover:shadow-xl cursor-pointer border border-[#C6C6C6]"
       >
@@ -126,6 +151,28 @@ const RoomCard = ({ room }) => {
         open={showDevModal}
         onCancel={() => setShowDevModal(false)}
       />
+
+      <Modal
+        open={showFullModal}
+        onClose={() => setShowFullModal(false)}
+        title="Room is full"
+      >
+        <div className="flex flex-col items-center gap-4 text-center">
+          <p className="text-sm text-gray-700">
+            This room has reached the maximum number of participants.
+          </p>
+          <p className="text-sm text-gray-700">
+            Please choose another room or try again later.
+          </p>
+          <button
+            type="button"
+            onClick={() => setShowFullModal(false)}
+            className="mt-2 rounded-lg bg-[#990011] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#7a000e]"
+          >
+            Close
+          </button>
+        </div>
+      </Modal>
     </>
   )
 }

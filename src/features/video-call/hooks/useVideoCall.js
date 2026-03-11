@@ -157,7 +157,20 @@ export const useVideoCall = (
       })
     })
 
-    return participantsArr
+    // De-duplicate by accountId so the same logged-in account
+    // opening the meeting in multiple tabs/devices does not
+    // appear as multiple distinct participants in the UI.
+    const uniqueByAccountId = []
+    const seenAccountIds = new Set()
+
+    for (const p of participantsArr) {
+      const key = String(p.accountId || p.id)
+      if (seenAccountIds.has(key)) continue
+      seenAccountIds.add(key)
+      uniqueByAccountId.push(p)
+    }
+
+    return uniqueByAccountId
   }, [
     sdkParticipants,
     localParticipant,

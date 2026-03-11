@@ -8,6 +8,7 @@ import { useLanguage } from "@/shared/context/LanguageContext"
 
 const WaitingScreen = ({
   session,
+  participantCount,
   localStream,
   micOn,
   cameraOn,
@@ -20,9 +21,10 @@ const WaitingScreen = ({
 }) => {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
-  const participants = session?.participants || []
+  const participants = session?.participants ?? []
   const { t } = useLanguage()
   const communityLanguage = localStorage.getItem("communityLanguage") || "en"
+  const effectiveParticipantCount = participantCount ?? participants.length
 
   return (
     <div className="flex min-h-screen w-full flex-col items-center justify-center relative bg-gray-50 p-4 md:p-0">
@@ -49,7 +51,10 @@ const WaitingScreen = ({
             t.rooms.waitingScreen.readyToJoin}
         </h4>
 
-        <ParticipantList participants={participants} />
+        <ParticipantList
+          participants={participants}
+          participantCount={participantCount}
+        />
       </div>
 
       <VideoPreview
@@ -72,7 +77,7 @@ const WaitingScreen = ({
         </PillButton>
         {isFull && (
           <p className="text-sm text-red-600">
-            {t.rooms.waitingScreen.roomFull} ({participants.length}/
+            {t.rooms.waitingScreen.roomFull} ({effectiveParticipantCount}/
             {maxParticipants})
           </p>
         )}

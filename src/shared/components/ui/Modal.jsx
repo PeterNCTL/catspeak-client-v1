@@ -11,25 +11,7 @@ const Modal = ({
   title,
   showCloseButton = true,
 }) => {
-  useEffect(() => {
-    let timeoutId
-    if (open) {
-      const scrollbarWidth =
-        window.innerWidth - document.documentElement.clientWidth
-      document.body.style.paddingRight = `${scrollbarWidth}px`
-      document.body.style.overflow = "hidden"
-    } else {
-      // Delay reverting the styles so the exit animation finishes before layout shift
-      timeoutId = setTimeout(() => {
-        document.body.style.overflow = "unset"
-        document.body.style.paddingRight = "0px"
-      }, 200) // matches transition duration (0.2s)
-    }
-
-    return () => {
-      if (timeoutId) clearTimeout(timeoutId)
-    }
-  }, [open])
+  // Modal visibility is handled by the "open" prop and AnimatePresence
 
   // Use createPortal to render the modal at the document body level
   return createPortal(

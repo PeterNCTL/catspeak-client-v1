@@ -1,7 +1,7 @@
 import React from "react"
 import { useGetRoomsQuery } from "@/store/api/roomsApi"
-import RoomCard from "./RoomCard"
-import EmptyRoomState from "./EmptyRoomState"
+import RoomCard from "../RoomCard"
+import EmptyRoomState from "../EmptyRoomState"
 import colors from "@/shared/utils/colors"
 import { useLanguage } from "@/shared/context/LanguageContext"
 

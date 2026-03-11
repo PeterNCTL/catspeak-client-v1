@@ -1,12 +1,11 @@
-import React, { useState } from "react"
+import React, { useState, useMemo } from "react"
 import { MessageCircle, Monitor, Users, Layers, Filter } from "lucide-react"
-import { useSearchParams, useParams } from "react-router-dom"
+import { useSearchParams, useParams, useNavigate } from "react-router-dom"
 import {
   RoomFilterSidebar,
   ClassSidebar,
   WelcomeSection,
   SessionActionButtons,
-  HeroCarousel,
   CommunicateTab,
   TeachingTab,
   GroupTab,
@@ -17,6 +16,7 @@ import {
   useRoomsPageLogic,
   useGetRoomsQuery,
 } from "@/features/rooms"
+import { WorkshopCarousel } from "@/features/workshops"
 import { useLanguage } from "@/shared/context/LanguageContext"
 import { PageNotFound } from "@/shared/pages"
 import { AnimatePresence } from "framer-motion"
@@ -25,16 +25,31 @@ import { FadeAnimation, FluentAnimation } from "@/shared/animations"
 const RoomsPage = () => {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
   const { t } = useLanguage()
-  const { state, derived, actions } = useRoomsPageLogic()
-  const { allowConnect, page, tab } = state
-  const { slides } = derived
-  const {
-    setAllowConnect,
-    setPage,
-    setTab,
-    handleCreateOneOnOneSession,
-    handleCreateStudyGroupSession,
-  } = actions
+
+  // --- UI State moved from hook ---
+  const [allowConnect, setAllowConnect] = useState(false)
+  const [page, setPage] = useState(1)
+  const [tab, setTab] = useState("communicate")
+  const [isCreateRoomModalOpen, setCreateRoomModalOpen] = useState(false)
+
+  // Carousel State
+  const slides = useMemo(() => t?.rooms?.heroCarousel?.slides || [], [t])
+
+  const navigate = useNavigate()
+  const { state, actions } = useRoomsPageLogic()
+
+  // Actions Wrappers
+  const handleCreateOneOnOne = () => {
+    actions.handleCreateOneOnOneSession(() => {
+      navigate("/queue")
+    })
+  }
+
+  const handleCreateStudyGroup = () => {
+    actions.handleCreateStudyGroupSession(() => {
+      setCreateRoomModalOpen(true)
+    })
+  }
 
   // --- Extracting Data Fetching Logic ---
   const [searchParams] = useSearchParams()
@@ -107,16 +122,16 @@ const RoomsPage = () => {
 
             {/* Session Creation Buttons */}
             <SessionActionButtons
-              handleCreateOneOnOneSession={handleCreateOneOnOneSession}
-              handleCreateStudyGroupSession={handleCreateStudyGroupSession}
+              handleCreateOneOnOneSession={handleCreateOneOnOne}
+              handleCreateStudyGroupSession={handleCreateStudyGroup}
               isCreatingOneOnOne={state.isCreatingOneOnOne}
               isCreatingStudyGroup={state.isCreatingStudyGroup}
             />
           </div>
 
-          {/* Right column - Hero Carousel */}
+          {/* Right column - Workshop Carousel */}
           <div className="w-full lg:w-1/2">
-            <HeroCarousel slides={slides} />
+            <WorkshopCarousel slides={slides} />
           </div>
         </div>
 
@@ -186,8 +201,8 @@ const RoomsPage = () => {
           </div>
         </div>
         <CreateRoomModal
-          open={state.isCreateRoomModalOpen}
-          onCancel={() => actions.setCreateRoomModalOpen(false)}
+          open={isCreateRoomModalOpen}
+          onCancel={() => setCreateRoomModalOpen(false)}
         />
       </FluentAnimation>
     </AnimatePresence>

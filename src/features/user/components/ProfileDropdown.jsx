@@ -119,13 +119,7 @@ const ProfileDropdown = () => {
               <div className="border-t border-[#F0F0F0]" />
 
               <div className="flex flex-col">
-                <button
-                  onClick={() => {
-                    handleCloseMenu()
-                    navigate("/profile")
-                  }}
-                  className={menuItemClass}
-                >
+                <button disabled className={menuItemDisabledClass}>
                   <User />
                   <span>{t.header.profile || "Profile"}</span>
                 </button>
