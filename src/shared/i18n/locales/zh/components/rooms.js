@@ -15,26 +15,7 @@ export default {
   },
   heroCarousel: {
     comingSoonTitle: "即将推出",
-    slides: [
-      {
-        title: "这个标题",
-        cta: "了解更多",
-        image:
-          "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1200&q=80",
-      },
-      {
-        title: "小组口语课",
-        cta: "探索",
-        image:
-          "https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?auto=format&fit=crop&w=1200&q=80",
-      },
-      {
-        title: "辩论工作坊",
-        cta: "立即注册",
-        image:
-          "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=1200&q=80",
-      },
-    ],
+    slides: [],
   },
   filters: {
     title: "房间",

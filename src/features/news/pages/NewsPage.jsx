@@ -12,7 +12,7 @@ const NewsPage = () => {
   const pageSize = 10
 
   const { data, isLoading, error } = useGetPostsQuery({ page, pageSize })
-
+  console.log(data)
   if (isLoading) {
     return (
       <div className="flex min-h-[50vh] items-center justify-center">
@@ -27,9 +27,7 @@ const NewsPage = () => {
     }
 
     if (error?.status === 401) {
-      return (
-        <EmptyState message={t.catSpeak.newsLoginPrompt} />
-      )
+      return <EmptyState message={t.catSpeak.newsLoginPrompt} />
     }
 
     return <ErrorMessage message="Error loading posts" />
@@ -38,7 +36,7 @@ const NewsPage = () => {
   const posts = data?.data?.filter((post) => post.privacy === "Public") || []
 
   return (
-    <div className="columns-1 gap-4 sm:columns-2 md:columns-3 lg:columns-4 xl:columns-5 2xl:columns-6">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {posts.map((post) => (
         <NewsCard key={post.postId} news={post} />
       ))}

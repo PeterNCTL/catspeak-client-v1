@@ -4,6 +4,7 @@ import RoomCard from "../RoomCard"
 import EmptyRoomState from "../EmptyRoomState"
 import colors from "@/shared/utils/colors"
 import { useLanguage } from "@/shared/context/LanguageContext"
+import { ChevronRight } from "lucide-react"
 
 const CategoryRoomSection = ({
   categoryKey,
@@ -29,27 +30,26 @@ const CategoryRoomSection = ({
 
   // Header section component
   const renderHeader = () => (
-    <div className="flex h-8 items-center justify-between">
-      <div className="flex items-end gap-3">
+    <button
+      onClick={() => onSeeMore(categoryKey)}
+      className="group w-fit flex h-12 items-center gap-2 rounded-md hover:bg-[#E5E5E5] pr-6"
+    >
+      <div className="flex items-center gap-2 transition-transform duration-300 group-hover:translate-x-4">
         <h6
           className="mb-0 text-xl font-bold"
           style={{ color: colors.headingColor }}
         >
           {title}
         </h6>
-        <button
-          onClick={() => onSeeMore(categoryKey)}
-          className="mb-[2px] cursor-pointer text-sm text-[#7A7574] no-underline hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
-        >
-          {t.rooms.filters.seeMore}
-        </button>
+
+        <ChevronRight size={24} color="#990011" />
       </div>
-    </div>
+    </button>
   )
 
   if (!isLoading && rooms.length === 0) {
     return (
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-2">
         {renderHeader()}
         <EmptyRoomState message={t.rooms.filters.noRoomsFoundCategory} />
       </div>

@@ -98,13 +98,15 @@ const NewsDetailPage = () => {
       {/* Article */}
       <article className="overflow-hidden bg-white">
         {/* Hero */}
-        <div className="relative h-[350px] w-full">
-          <img
-            src={newsItem.media?.[0]?.mediaUrl || placeholderImg}
-            alt={newsItem.title}
-            className="h-full w-full object-cover rounded-3xl"
-          />
-        </div>
+        {newsItem.media && newsItem.media.length > 0 && (
+          <div className="relative h-[350px] w-full">
+            <img
+              src={newsItem.media[0].mediaUrl}
+              alt={newsItem.title}
+              className="h-full w-full object-cover rounded-3xl"
+            />
+          </div>
+        )}
 
         {/* Stats & Actions */}
         <div className="flex flex-col items-start gap-2 py-4 border-b border-[#C6C6C6]">

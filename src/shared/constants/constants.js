@@ -40,3 +40,12 @@ export const topicsFilters = [
   ["A1", "B2"],
   ["Khác"],
 ]
+
+export const COLORS = [
+  { value: "#BF156D", name: "Hồng" },
+  { value: "#FAC126", name: "Vàng" },
+  { value: "#990011", name: "Đỏ" },
+  { value: "#00BB38", name: "Xanh lá" },
+  { value: "#004AAD", name: "Xanh dương" },
+  { value: "#FEAE13", name: "Cam" },
+]

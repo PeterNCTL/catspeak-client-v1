@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react"
+import toast from "react-hot-toast"
 import { useNavigate, useParams } from "react-router-dom"
 import {
   useCreateRoomMutation,
@@ -75,11 +76,20 @@ const CreateRoomModal = ({ open, onCancel }) => {
         navigate(`/room/${joinResult.roomId}`)
       }
     } catch (err) {
-      if (err?.status === 404 || err?.originalStatus === 404) {
-        // Optionally show toast indicating no room matches
-      } else {
-        console.error("Failed to join room:", err)
+      const is404 = err?.status === 404 || err?.data?.statusCode === 404
+
+      if (is404) {
+        toast.error(t.errors.rooms.noRoomFound, {
+          id: "join-room-error",
+        })
+        return
       }
+
+      toast.error(t.errors.rooms.genericJoinError, {
+        id: "join-room-error",
+      })
+
+      console.error("Join room failed:", err)
     }
   }
 
@@ -128,9 +138,9 @@ const CreateRoomModal = ({ open, onCancel }) => {
       open={open}
       onClose={handleCancel}
       title={t.rooms.createRoom.title}
-      className="max-w-sm sm:max-w-md"
+      className="max-w-sm sm:max-w-md max-[425px]:max-w-none max-[425px]:h-full max-[425px]:rounded-none max-[425px]:flex max-[425px]:flex-col"
     >
-      <div className="flex flex-col gap-5 max-h-[60vh] overflow-y-auto px-1 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#990011] [&::-webkit-scrollbar-track]:bg-gray-200 [&::-webkit-scrollbar]:w-1.5">
+      <div className="flex flex-col gap-5 max-h-[60vh] overflow-y-auto px-1 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#990011] [&::-webkit-scrollbar-track]:bg-gray-200 [&::-webkit-scrollbar]:w-1.5 max-[425px]:max-h-none max-[425px]:flex-1">
         {/* Room Name */}
         <TextInput
           id="name"
@@ -166,7 +176,7 @@ const CreateRoomModal = ({ open, onCancel }) => {
           onClick={handleJoin}
           loading={isJoining}
           loadingText={t.rooms.createRoom.joining}
-          disabled={!selectedLanguage || isCreating}
+          disabled={!selectedLanguage || isLoading}
         >
           {t.rooms.createRoom.join}
         </PillButton>
@@ -174,7 +184,7 @@ const CreateRoomModal = ({ open, onCancel }) => {
           onClick={handleCreate}
           loading={isCreating}
           loadingText={t.rooms.createRoom.creating}
-          disabled={!selectedLanguage || isJoining}
+          disabled={!selectedLanguage || isLoading}
         >
           {t.rooms.createRoom.create}
         </PillButton>

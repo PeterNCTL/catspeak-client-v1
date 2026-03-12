@@ -11,7 +11,7 @@ function App() {
   return (
     <Provider store={store}>
       <ConversationSignalRProvider>
-        <Toaster position="top-center" />
+        <Toaster position="top-center" limit={1} />
         <AppRouter />
       </ConversationSignalRProvider>
     </Provider>

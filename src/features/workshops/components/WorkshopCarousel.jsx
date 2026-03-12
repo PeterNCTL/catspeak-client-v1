@@ -9,7 +9,6 @@ import ChinaWorkshopModal from "./modals/ChinaWorkshopModal"
 import { getWorkshopSlides } from "../data/workshopSlides"
 import PillButton from "@/shared/components/ui/PillButton"
 
-
 const WorkshopCarousel = ({ slides: propSlides = [] }) => {
   const { t } = useLanguage()
   const [modalType, setModalType] = useState(null) // 'china' or 'development'
@@ -39,7 +38,7 @@ const WorkshopCarousel = ({ slides: propSlides = [] }) => {
 
   return (
     <>
-      <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-black/5 shadow-[0_20px_50px_rgba(0,0,0,0.2)] group h-[200px] sm:h-[240px] md:h-[260px] w-full">
+      <div className="relative overflow-hidden rounded-xl bg-black/5 shadow-[0_20px_50px_rgba(0,0,0,0.2)] group h-[200px] sm:h-[240px] md:h-[260px] w-full">
         {/* Carousel Slides */}
         {slides.map((slide, idx) => (
           <div
@@ -57,14 +56,13 @@ const WorkshopCarousel = ({ slides: propSlides = [] }) => {
             />
             <div className="absolute inset-0 flex flex-col justify-center px-4 sm:px-6 md:px-8 text-white drop-shadow-[0_3px_10px_rgba(0,0,0,0.35)]">
               <div className="inline-flex flex-col gap-2 sm:gap-3 rounded-xl sm:rounded-2xl bg-black/45 px-4 py-3 sm:px-6 sm:py-4 backdrop-blur-[2px] w-fit">
-                <p className="text-sm sm:text-base md:text-lg font-semibold uppercase whitespace-pre-line">
+                <p className="text-base md:text-lg font-semibold uppercase whitespace-pre-line">
                   {slide.title || t.workshops.heroCarousel.comingSoonTitle}
                 </p>
                 <PillButton
                   onClick={() => setModalType(slide.modal || "development")}
                   bgColor="#f5c518"
                   textColor="#990011"
-                  className="!h-9 !px-4 text-xs sm:text-sm font-semibold shadow"
                 >
                   {slide.cta}
                 </PillButton>

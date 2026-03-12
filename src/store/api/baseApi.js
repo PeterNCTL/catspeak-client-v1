@@ -22,9 +22,16 @@ let refreshPromise = null
 const baseQueryWithReauth = async (args, api, extraOptions) => {
   let result = await baseQuery(args, api, extraOptions)
 
+  if (result.error?.status === 401) {
+    console.warn("401 detected:", args.url)
+  }
+
   if (result.error && result.error.status === 401) {
-    const refreshToken = api.getState().auth.refreshToken
-    const token = api.getState().auth.token
+    const state = api.getState().auth
+
+    const token = state.token || localStorage.getItem("token")
+    const refreshToken =
+      state.refreshToken || localStorage.getItem("refreshToken")
 
     if (!refreshToken || !token) {
       api.dispatch(logout())
@@ -32,7 +39,7 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
     }
 
     // prevent infinite loops if the refresh endpoint itself returns 401
-    if (args.url === "/Auth/refresh-token") {
+    if (args.url === "/Auth/refresh-token" || args.url === "/Auth/login") {
       return result
     }
 

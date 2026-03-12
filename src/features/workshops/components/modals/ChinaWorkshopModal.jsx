@@ -23,25 +23,17 @@ const ChinaWorkshopModal = ({ open, onClose, t }) => {
         </div>
 
         <div className="space-y-6 px-2 text-[15px] sm:text-base leading-relaxed text-gray-800">
-          {/* Expert Sharing Label */}
-          {workshop.expertSharing && (
-            <p className="font-bold text-center sm:text-left">
-              {workshop.expertSharing}
-            </p>
-          )}
-
           {/* Intro Section */}
           <div className="space-y-4">
             <p>
-              10 năm không chỉ là thời gian mà còn là những trải nghiệm, góc
-              nhìn và bài học mà ít ai có cơ hội nghe trực tiếp. Bạn có tò mò về{" "}
+              {workshop.introText}{" "}
               <span className="text-[#b91c1c] font-bold">
-                cuộc sống, môi trường làm việc và cơ hội tại Trung Quốc
+                {workshop.introHighlight}
               </span>{" "}
-              không?
+              {workshop.introClosing}
             </p>
             <ul className="list-inside list-disc space-y-1 pl-4">
-              {workshop.bulletPoints.map((point, idx) => (
+              {(workshop.bulletPoints || []).map((point, idx) => (
                 <li key={idx}>{point}</li>
               ))}
             </ul>
@@ -50,7 +42,7 @@ const ChinaWorkshopModal = ({ open, onClose, t }) => {
           {/* Workshop Title */}
           <div className="py-2">
             <div className="m-0">
-              Tất cả sẽ được chia sẻ trong workshop:{" "}
+              {workshop.workshopTitlePrefix}{" "}
               <span className="text-[#b91c1c] font-bold">
                 {workshop.workshopTitle}
               </span>
@@ -58,12 +50,11 @@ const ChinaWorkshopModal = ({ open, onClose, t }) => {
           </div>
 
           <p>
-            Một buổi trò chuyện thẳng thắn về{" "}
+            {workshop.descriptionText}{" "}
             <span className="text-[#b91c1c] font-bold">
-              cuộc sống, công việc và những bài học thực tế sau hơn 10 năm sống
-              và làm việc tại Trung Quốc đến từ khách mời đặc biệt của Cat Speak
+              {workshop.descriptionHighlight}
             </span>
-            .
+            {workshop.descriptionClosing}
           </p>
 
           {/* Info Section */}
@@ -71,14 +62,18 @@ const ChinaWorkshopModal = ({ open, onClose, t }) => {
             <div className="flex items-start gap-2">
               <span className="text-lg">⏰</span>
               <p>
-                <span className="font-bold text-[#b91c1c]">Thời gian:</span>{" "}
+                <span className="font-bold text-[#b91c1c]">
+                  {workshop.timeLabel}
+                </span>{" "}
                 {workshop.time}
               </p>
             </div>
             <div className="flex items-start gap-2">
               <span className="text-lg">📍</span>
               <p>
-                <span className="font-bold text-[#b91c1c]">Địa điểm:</span>{" "}
+                <span className="font-bold text-[#b91c1c]">
+                  {workshop.locationLabel}
+                </span>{" "}
                 {workshop.location}
               </p>
             </div>
@@ -90,7 +85,9 @@ const ChinaWorkshopModal = ({ open, onClose, t }) => {
               {workshop.joinLinkNote}
             </p>
             <p className="font-bold">
-              <span className="text-[#b91c1c]">Link đăng ký:</span>{" "}
+              <span className="text-[#b91c1c]">
+                {workshop.registerLinkLabel}
+              </span>{" "}
               <a
                 href="https://docs.google.com/forms/d/e/1FAIpQLSflanRsWpM4EbY8ICXXHZ5Qms0X1lF2g4MR4ox_eY-W9eUHig/viewform?usp=header"
                 target="_blank"
@@ -148,9 +145,9 @@ const ChinaWorkshopModal = ({ open, onClose, t }) => {
             onClick={onClose}
             bgColor="#f5c518"
             textColor="#990011"
-            className="mt-4 w-full font-bold shadow-md"
+            className="w-full"
           >
-            Đóng
+            {workshop.closeButton}
           </PillButton>
         </div>
       </div>
