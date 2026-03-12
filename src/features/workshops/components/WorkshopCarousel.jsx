@@ -38,70 +38,87 @@ const WorkshopCarousel = ({ slides: propSlides = [] }) => {
 
   return (
     <>
-      <div className="relative overflow-hidden rounded-xl bg-black/5 shadow-[0_20px_50px_rgba(0,0,0,0.2)] group h-[200px] sm:h-[240px] md:h-[260px] w-full">
-        {/* Carousel Slides */}
-        {slides.map((slide, idx) => (
-          <div
-            key={idx}
-            className={`absolute inset-0 w-full h-full transition-opacity duration-500 ease-in-out ${
-              idx === activeIndex
-                ? "opacity-100 z-10 pointer-events-auto"
-                : "opacity-0 z-0 pointer-events-none"
-            }`}
-          >
-            <img
-              src={slide.image}
-              alt={slide.title}
-              className="h-full w-full object-cover"
-            />
-            <div className="absolute inset-0 flex flex-col justify-center px-4 sm:px-6 md:px-8 text-white drop-shadow-[0_3px_10px_rgba(0,0,0,0.35)]">
-              <div className="inline-flex flex-col gap-2 sm:gap-3 rounded-xl sm:rounded-2xl bg-black/45 px-4 py-3 sm:px-6 sm:py-4 backdrop-blur-[2px] w-fit">
-                <p className="text-base md:text-lg font-semibold uppercase whitespace-pre-line">
-                  {slide.title || t.workshops.heroCarousel.comingSoonTitle}
-                </p>
-                <PillButton
-                  onClick={() => setModalType(slide.modal || "development")}
-                  bgColor="#f5c518"
-                  textColor="#990011"
-                >
-                  {slide.cta}
-                </PillButton>
+      <div className="mx-auto max-w-3xl w-full px-4 sm:px-6 md:px-8 lg:px-0">
+        <div className="relative overflow-hidden rounded-xl bg-black/5 shadow-[0_20px_50px_rgba(0,0,0,0.2)] group aspect-video w-full">
+          {/* Carousel Slides */}
+          {slides.map((slide, idx) => (
+            <div
+              key={idx}
+              className={`absolute inset-0 w-full h-full transition-opacity duration-700 ease-in-out ${
+                idx === activeIndex
+                  ? "opacity-100 z-10 pointer-events-auto"
+                  : "opacity-0 z-0 pointer-events-none"
+              }`}
+            >
+              <img
+                src={slide.image}
+                alt={slide.title}
+                className="h-full w-full object-cover transform transition-transform duration-[2000ms] ease-out"
+              />
+              {/* Gradient Overlay for better legibility */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-r from-black/20 via-transparent to-transparent hidden md:block" />
+
+              <div className="absolute inset-0 flex flex-col justify-end px-8 pb-20 text-white text-left">
+                <div className="max-w-xl space-y-3 sm:space-y-5 animate-in fade-in slide-in-from-bottom-5 duration-700">
+                  <div className="space-y-1.5 sm:space-y-2">
+                    <h2 className="text-3xl font-bold drop-shadow-lg">
+                      {slide.title || t.workshops.heroCarousel.comingSoonTitle}
+                    </h2>
+                    {slide.subtext && (
+                      <p className="text-sm leading-relaxed">{slide.subtext}</p>
+                    )}
+                  </div>
+
+                  <div className="pt-1.5">
+                    <PillButton
+                      onClick={() => setModalType(slide.modal || "development")}
+                      bgColor="#f5c518"
+                      textColor="#990011"
+                    >
+                      {slide.cta}
+                    </PillButton>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))}
 
-        {/* Custom Navigation Buttons & Dots */}
-        {slides.length > 1 && (
-          <>
-            {/* Nav Buttons - Hidden on mobile, shown on hover (desktop) */}
-            <div className="hidden sm:block absolute left-3 top-3 z-20 transition-opacity duration-300 opacity-0 group-hover:opacity-100">
-              <BubbleChevronLeft aria-label="Prev slide" onClick={handlePrev} />
-            </div>
-            <div className="hidden sm:block absolute right-3 bottom-10 z-20 transition-opacity duration-300 opacity-0 group-hover:opacity-100">
-              <BubbleChevronRight
-                aria-label="Next slide"
-                onClick={handleNext}
-              />
-            </div>
-
-            {/* Pagination Dots */}
-            <div className="absolute bottom-4 left-0 right-0 z-20 flex justify-center gap-1.5">
-              {slides.map((_, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setActiveIndex(idx)}
-                  className={`h-1.5 rounded-full transition-all duration-300 ${
-                    idx === activeIndex
-                      ? "w-5 bg-[#990011] opacity-100"
-                      : "w-1.5 bg-white opacity-50 hover:opacity-75"
-                  }`}
-                  aria-label={`Go to slide ${idx + 1}`}
+          {/* Custom Navigation Buttons & Dots */}
+          {slides.length > 1 && (
+            <>
+              {/* Nav Buttons - Shown on hover (desktop) */}
+              <div className="hidden sm:block absolute left-6 top-1/2 -translate-y-1/2 z-20 transition-all duration-300 opacity-0 group-hover:opacity-100 hover:scale-110">
+                <BubbleChevronLeft
+                  aria-label="Prev slide"
+                  onClick={handlePrev}
                 />
-              ))}
-            </div>
-          </>
-        )}
+              </div>
+              <div className="hidden sm:block absolute right-6 top-1/2 -translate-y-1/2 z-20 transition-all duration-300 opacity-0 group-hover:opacity-100 hover:scale-110">
+                <BubbleChevronRight
+                  aria-label="Next slide"
+                  onClick={handleNext}
+                />
+              </div>
+
+              {/* Pagination Dots */}
+              <div className="absolute bottom-6 left-0 right-0 z-20 flex justify-center gap-3">
+                {slides.map((_, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setActiveIndex(idx)}
+                    className={`h-2 rounded-full transition-all duration-500 ${
+                      idx === activeIndex
+                        ? "w-8 bg-[#f5c518] shadow-[0_0_10px_rgba(245,197,24,0.5)]"
+                        : "w-2 bg-white/40 hover:bg-white/60"
+                    }`}
+                    aria-label={`Go to slide ${idx + 1}`}
+                  />
+                ))}
+              </div>
+            </>
+          )}
+        </div>
       </div>
 
       <ChinaWorkshopModal

@@ -9,6 +9,7 @@ import workshop1 from "@/shared/assets/images/workshops/workshop1.jpg"
 export const getWorkshopSlides = (t, propSlides = []) => [
   {
     title: t.workshops.chinaWorkshop.title,
+    subtext: `${t.workshops.chinaWorkshop.introText} ${t.workshops.chinaWorkshop.introHighlight} ${t.workshops.chinaWorkshop.introClosing}`,
     cta: t.workshops.chinaWorkshop.cta,
     image: workshop1,
     modal: "china",

@@ -17,6 +17,9 @@ import { useLanguage } from "@/shared/context/LanguageContext"
 import PostContent from "../components/PostContent"
 import placeholderImg from "@/shared/assets/images/news/placeholder.jpg"
 import LoadingSpinner from "@/shared/components/ui/LoadingSpinner"
+import Carousel from "@/shared/components/ui/Carousel"
+
+const IMAGE_BASE_URL = import.meta.env.VITE_IMAGE_BASE_URL || ""
 
 const NewsDetailPage = () => {
   const { id, lang } = useParams()
@@ -97,15 +100,15 @@ const NewsDetailPage = () => {
 
       {/* Article */}
       <article className="overflow-hidden bg-white">
-        {/* Hero */}
+        {/* Hero / Carousel */}
         {newsItem.media && newsItem.media.length > 0 && (
-          <div className="relative h-[350px] w-full">
-            <img
-              src={newsItem.media[0].mediaUrl}
-              alt={newsItem.title}
-              className="h-full w-full object-cover rounded-3xl"
-            />
-          </div>
+          <Carousel
+            images={newsItem.media.map((item) => ({
+              url: `${IMAGE_BASE_URL}${item.mediaUrl}`,
+              alt: newsItem.title,
+            }))}
+            className="rounded-3xl"
+          />
         )}
 
         {/* Stats & Actions */}
@@ -148,18 +151,6 @@ const NewsDetailPage = () => {
         {/* Body */}
         <div className="space-y-6 text-gray-700 leading-relaxed p-4 text-base">
           <PostContent html={newsItem.content} />
-
-          {newsItem.media && newsItem.media.length > 1 && (
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              {newsItem.media.slice(1).map((mediaItem) => (
-                <img
-                  key={mediaItem.postMediaId}
-                  src={mediaItem.mediaUrl}
-                  className="rounded-2xl object-cover h-60 w-full"
-                />
-              ))}
-            </div>
-          )}
         </div>
       </article>
     </div>

@@ -27,6 +27,12 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
   }
 
   if (result.error && result.error.status === 401) {
+    // Never retry or refresh for auth endpoints themselves — return immediately
+    // to avoid infinite loops or premature logouts
+    if (args.url === "/Auth/refresh-token" || args.url === "/Auth/login") {
+      return result
+    }
+
     const state = api.getState().auth
 
     const token = state.token || localStorage.getItem("token")
@@ -35,11 +41,6 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
 
     if (!refreshToken || !token) {
       api.dispatch(logout())
-      return result
-    }
-
-    // prevent infinite loops if the refresh endpoint itself returns 401
-    if (args.url === "/Auth/refresh-token" || args.url === "/Auth/login") {
       return result
     }
 

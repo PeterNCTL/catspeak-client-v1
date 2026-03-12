@@ -1,9 +1,11 @@
-import React, { useState, useMemo } from "react"
+import React, { useState, useMemo, useEffect } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import { Bookmark } from "lucide-react"
 import placeholderImg from "@/shared/assets/images/news/placeholder.jpg"
 import InDevelopmentModal from "@/shared/components/common/InDevelopmentModal"
 import { COLORS } from "@/shared/constants/constants"
+
+const IMAGE_BASE_URL = import.meta.env.VITE_IMAGE_BASE_URL || ""
 
 const NewsCard = ({ news }) => {
   const navigate = useNavigate()
@@ -11,6 +13,7 @@ const NewsCard = ({ news }) => {
   const currentLang = lang || "en"
 
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [currentMediaIndex, setCurrentMediaIndex] = useState(0)
 
   const handleCardClick = () => {
     navigate(`/${currentLang}/cat-speak/news/${news.postId}`)
@@ -22,6 +25,15 @@ const NewsCard = ({ news }) => {
   }
 
   const hasMedia = news.media && news.media.length > 0
+
+  useEffect(() => {
+    if (hasMedia && news.media.length > 1) {
+      const interval = setInterval(() => {
+        setCurrentMediaIndex((prev) => (prev + 1) % news.media.length)
+      }, 10000) // 10 seconds per image
+      return () => clearInterval(interval)
+    }
+  }, [hasMedia, news.media?.length])
 
   const randomBackgroundColor = useMemo(() => {
     if (hasMedia) return null
@@ -48,16 +60,28 @@ const NewsCard = ({ news }) => {
       className="group relative h-full overflow-hidden border cursor-pointer rounded-xl transition-all duration-300 border-[#C6C6C6] hover:border-[#990011] hover:shadow-md bg-white flex flex-col"
     >
       {/* Media/Upper Section */}
-      <div className="relative w-full overflow-hidden">
+      <div className="relative w-full aspect-video overflow-hidden">
         {hasMedia ? (
-          <img
-            src={news.media[0].mediaUrl}
-            alt={news.title}
-            className="w-full aspect-video object-cover transition-transform duration-500 group-hover:scale-110"
-          />
+          <div
+            className="flex h-full transition-transform duration-700 ease-out"
+            style={{ transform: `translateX(-${currentMediaIndex * 100}%)` }}
+          >
+            {news.media.map((item) => (
+              <div
+                key={item.postMediaId}
+                className="w-full h-full flex-shrink-0 relative"
+              >
+                <img
+                  src={`${IMAGE_BASE_URL}${item.mediaUrl}`}
+                  alt={news.title}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            ))}
+          </div>
         ) : (
           <div
-            className="w-full aspect-video flex items-center justify-center"
+            className="w-full h-full flex items-center justify-center"
             style={{ backgroundColor: randomBackgroundColor }}
           >
             <span className="text-white/20 font-bold text-4xl select-none">
