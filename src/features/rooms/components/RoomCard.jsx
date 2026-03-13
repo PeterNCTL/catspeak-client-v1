@@ -26,7 +26,8 @@ const RoomCard = ({ room }) => {
   }, [room.name, t.rooms.specialNames])
 
   const isRoomFull =
-    (room.currentParticipantCount || 0) >= (room.maxParticipants || 0)
+    room.maxParticipants !== null &&
+    (room.currentParticipantCount || 0) >= room.maxParticipants
 
   const handleJoinRoom = (e) => {
     e.stopPropagation()
@@ -46,10 +47,12 @@ const RoomCard = ({ room }) => {
   const createDate = new Date(room.createDate)
   const dateStr = formatDate(createDate)
 
-  // Use duration from the room response (in minutes)
-  const durationMinutes = room.duration || 20 // fallback to 20 if not provided
+  const isInfiniteDuration = room.duration === null
+  const durationMinutes = room.duration || 20 // fallback to 20 if not null
   const endDate = calculateEndDate(createDate, durationMinutes)
-  const timeStr = formatTimeRange(createDate, endDate)
+  const timeStr = isInfiniteDuration
+    ? t.rooms.noLimit
+    : formatTimeRange(createDate, endDate)
 
   // Placeholder code simulation
   const roomCode = `room-${room.roomId}`.toLowerCase()
@@ -133,8 +136,11 @@ const RoomCard = ({ room }) => {
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-sm border border-gray-200">
                 <Users className="h-5 w-5 text-[#990011]" />
               </div>
-              <span className="text-base font-bold">
-                {room.currentParticipantCount || 0}/{room.maxParticipants}
+              <span className="text-base font-bold whitespace-nowrap">
+                {room.currentParticipantCount || 0}
+                {room.maxParticipants === null
+                  ? ` / ${t.rooms.noLimit}`
+                  : `/${room.maxParticipants}`}
               </span>
             </div>
 
@@ -145,7 +151,9 @@ const RoomCard = ({ room }) => {
               </div>
               <div className="flex flex-col text-left">
                 <span className="text-sm font-bold">{dateStr}</span>
-                <span className="text-xs text-gray-500">{timeStr}</span>
+                <span className="text-xs text-gray-500 whitespace-nowrap">
+                  {timeStr}
+                </span>
               </div>
             </div>
           </div>

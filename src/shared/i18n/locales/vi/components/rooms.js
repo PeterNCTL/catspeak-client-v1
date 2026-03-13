@@ -154,6 +154,7 @@ export default {
     isHere: "đang ở đây",
     loading: "Đang tải...",
     roomNotFound: "Không tìm thấy phòng",
+    roomNotFoundSubtext: "Phòng bạn đang tìm không tồn tại hoặc đã bị đóng. Hãy khám phá những phòng khác đang diễn ra sôi nổi nhé!",
     roomFull: "Phòng đã đủ người (tối đa 5).",
     joinError: "Có lỗi xảy ra khi tham gia phòng.",
     createSessionError: "Không thể tạo phiên. Vui lòng thử lại.",
@@ -185,4 +186,5 @@ export default {
     subMessage: "Vui lòng chọn phòng khác hoặc thử lại sau.",
     close: "Đóng",
   },
+  noLimit: "Không giới hạn",
 }

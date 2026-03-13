@@ -53,7 +53,8 @@ export const VideoCallProvider = ({ children }) => {
 
   const isRoomFull =
     room &&
-    room.currentParticipantCount >= room.maxParticipants &&
+    room.maxParticipants !== null &&
+    (room.currentParticipantCount || 0) >= room.maxParticipants &&
     !isUserParticipant
 
   useEffect(() => {
@@ -97,8 +98,8 @@ export const VideoCallProvider = ({ children }) => {
     )
   }
 
-  // Handle errors or missing session
-  if (sessionError || (!isLoadingSession && !session)) {
+  // Handle API session loading errors
+  if (sessionError) {
     console.error("Failed to load session:", sessionError)
     return (
       <div className="flex items-center justify-center h-screen bg-neutral-950 text-white flex-col gap-4">
@@ -123,6 +124,32 @@ export const VideoCallProvider = ({ children }) => {
               navigate(`/${communityLang}/community`)
             }}
             variant="secondary"
+          >
+            {t.rooms.waitingScreen.backToCommunity}
+          </PillButton>
+        </div>
+      </div>
+    )
+  }
+
+  // Handle missing session (e.g. room not found)
+  if (!isLoadingSession && !session) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-neutral-950 text-white flex-col gap-4">
+        <p className="text-red-500 text-xl">
+          {t.rooms.waitingScreen.roomNotFound}
+        </p>
+        <p className="text-gray-400 text-sm text-center max-w-[400px]">
+          {t.rooms.waitingScreen.roomNotFoundSubtext}
+        </p>
+        <div className="flex flex-col gap-3 min-w-[200px]">
+          <PillButton
+            onClick={() => {
+              const communityLang =
+                localStorage.getItem("communityLanguage") || language || "vi"
+              navigate(`/${communityLang}/community`)
+            }}
+            variant="primary"
           >
             {t.rooms.waitingScreen.backToCommunity}
           </PillButton>

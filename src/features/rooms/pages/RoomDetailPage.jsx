@@ -44,8 +44,8 @@ const RoomDetailPage = () => {
 
   const activeSession = activeSessions?.find((s) => s.roomId === parseInt(id))
   const currentParticipantCount = room?.currentParticipantCount ?? 0
-  const maxParticipants = room?.maxParticipants ?? 5
-  const isRoomFull = currentParticipantCount >= maxParticipants
+  const maxParticipants = room?.maxParticipants ?? null
+  const isRoomFull = maxParticipants !== null && currentParticipantCount >= maxParticipants
 
   // -- Media Preview State --
   const [micOn, setMicOn] = useState(false)
