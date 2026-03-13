@@ -15,6 +15,10 @@ export default {
     trickOrTreat: "Trick or Treat",
     allowConnect: "Cho phép kết nối với bạn bè quốc tế",
   },
+  specialNames: {
+    doYouLikeToGoOut: "Bạn thích đi chơi không?",
+    hskExamPrep: "Phòng luyện thi HSK",
+  },
   heroCarousel: {
     comingSoonTitle: "Sắp ra mắt",
     slides: [],
@@ -174,5 +178,11 @@ export default {
       toggleMic: "Không thể bật/tắt micro",
       toggleCam: "Không thể bật/tắt camera",
     },
+  },
+  roomFullModal: {
+    title: "Phòng đã đầy",
+    message: "Phòng này đã đạt số lượng người tham gia tối đa.",
+    subMessage: "Vui lòng chọn phòng khác hoặc thử lại sau.",
+    close: "Đóng",
   },
 }

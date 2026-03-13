@@ -15,7 +15,7 @@ const SessionActionButtons = ({
   const [isDevelopmentModalOpen, setIsDevelopmentModalOpen] = useState(false)
 
   return (
-    <div className="relative mt-4 sm:mt-6 pl-4 sm:pl-6">
+    <div className="relative">
       <InDevelopmentModal
         open={isDevelopmentModalOpen}
         onCancel={() => setIsDevelopmentModalOpen(false)}

@@ -14,6 +14,10 @@ export default {
     trickOrTreat: "Trick or Treat",
     allowConnect: "Allow connection with international friends",
   },
+  specialNames: {
+    doYouLikeToGoOut: "Do you like to go out?",
+    hskExamPrep: "HSK Exam Prep Room",
+  },
   heroCarousel: {
     comingSoonTitle: "Coming Soon",
     slides: [],
@@ -198,5 +202,11 @@ export default {
       toggleMic: "Failed to toggle microphone",
       toggleCam: "Failed to toggle camera",
     },
+  },
+  roomFullModal: {
+    title: "Room is full",
+    message: "This room has reached the maximum number of participants.",
+    subMessage: "Please choose another room or try again later.",
+    close: "Close",
   },
 }

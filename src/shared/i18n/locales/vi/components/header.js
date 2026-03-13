@@ -1,4 +1,5 @@
 export default {
+  profile: "Thông tin cá nhân",
   settings: "Cài đặt",
   logout: "Đăng xuất",
   soon: "Sắp ra mắt",

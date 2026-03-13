@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react"
+import { createPortal } from "react-dom"
 import { useNavigate, useLocation, useParams } from "react-router-dom"
 import {
   Menu,
@@ -135,36 +136,42 @@ const CatSpeakSidebar = () => {
         <SidebarContent />
       </div>
 
-      {/* Mobile Drawer Overlay */}
-      {mobileOpen && (
-        <div
-          className="fixed inset-0 bg-black/40 z-40 lg:hidden transition-opacity"
-          onClick={() => setMobileOpen(false)}
-        />
-      )}
+      {/* Mobile Drawer Portal */}
+      {createPortal(
+        <div className="fixed inset-0 z-[1000] lg:hidden pointer-events-none">
+          {/* Mobile Drawer Overlay */}
+          {mobileOpen && (
+            <div
+              className="fixed inset-0 bg-black/40 transition-opacity pointer-events-auto"
+              onClick={() => setMobileOpen(false)}
+            />
+          )}
 
-      {/* Mobile Drawer Panel */}
-      <div
-        className={`fixed top-0 left-0 h-full w-[280px] bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-in-out lg:hidden pt-4 pb-6 px-4 flex flex-col ${
-          mobileOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
-      >
-        <div className="flex justify-between items-center mb-6 px-2">
-          <span className="text-lg font-bold text-gray-900 tracking-tight">
-            {t.catSpeak.sidebar.menu}
-          </span>
-          <button
-            onClick={() => setMobileOpen(false)}
-            className="p-1.5 text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+          {/* Mobile Drawer Panel */}
+          <div
+            className={`fixed top-0 left-0 h-full w-[280px] bg-white shadow-2xl transform transition-transform duration-300 ease-in-out pt-4 pb-6 px-4 flex flex-col pointer-events-auto ${
+              mobileOpen ? "translate-x-0" : "-translate-x-full"
+            }`}
           >
-            <X size={20} />
-          </button>
-        </div>
+            <div className="flex justify-between items-center mb-6 px-2">
+              <span className="text-lg font-bold text-gray-900 tracking-tight">
+                {t.catSpeak.sidebar.menu}
+              </span>
+              <button
+                onClick={() => setMobileOpen(false)}
+                className="p-1.5 text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <X size={20} />
+              </button>
+            </div>
 
-        <div className="flex-1 overflow-y-auto [&::-webkit-scrollbar]:hidden">
-          <SidebarContent />
-        </div>
-      </div>
+            <div className="flex-1 overflow-y-auto [&::-webkit-scrollbar]:hidden">
+              <SidebarContent />
+            </div>
+          </div>
+        </div>,
+        document.body,
+      )}
 
       {/* Coming Soon Modal */}
       <InDevelopmentModal

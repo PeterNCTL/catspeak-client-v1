@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react"
-import { useParams, useLocation } from "react-router-dom"
+import { useParams, useLocation, useNavigate } from "react-router-dom"
 import { MeetingProvider } from "@videosdk.live/react-sdk"
 
 import { useGetProfileQuery } from "@/features/auth"
@@ -9,20 +9,26 @@ import {
   useJoinVideoSessionMutation,
   useGetVideoSdkTokenMutation,
 } from "@/store/api/videoSessionsApi"
+import { useGetRoomByIdQuery } from "@/features/rooms"
+import PillButton from "@/shared/components/ui/PillButton"
 import { meetingConfig } from "@/shared/utils/videoSdkConfig"
 import { useLanguage } from "@/shared/context/LanguageContext"
 
 import { VideoCallContent } from "./VideoCallContext"
 
 export const VideoCallProvider = ({ children }) => {
-  const { t } = useLanguage()
+  const { t, language } = useLanguage()
+  const navigate = useNavigate()
+  const location = useLocation()
   const [sdkToken, setSdkToken] = useState(null)
   const [sdkReady, setSdkReady] = useState(false)
 
   const hasJoinedRef = useRef(false)
 
   const { id } = useParams()
+
   const { data: userData } = useGetProfileQuery()
+
   const user = userData?.data
 
   const {
@@ -30,13 +36,28 @@ export const VideoCallProvider = ({ children }) => {
     isLoading: isLoadingSession,
     error: sessionError,
   } = useGetVideoSessionByIdQuery(id, { skip: !id })
-
   const [joinSession] = useJoinVideoSessionMutation()
   const [leaveSession] = useLeaveVideoSessionMutation()
   const [getVideoSdkToken] = useGetVideoSdkTokenMutation()
 
+  const { data: room, isLoading: isLoadingRoom } = useGetRoomByIdQuery(
+    session?.roomId,
+    {
+      skip: !session?.roomId,
+    },
+  )
+
+  const isUserParticipant = session?.participants?.some(
+    (p) => String(p.accountId) === String(user?.accountId),
+  )
+
+  const isRoomFull =
+    room &&
+    room.currentParticipantCount >= room.maxParticipants &&
+    !isUserParticipant
+
   useEffect(() => {
-    if (!id || !session || !user) return
+    if (!id || !session || !user || isLoadingRoom || isRoomFull) return
     if (hasJoinedRef.current) return
 
     const initMeeting = async () => {
@@ -65,10 +86,10 @@ export const VideoCallProvider = ({ children }) => {
     }
 
     initMeeting()
-  }, [id, session, user, getVideoSdkToken])
+  }, [id, session, user, getVideoSdkToken, isLoadingRoom, isRoomFull])
 
   // Loading state
-  if (isLoadingSession || !userData) {
+  if (isLoadingSession || !userData || (session?.roomId && isLoadingRoom)) {
     return (
       <div className="flex items-center justify-center h-screen bg-neutral-950 text-white">
         <p>{t.rooms.videoCall.provider.loadingSession}</p>
@@ -88,17 +109,48 @@ export const VideoCallProvider = ({ children }) => {
           {sessionError?.data?.message ||
             t.rooms.videoCall.provider.unknownError}
         </p>
-        <button
-          onClick={() => window.location.reload()}
-          className="px-4 py-2 bg-neutral-800 rounded hover:bg-neutral-700 transition"
-        >
-          {t.rooms.videoCall.provider.retry}
-        </button>
+        <div className="flex flex-col gap-3 min-w-[200px]">
+          <PillButton
+            onClick={() => window.location.reload()}
+            variant="primary"
+          >
+            {t.rooms.videoCall.provider.retry}
+          </PillButton>
+          <PillButton
+            onClick={() => {
+              const communityLang =
+                localStorage.getItem("communityLanguage") || language || "vi"
+              navigate(`/${communityLang}/community`)
+            }}
+            variant="secondary"
+          >
+            {t.rooms.waitingScreen.backToCommunity}
+          </PillButton>
+        </div>
       </div>
     )
   }
 
   if (!sdkReady) {
+    if (isRoomFull) {
+      return (
+        <div className="flex flex-col items-center justify-center h-screen bg-neutral-950 text-white gap-4">
+          <p className="text-xl font-bold">{t.rooms.roomFullModal.title}</p>
+          <p className="text-gray-400">{t.rooms.roomFullModal.message}</p>
+          <PillButton
+            onClick={() => {
+              const communityLang =
+                localStorage.getItem("communityLanguage") || language || "vi"
+              navigate(`/${communityLang}/community`)
+            }}
+            className="mt-2 min-w-[150px]"
+          >
+            {t.rooms.waitingScreen.backToCommunity}
+          </PillButton>
+        </div>
+      )
+    }
+
     return (
       <div className="flex items-center justify-center h-screen bg-neutral-950 text-white">
         <p>{t.rooms.videoCall.provider.connecting}</p>
@@ -107,7 +159,6 @@ export const VideoCallProvider = ({ children }) => {
   }
 
   // Read initial state from navigation (default to false if not set)
-  const location = useLocation()
   const initMic = location.state?.micEnabled || false
   const initCam = location.state?.webcamEnabled || false
 

@@ -83,21 +83,17 @@ const MobileCommunityDropdown = ({ navKey, onClose }) => {
 
   return (
     <div className="flex flex-col">
-      <div
-        className={`flex items-center justify-between w-full min-h-[36px] rounded-[5px] transition-colors ${
-          isActive || communityOpen
-            ? "bg-[#F2F2F2]"
-            : "hover:bg-[#F2F2F2]"
-        }`}
-      >
+      <div className="flex items-center w-full gap-1">
         {/* Navigate button */}
         <button
           onClick={handleNavigateClick}
-          className={`flex-grow h-full px-3 py-2 flex items-center text-left ${
-            isActive || communityOpen ? "text-[#990011]" : ""
+          className={`flex-grow h-12 px-3 flex items-center text-left rounded-[5px] transition-colors ${
+            isActive || communityOpen
+              ? "bg-[#F2F2F2] text-[#990011] hover:bg-[#E6E6E6]"
+              : "hover:bg-[#F2F2F2]"
           }`}
         >
-          <span>{displayLabel}</span>
+          <span className="font-semibold">{displayLabel}</span>
         </button>
 
         {/* Expand button */}
@@ -106,14 +102,16 @@ const MobileCommunityDropdown = ({ navKey, onClose }) => {
             e.stopPropagation()
             setCommunityOpen((prev) => !prev)
           }}
-          className={`px-3 py-2 h-full flex items-center justify-center ${
-            isActive || communityOpen ? "text-[#990011]" : ""
+          className={`w-12 h-12 flex items-center justify-center rounded-[5px] transition-colors ${
+            isActive || communityOpen
+              ? "bg-[#F2F2F2] text-[#990011] hover:bg-[#E6E6E6]"
+              : "hover:bg-[#F2F2F2]"
           }`}
         >
           {communityOpen ? (
-            <ChevronUp size={14} />
+            <ChevronUp size={20} />
           ) : (
-            <ChevronDown size={14} />
+            <ChevronDown size={20} />
           )}
         </button>
       </div>

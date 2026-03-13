@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react"
+import { useParams } from "react-router-dom"
 import {
   BubbleChevronLeft,
   BubbleChevronRight,
@@ -10,12 +11,13 @@ import { getWorkshopSlides } from "../data/workshopSlides"
 import PillButton from "@/shared/components/ui/PillButton"
 
 const WorkshopCarousel = ({ slides: propSlides = [] }) => {
+  const { lang } = useParams()
   const { t } = useLanguage()
   const [modalType, setModalType] = useState(null) // 'china' or 'development'
   const [activeIndex, setActiveIndex] = useState(0)
 
   // Get slides from data utility
-  const slides = getWorkshopSlides(t, propSlides)
+  const slides = getWorkshopSlides(t, lang, propSlides)
 
   const handlePrev = useCallback(() => {
     setActiveIndex((prev) => (prev - 1 + slides.length) % slides.length)
@@ -32,9 +34,9 @@ const WorkshopCarousel = ({ slides: propSlides = [] }) => {
       handleNext()
     }, 5000)
     return () => clearInterval(interval)
-  }, [handleNext, slides])
+  }, [handleNext, slides.length])
 
-  if (!slides || slides.length === 0) return null
+  if (slides.length === 0) return null
 
   return (
     <>

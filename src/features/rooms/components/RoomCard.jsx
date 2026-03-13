@@ -11,12 +11,19 @@ import {
 } from "@/shared/utils/dateFormatter"
 import InDevelopmentModal from "@/shared/components/common/InDevelopmentModal"
 import Modal from "@/shared/components/ui/Modal"
+import RoomFullModal from "./RoomFullModal"
+
+import { getTranslatedRoomName } from "../utils/roomNameUtils"
 
 const RoomCard = ({ room }) => {
   const [searchParams] = useSearchParams()
-  const { language } = useLanguage()
+  const { language, t } = useLanguage()
   const { isAuthenticated } = useAuth()
   const { openAuthModal } = useAuthModal()
+
+  const translatedName = React.useMemo(() => {
+    return getTranslatedRoomName(room.name, t)
+  }, [room.name, t.rooms.specialNames])
 
   const isRoomFull =
     (room.currentParticipantCount || 0) >= (room.maxParticipants || 0)
@@ -32,7 +39,6 @@ const RoomCard = ({ room }) => {
 
     // If authenticated, open room in new tab
     const url = `/room/${room.roomId}`
-
     window.open(url, "_blank")
   }
 
@@ -43,7 +49,6 @@ const RoomCard = ({ room }) => {
   // Use duration from the room response (in minutes)
   const durationMinutes = room.duration || 20 // fallback to 20 if not provided
   const endDate = calculateEndDate(createDate, durationMinutes)
-
   const timeStr = formatTimeRange(createDate, endDate)
 
   // Placeholder code simulation
@@ -106,7 +111,7 @@ const RoomCard = ({ room }) => {
         <div className="flex flex-1 flex-col p-5">
           {/* Title */}
           <h3 className="mb-2 text-lg font-bold text-gray-900 line-clamp-1">
-            {room.name}
+            {translatedName}
           </h3>
 
           {/* Room Link/Code */}
@@ -152,27 +157,10 @@ const RoomCard = ({ room }) => {
         onCancel={() => setShowDevModal(false)}
       />
 
-      <Modal
+      <RoomFullModal
         open={showFullModal}
         onClose={() => setShowFullModal(false)}
-        title="Room is full"
-      >
-        <div className="flex flex-col items-center gap-4 text-center">
-          <p className="text-sm text-gray-700">
-            This room has reached the maximum number of participants.
-          </p>
-          <p className="text-sm text-gray-700">
-            Please choose another room or try again later.
-          </p>
-          <button
-            type="button"
-            onClick={() => setShowFullModal(false)}
-            className="mt-2 rounded-lg bg-[#990011] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#7a000e]"
-          >
-            Close
-          </button>
-        </div>
-      </Modal>
+      />
     </>
   )
 }

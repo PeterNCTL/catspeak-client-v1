@@ -5,6 +5,7 @@ import PillButton from "@/shared/components/ui/PillButton"
 import ParticipantList from "./ParticipantList"
 import VideoPreview from "./VideoPreview"
 import { useLanguage } from "@/shared/context/LanguageContext"
+import { getTranslatedRoomName } from "../../utils/roomNameUtils"
 
 const WaitingScreen = ({
   session,
@@ -46,8 +47,7 @@ const WaitingScreen = ({
 
       <div className="mb-4 text-center">
         <h4 className="mb-1 font-semibold text-gray-900 text-2xl md:text-4xl">
-          {session?.name ||
-            session?.roomName ||
+          {getTranslatedRoomName(session?.roomName, t) ||
             t.rooms.waitingScreen.readyToJoin}
         </h4>
 

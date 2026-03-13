@@ -9,6 +9,8 @@ const coreColors = {
   secondaryGray: "#7A7574", // Fluent UI
   borderColor: "#E5E5E5", // Fluent UI
   youtubeBorderColor: "#C6C6C6", // Youtube border color
+  // #F2F2F2 hover/active bg
+  // #E6E6E6 hover for active
 }
 
 export const colors = {

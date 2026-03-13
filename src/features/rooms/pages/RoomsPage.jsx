@@ -15,25 +15,22 @@ import {
   RoomsMobileDrawer,
   useRoomsPageLogic,
   useGetRoomsQuery,
+  AllowConnectSwitch,
 } from "@/features/rooms"
 import { WorkshopCarousel } from "@/features/workshops"
 import { useLanguage } from "@/shared/context/LanguageContext"
 import { PageNotFound } from "@/shared/pages"
 import { AnimatePresence } from "framer-motion"
 import { FadeAnimation, FluentAnimation } from "@/shared/animations"
+import InDevelopmentModal from "@/shared/components/common/InDevelopmentModal"
 
 const RoomsPage = () => {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
   const { t } = useLanguage()
 
-  // --- UI State moved from hook ---
-  const [allowConnect, setAllowConnect] = useState(false)
   const [page, setPage] = useState(1)
   const [tab, setTab] = useState("communicate")
   const [isCreateRoomModalOpen, setCreateRoomModalOpen] = useState(false)
-
-  // Carousel State
-  const slides = useMemo(() => t?.rooms?.heroCarousel?.slides || [], [t])
 
   const navigate = useNavigate()
   const { state, actions } = useRoomsPageLogic()
@@ -112,13 +109,12 @@ const RoomsPage = () => {
         className="w-full overflow-x-hidden"
       >
         {/* Hero Section - Improved mobile spacing */}
-        <div className="flex flex-col gap-5 p-5 sm:px-6 sm:py-8 md:gap-10 md:py-12 lg:flex-row lg:items-start">
+        <div className="grid grid-cols-1 gap-5 p-5 sm:px-6 sm:py-8 md:gap-10 md:py-12 lg:grid-cols-2">
           {/* Left column - Welcome Section */}
-          <div className="w-full lg:w-1/2">
-            <WelcomeSection
-              allowConnect={allowConnect}
-              setAllowConnect={setAllowConnect}
-            />
+          <div className="flex flex-col gap-8">
+            <WelcomeSection />
+
+            <AllowConnectSwitch />
 
             {/* Session Creation Buttons */}
             <SessionActionButtons
@@ -130,8 +126,8 @@ const RoomsPage = () => {
           </div>
 
           {/* Right column - Workshop Carousel */}
-          <div className="w-full lg:w-1/2">
-            <WorkshopCarousel slides={slides} />
+          <div>
+            <WorkshopCarousel />
           </div>
         </div>
 

@@ -9,6 +9,13 @@ export { default as RoomsTabs } from "./components/navigation/RoomsTabs"
 export { default as RoomsMobileDrawer } from "./components/navigation/RoomsMobileDrawer"
 export { default as SessionActionButtons } from "./components/SessionActionButtons"
 export { default as WelcomeSection } from "./components/sections/WelcomeSection"
+export { default as AllowConnectSwitch } from "./components/AllowConnectSwitch"
+export {
+  WaitingScreen,
+  ParticipantList,
+  VideoPreview,
+  getTranslatedRoomName,
+} from "./components/waiting-room"
 
 // Tab Components
 export { default as CommunicateTab } from "./components/tabs/CommunicateTab"

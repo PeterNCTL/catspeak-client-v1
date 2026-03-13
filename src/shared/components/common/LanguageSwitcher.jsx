@@ -6,10 +6,10 @@ import { useLanguage } from "@/shared/context/LanguageContext"
 import colors from "@/shared/utils/colors"
 
 const LANGUAGES = [
-  { key: "vi", labelKey: "vi" },
-  { key: "viNom", labelKey: "viNom", disabled: true },
-  { key: "zh", labelKey: "zh" },
-  { key: "en", labelKey: "en" },
+  { key: "vi", label: "Tiếng Việt (Quốc Ngữ)" },
+  { key: "viNom", label: "Tiếng Việt (Nôm)", disabled: true },
+  { key: "zh", label: "中文" },
+  { key: "en", label: "English" },
 ]
 
 const LanguageSwitcher = ({ className = "" }) => {
@@ -69,21 +69,15 @@ const LanguageSwitcher = ({ className = "" }) => {
               className="rounded-xl shadow-lg bg-white overflow-hidden"
             >
               <div className="flex flex-col whitespace-nowrap">
-                {LANGUAGES.map(({ key, labelKey, disabled }) => {
+                {LANGUAGES.map(({ key, label, disabled }) => {
                   const isActive = language === key
-
-                  const label =
-                    t.header?.languages?.[labelKey] ||
-                    (labelKey === "viNom"
-                      ? "Vietnamese (Nom) - Coming soon"
-                      : labelKey)
 
                   return (
                     <button
                       key={key}
                       disabled={disabled}
                       onClick={() => !disabled && handleLanguageSelect(key)}
-                      className={`w-full text-left px-4 h-12 text-base transition-colors
+                      className={`w-full text-left px-4 h-12 text-sm transition-colors
                         ${
                           disabled
                             ? "text-[#7A7574] cursor-default"

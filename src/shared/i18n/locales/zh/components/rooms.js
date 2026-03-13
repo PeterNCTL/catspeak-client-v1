@@ -13,6 +13,10 @@ export default {
     trickOrTreat: "不给糖就捣蛋",
     allowConnect: "允许与国际朋友联系",
   },
+  specialNames: {
+    doYouLikeToGoOut: "你喜欢出去玩吗？",
+    hskExamPrep: "HSK备考室",
+  },
   heroCarousel: {
     comingSoonTitle: "即将推出",
     slides: [],
@@ -169,5 +173,11 @@ export default {
       toggleMic: "无法切换麦克风",
       toggleCam: "无法切换摄像头",
     },
+  },
+  roomFullModal: {
+    title: "房间已满",
+    message: "该房间已达到最大人数限制。",
+    subMessage: "请选择其他房间或稍后再试。",
+    close: "关闭",
   },
 }

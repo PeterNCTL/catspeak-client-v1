@@ -12,7 +12,7 @@ const NewsPage = () => {
   const pageSize = 10
 
   const { data, isLoading, error } = useGetPostsQuery({ page, pageSize })
-
+  console.log(data)
   if (isLoading) {
     return (
       <div className="flex min-h-[50vh] items-center justify-center">

@@ -121,17 +121,19 @@ const ProfileDropdown = () => {
               <div className="flex flex-col">
                 <button disabled className={menuItemDisabledClass}>
                   <User />
-                  <span>{t.header.profile || "Profile"}</span>
+                  <span className="text-sm">
+                    {t.header.profile}
+                  </span>
                 </button>
 
                 <button disabled className={menuItemDisabledClass}>
                   <Settings />
-                  <span className="flex-1 text-left">{t.header.settings}</span>
+                  <span className="text-sm">{t.header.settings}</span>
                 </button>
 
                 <button onClick={handleLogout} className={menuItemClass}>
                   <LogOut />
-                  <span>{t.header.logout}</span>
+                  <span className="text-sm">{t.header.logout}</span>
                 </button>
               </div>
             </div>

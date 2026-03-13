@@ -1,13 +1,12 @@
 import React, { useState, useEffect, useRef } from "react"
 import { useParams, useNavigate, useSearchParams } from "react-router-dom"
-import { useGetRoomByIdQuery } from "@/features/rooms"
+import { useGetRoomByIdQuery, WaitingScreen } from "@/features/rooms"
 import {
   useGetActiveVideoSessionsQuery,
   useJoinVideoSessionMutation,
   useCreateVideoSessionMutation,
 } from "@/store/api/videoSessionsApi"
 import { useAuth } from "@/features/auth"
-import { WaitingScreen } from "@/features/waiting-room"
 import { useLanguage } from "@/shared/context/LanguageContext"
 import { Snackbar, Alert } from "@mui/material"
 
