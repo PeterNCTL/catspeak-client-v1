@@ -66,18 +66,26 @@ const NewsCard = ({ news }) => {
             className="flex h-full transition-transform duration-700 ease-out"
             style={{ transform: `translateX(-${currentMediaIndex * 100}%)` }}
           >
-            {news.media.map((item) => (
-              <div
-                key={item.postMediaId}
-                className="w-full h-full flex-shrink-0 relative"
-              >
-                <img
-                  src={`${IMAGE_BASE_URL}${item.mediaUrl}`}
-                  alt={news.title}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            ))}
+            {news.media.map((item) => {
+              const imageUrl = `${IMAGE_BASE_URL}${item.mediaUrl}`
+
+              console.log("IMAGE_BASE_URL:", IMAGE_BASE_URL)
+              console.log("mediaUrl:", item.mediaUrl)
+              console.log("FINAL IMAGE URL:", imageUrl)
+
+              return (
+                <div
+                  key={item.postMediaId}
+                  className="w-full h-full flex-shrink-0 relative"
+                >
+                  <img
+                    src={imageUrl}
+                    alt={news.title}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              )
+            })}
           </div>
         ) : (
           <div
