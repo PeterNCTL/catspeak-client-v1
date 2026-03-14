@@ -19,7 +19,7 @@ import placeholderImg from "@/shared/assets/images/news/placeholder.jpg"
 import LoadingSpinner from "@/shared/components/ui/LoadingSpinner"
 import Carousel from "@/shared/components/ui/Carousel"
 
-const IMAGE_BASE_URL = import.meta.env.VITE_IMAGE_BASE_URL || ""
+const IMAGE_BASE_URL = "https://api.catspeak.com.vn"
 
 const NewsDetailPage = () => {
   const { id, lang } = useParams()
@@ -77,7 +77,7 @@ const NewsDetailPage = () => {
           <div className="flex items-center gap-3">
             {newsItem.avatarUrl ? (
               <img
-                src={newsItem.avatarUrl}
+                src={`${IMAGE_BASE_URL}${newsItem.avatarUrl}`}
                 alt={newsItem.authorName}
                 className="w-10 h-10 rounded-full object-cover"
               />

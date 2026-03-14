@@ -5,7 +5,7 @@ import placeholderImg from "@/shared/assets/images/news/placeholder.jpg"
 import InDevelopmentModal from "@/shared/components/common/InDevelopmentModal"
 import { COLORS } from "@/shared/constants/constants"
 
-const IMAGE_BASE_URL = import.meta.env.VITE_IMAGE_BASE_URL || ""
+const IMAGE_BASE_URL = "https://api.catspeak.com.vn"
 
 const NewsCard = ({ news }) => {
   const navigate = useNavigate()
@@ -69,10 +69,6 @@ const NewsCard = ({ news }) => {
             {news.media.map((item) => {
               const imageUrl = `${IMAGE_BASE_URL}${item.mediaUrl}`
 
-              console.log("IMAGE_BASE_URL:", IMAGE_BASE_URL)
-              console.log("mediaUrl:", item.mediaUrl)
-              console.log("FINAL IMAGE URL:", imageUrl)
-
               return (
                 <div
                   key={item.postMediaId}
@@ -133,7 +129,7 @@ const NewsCard = ({ news }) => {
           <div className="flex items-center gap-2 truncate flex-1 mr-2">
             {news.avatarUrl ? (
               <img
-                src={news.avatarUrl}
+                src={`${IMAGE_BASE_URL}${news.avatarUrl}`}
                 alt={news.authorName}
                 className="w-5 h-5 rounded-full object-cover border border-gray-100"
               />
