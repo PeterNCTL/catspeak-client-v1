@@ -20,23 +20,24 @@ const VideoGrid = ({ localStream, peers, participants, currentUserId }) => {
   let gridClassName = ""
 
   if (count === 1) {
-    gridClassName = "grid-cols-1 grid-rows-1"
+    gridClassName = "grid-cols-1"
   } else if (count === 2) {
-    gridClassName = "grid-cols-1 sm:grid-cols-2 sm:grid-rows-1"
+    gridClassName = "grid-cols-1 sm:grid-cols-2"
   } else if (count <= 4) {
-    gridClassName = "grid-cols-1 sm:grid-cols-2 sm:grid-rows-2"
-  } else if (count <= 6) {
-    gridClassName = "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 sm:grid-rows-2"
+    gridClassName = "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
   } else {
-    // Fallback for larger meetings if needed
-    gridClassName = "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 auto-rows-fr"
+    gridClassName =
+      "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
   }
+
+  const scrollbarClasses =
+    "[&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#990011] [&::-webkit-scrollbar-track]:bg-gray-200 [&::-webkit-scrollbar]:w-1.5"
 
   return (
     <div
-      className={`grid h-full w-full gap-2 p-2 sm:gap-3 sm:p-3 md:gap-4 md:p-4 ${gridClassName}`}
+      className={`grid h-full w-full gap-2 overflow-y-auto p-2 place-content-start justify-center sm:gap-3 sm:p-3 md:gap-4 md:p-4 ${gridClassName} ${scrollbarClasses}`}
     >
-      {participants.map((participant) => {
+      {participants.map((participant, index) => {
         // Note: isLocal calculation is still useful for UI,
         // but stream access is now normalized in `participant.stream`
         const isLocal = participant.isLocal
@@ -46,8 +47,8 @@ const VideoGrid = ({ localStream, peers, participants, currentUserId }) => {
 
         return (
           <div
-            key={participant.id || participant.accountId}
-            className="relative h-full w-full"
+            key={participant.id || participant.accountId || `v-${index}`}
+            className="relative w-full aspect-video max-w-full"
           >
             <VideoTile
               participantId={participant.id} // Pass SDK ID for internal hook usage

@@ -1,7 +1,5 @@
 import React, { useState } from "react"
-import Send from "@mui/icons-material/Send"
-import Check from "@mui/icons-material/Check"
-import Close from "@mui/icons-material/Close"
+import { Send, Check, X } from "lucide-react"
 import PassConfirmationModal from "./PassConfirmationModal"
 import MyStoryModal from "./MyStoryModal"
 import { useLanguage } from "@/shared/context/LanguageContext"
@@ -59,7 +57,7 @@ const LiveMessages = ({
               className="text-[#990011] transition hover:scale-105"
               aria-label="Send message"
             >
-              <Send sx={{ fontSize: 20 }} />
+              <Send size={20} />
             </button>
             <span className="text-xs text-gray-500">
               {inputValue.length} / 200
@@ -109,7 +107,7 @@ const LiveMessages = ({
             className="text-[#990011] transition hover:scale-105"
             aria-label="Send message"
           >
-            <Send sx={{ fontSize: 20 }} />
+            <Send size={20} />
           </button>
           <span className="text-xs text-gray-500">
             {inputValue.length} / 200
@@ -177,7 +175,7 @@ const LiveMessages = ({
                       className="flex h-6 w-6 items-center justify-center rounded-full bg-white text-[#990011] shadow hover:scale-110"
                       title={t.catSpeak.connect}
                     >
-                      <Check sx={{ fontSize: 14 }} />
+                      <Check size={14} />
                     </button>
                     <button
                       onClick={(e) => {
@@ -187,7 +185,7 @@ const LiveMessages = ({
                       className="flex h-6 w-6 items-center justify-center rounded-full bg-white text-gray-600 shadow hover:scale-110 hover:text-red-500"
                       title={t.catSpeak.pass}
                     >
-                      <Close sx={{ fontSize: 14 }} />
+                      <X size={14} />
                     </button>
                   </div>
                 )}

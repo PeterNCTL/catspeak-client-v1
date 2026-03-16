@@ -1,6 +1,10 @@
 import React, { useState, useEffect, useRef } from "react"
 import { useParams, useNavigate, useSearchParams } from "react-router-dom"
-import { useGetRoomByIdQuery, WaitingScreen } from "@/features/rooms"
+import {
+  useGetRoomByIdQuery,
+  WaitingScreen,
+  useMediaPreview,
+} from "@/features/rooms"
 import {
   useGetActiveVideoSessionsQuery,
   useJoinVideoSessionMutation,
@@ -45,15 +49,8 @@ const RoomDetailPage = () => {
   const activeSession = activeSessions?.find((s) => s.roomId === parseInt(id))
   const currentParticipantCount = room?.currentParticipantCount ?? 0
   const maxParticipants = room?.maxParticipants ?? null
-  const isRoomFull = maxParticipants !== null && currentParticipantCount >= maxParticipants
-
-  // -- Media Preview State --
-  const [micOn, setMicOn] = useState(false)
-  const [cameraOn, setCameraOn] = useState(false)
-
-  const [videoTrack, setVideoTrack] = useState(null)
-  const [audioTrack, setAudioTrack] = useState(null)
-  const [localStream, setLocalStream] = useState(null)
+  const isRoomFull =
+    maxParticipants !== null && currentParticipantCount >= maxParticipants
 
   // -- Snackbar State --
   const [snackbar, setSnackbar] = useState({
@@ -62,115 +59,27 @@ const RoomDetailPage = () => {
     severity: "error", // 'error' | 'warning' | 'info' | 'success'
   })
 
+  // -- Media Preview Hook --
+  const { micOn, cameraOn, localStream, toggleMic, toggleCamera } =
+    useMediaPreview({
+      onError: (type) => {
+        setSnackbar({
+          open: true,
+          message:
+            type === "camera"
+              ? t.rooms.waitingScreen.cameraAccessError
+              : t.rooms.waitingScreen.micAccessError,
+          severity: "error",
+        })
+      },
+    })
+
   const handleCloseSnackbar = (event, reason) => {
     if (reason === "clickaway") {
       return
     }
     setSnackbar({ ...snackbar, open: false })
   }
-
-  // -- Media Effects (Copied/Adapted from VideoCallContext logic) --
-  useEffect(() => {
-    let active = true
-    let newTrack = null
-
-    const updateVideo = async () => {
-      if (cameraOn) {
-        try {
-          const stream = await navigator.mediaDevices.getUserMedia({
-            video: true,
-          })
-          newTrack = stream.getVideoTracks()[0]
-          if (active) setVideoTrack(newTrack)
-          else newTrack.stop()
-        } catch (err) {
-          console.error("Error getting video:", err)
-          if (
-            err.name === "NotAllowedError" ||
-            err.name === "PermissionDeniedError" ||
-            err.name === "NotReadableError"
-          ) {
-            setCameraOn(false)
-            setSnackbar({
-              open: true,
-              message: t.rooms.waitingScreen.cameraAccessError,
-              severity: "error",
-            })
-          }
-        }
-      } else {
-        setVideoTrack(null)
-      }
-    }
-
-    updateVideo()
-
-    return () => {
-      active = false
-      if (newTrack) newTrack.stop()
-      setVideoTrack((prev) => {
-        if (prev) prev.stop()
-        return null
-      })
-    }
-  }, [cameraOn])
-
-  useEffect(() => {
-    let active = true
-    let newTrack = null
-
-    const updateAudio = async () => {
-      if (micOn) {
-        try {
-          const stream = await navigator.mediaDevices.getUserMedia({
-            audio: true,
-          })
-          newTrack = stream.getAudioTracks()[0]
-          if (active) setAudioTrack(newTrack)
-          else newTrack.stop()
-        } catch (err) {
-          console.error("Error getting audio:", err)
-          if (
-            err.name === "NotAllowedError" ||
-            err.name === "PermissionDeniedError" ||
-            err.name === "NotReadableError"
-          ) {
-            setMicOn(false)
-            setSnackbar({
-              open: true,
-              message: t.rooms.waitingScreen.micAccessError,
-              severity: "error",
-            })
-          }
-        }
-      } else {
-        setAudioTrack(null)
-      }
-    }
-
-    updateAudio()
-
-    return () => {
-      active = false
-      if (newTrack) newTrack.stop()
-      setAudioTrack((prev) => {
-        if (prev) prev.stop()
-        return null
-      })
-    }
-  }, [micOn])
-
-  useEffect(() => {
-    const tracks = []
-    if (videoTrack) tracks.push(videoTrack)
-    if (audioTrack) tracks.push(audioTrack)
-
-    if (tracks.length > 0) {
-      setLocalStream(new MediaStream(tracks))
-    } else {
-      setLocalStream(null)
-    }
-  }, [videoTrack, audioTrack])
 
   // -- Handlers --
 
@@ -293,8 +202,8 @@ const RoomDetailPage = () => {
         micOn={micOn}
         cameraOn={cameraOn}
         user={user}
-        onToggleMic={() => setMicOn(!micOn)}
-        onToggleCam={() => setCameraOn(!cameraOn)}
+        onToggleMic={toggleMic}
+        onToggleCam={toggleCamera}
         onJoin={handleJoin}
         isFull={isRoomFull}
         maxParticipants={maxParticipants}

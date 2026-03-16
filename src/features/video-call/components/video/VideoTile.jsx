@@ -32,17 +32,22 @@ const VideoTile = ({
   const micOn = useSdk ? sdkMicOn : propMicOn
   const videoOn = useSdk ? webcamOn : propVideoOn
 
-  // Combine streams if using SDK
+  // Derive stable track references from the SDK stream wrappers.
+  // The SDK may return a new stream wrapper object on every render even when
+  // the underlying track has not changed. By depending on the track objects
+  // (which are stable SDK references), we only create a new MediaStream when
+  // a genuine track change occurs — preventing endless srcObject reassignments
+  // and AudioContext restarts in useAudioLevel.
+  const videoTrack = webcamStream?.track ?? null
+  const audioTrack = micStream?.track ?? null
+
   const sdkStream = useMemo(() => {
     if (!useSdk) return null
-    if (webcamStream || micStream) {
-      const tracks = []
-      if (webcamStream?.track) tracks.push(webcamStream.track)
-      if (micStream?.track) tracks.push(micStream.track)
-      return new MediaStream(tracks)
-    }
-    return null
-  }, [webcamStream, micStream, useSdk])
+    const tracks = []
+    if (videoTrack) tracks.push(videoTrack)
+    if (audioTrack) tracks.push(audioTrack)
+    return tracks.length > 0 ? new MediaStream(tracks) : null
+  }, [videoTrack, audioTrack, useSdk])
 
   const stream = useSdk ? sdkStream : propStream
 
@@ -64,7 +69,7 @@ const VideoTile = ({
 
   return (
     <div
-      className={`relative h-full w-full overflow-hidden rounded-lg bg-white border border-solid transition-[border-color,box-shadow] duration-200 ease-in-out ${
+      className={`relative h-full w-full min-h-[150px] overflow-hidden rounded-lg bg-white border border-solid transition-[border-color,box-shadow] duration-200 ease-in-out ${
         isSpeaking
           ? "border-green-600 shadow-[0_0_15px_rgba(46,125,50,0.4)]"
           : "border-[#C6C6C6] shadow-sm"

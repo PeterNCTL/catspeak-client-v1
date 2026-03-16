@@ -17,8 +17,16 @@ const getAudioContext = () => {
 const useAudioLevel = (stream) => {
   const [level, setLevel] = useState(0)
 
+  // Derive a stable key from the actual audio track IDs rather than the
+  // MediaStream object reference. This means the analyser chain is only
+  // rebuilt when a genuinely different microphone track arrives, not when
+  // the same tracks are rewrapped in a new MediaStream on a re-render.
+  const audioTrackIds = stream
+    ? stream.getAudioTracks().map((t) => t.id).join(",")
+    : ""
+
   useEffect(() => {
-    if (!stream) {
+    if (!stream || !audioTrackIds) {
       setLevel(0)
       return
     }
@@ -62,7 +70,8 @@ const useAudioLevel = (stream) => {
       if (source) source.disconnect()
       if (analyser) analyser.disconnect()
     }
-  }, [stream])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [audioTrackIds]) // depend on track identity, not the stream wrapper object
 
   return level
 }

@@ -1,8 +1,6 @@
 export const meetingConfig = {
-  meetingId: null,
-  name: null,
-  micEnabled: true,
-  webcamEnabled: true,
-  participantId: null,
+  apiKey: import.meta.env.VITE_VIDEOSDK_API_KEY,
+  micEnabled: false,
+  webcamEnabled: false,
   metaData: {},
 }

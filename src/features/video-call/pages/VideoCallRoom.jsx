@@ -25,15 +25,11 @@ const VideoCallRoomContent = () => {
     setShowChat,
     showParticipants,
     setShowParticipants,
-    hasJoined,
-    setHasJoined,
     user,
     isLoadingUser,
     currentUserId,
     session,
-    isLeaving,
     localStream,
-    peers,
     activeParticipants,
     messages,
     isConnected,
@@ -109,11 +105,10 @@ const VideoCallRoomContent = () => {
       {/* Main Content Area */}
       <div className="flex flex-1 flex-col overflow-hidden md:flex-row">
         {/* Video Area */}
-        <div className="relative flex flex-1 flex-col bg-gradient-to-br from-primary2 via-white to-primary2">
+        <div className="relative flex flex-1 flex-col min-h-0 overflow-hidden bg-gradient-to-br from-primary2 via-white to-primary2">
           <div className="absolute inset-0 bg-[url('/bg-pattern.svg')] opacity-[0.03] pointer-events-none" />
           <VideoGrid
             localStream={localStream}
-            peers={peers}
             participants={activeParticipants}
             currentUserId={currentUserId}
           />
@@ -125,7 +120,6 @@ const VideoCallRoomContent = () => {
             {showParticipants && (
               <ParticipantList
                 participants={activeParticipants}
-                peers={peers}
                 currentUserId={currentUserId}
               />
             )}
@@ -177,7 +171,6 @@ const VideoCallRoomContent = () => {
                   {showParticipants && (
                     <ParticipantList
                       participants={activeParticipants}
-                      peers={peers}
                       currentUserId={currentUserId}
                     />
                   )}
@@ -208,7 +201,6 @@ const VideoCallRoomContent = () => {
         setShowParticipants={setShowParticipants}
         unreadMessages={unreadMessages}
         localStream={localStream}
-        isLeaving={isLeaving}
         handleToggleMic={handleToggleMic}
         handleToggleCam={handleToggleCam}
         handleLeaveSession={handleLeaveSession}

@@ -1,5 +1,5 @@
 import React from "react"
-import { useSearchParams } from "react-router-dom"
+import { useSearchParams, useNavigate } from "react-router-dom"
 import { Clock, Users, Link, Bookmark } from "lucide-react"
 import { useLanguage } from "@/shared/context/LanguageContext"
 import { useAuth } from "@/features/auth"
@@ -20,6 +20,7 @@ const RoomCard = ({ room }) => {
   const { language, t } = useLanguage()
   const { isAuthenticated } = useAuth()
   const { openAuthModal } = useAuthModal()
+  const navigate = useNavigate()
 
   const translatedName = React.useMemo(() => {
     return getTranslatedRoomName(room.name, t)
@@ -38,9 +39,10 @@ const RoomCard = ({ room }) => {
       return
     }
 
-    // If authenticated, open room in new tab
+    // If authenticated, open room in the same page
     const url = `/room/${room.roomId}`
-    window.open(url, "_blank")
+    // window.open(url, "_blank")
+    navigate(url)
   }
 
   // Date and time formatting using locale-aware utilities

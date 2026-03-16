@@ -5,39 +5,35 @@ import { MeetingProvider } from "@videosdk.live/react-sdk"
 import { useGetProfileQuery } from "@/features/auth"
 import {
   useGetVideoSessionByIdQuery,
-  useLeaveVideoSessionMutation,
-  useJoinVideoSessionMutation,
   useGetVideoSdkTokenMutation,
 } from "@/store/api/videoSessionsApi"
 import { useGetRoomByIdQuery } from "@/features/rooms"
 import PillButton from "@/shared/components/ui/PillButton"
 import { meetingConfig } from "@/shared/utils/videoSdkConfig"
 import { useLanguage } from "@/shared/context/LanguageContext"
+import { getCommunityPath } from "@/shared/utils/navigation"
 
 import { VideoCallContent } from "./VideoCallContext"
 
 export const VideoCallProvider = ({ children }) => {
-  const { t, language } = useLanguage()
+  const { id } = useParams()
   const navigate = useNavigate()
   const location = useLocation()
+  const { t, language } = useLanguage()
+
   const [sdkToken, setSdkToken] = useState(null)
   const [sdkReady, setSdkReady] = useState(false)
-
   const hasJoinedRef = useRef(false)
 
-  const { id } = useParams()
-
   const { data: userData } = useGetProfileQuery()
-
-  const user = userData?.data
+  const user = userData?.data ?? null
 
   const {
     data: session,
     isLoading: isLoadingSession,
     error: sessionError,
   } = useGetVideoSessionByIdQuery(id, { skip: !id })
-  const [joinSession] = useJoinVideoSessionMutation()
-  const [leaveSession] = useLeaveVideoSessionMutation()
+
   const [getVideoSdkToken] = useGetVideoSdkTokenMutation()
 
   const { data: room, isLoading: isLoadingRoom } = useGetRoomByIdQuery(
@@ -48,7 +44,7 @@ export const VideoCallProvider = ({ children }) => {
   )
 
   const isUserParticipant = session?.participants?.some(
-    (p) => String(p.accountId) === String(user?.accountId),
+    (p) => p.accountId === user?.accountId,
   )
 
   const isRoomFull =
@@ -65,10 +61,6 @@ export const VideoCallProvider = ({ children }) => {
       try {
         hasJoinedRef.current = true
 
-        // 1️⃣ Sync backend participation (currently disabled)
-        // await joinSession(id).unwrap()
-
-        // 2️⃣ Get a FRESH VideoSDK token
         const res = await getVideoSdkToken({
           meetingId: session.videoSdkMeetingId,
           name: user.username,
@@ -118,11 +110,7 @@ export const VideoCallProvider = ({ children }) => {
             {t.rooms.videoCall.provider.retry}
           </PillButton>
           <PillButton
-            onClick={() => {
-              const communityLang =
-                localStorage.getItem("communityLanguage") || language || "vi"
-              navigate(`/${communityLang}/community`)
-            }}
+            onClick={() => navigate(getCommunityPath(language))}
             variant="secondary"
           >
             {t.rooms.waitingScreen.backToCommunity}
@@ -144,11 +132,7 @@ export const VideoCallProvider = ({ children }) => {
         </p>
         <div className="flex flex-col gap-3 min-w-[200px]">
           <PillButton
-            onClick={() => {
-              const communityLang =
-                localStorage.getItem("communityLanguage") || language || "vi"
-              navigate(`/${communityLang}/community`)
-            }}
+            onClick={() => navigate(getCommunityPath(language))}
             variant="primary"
           >
             {t.rooms.waitingScreen.backToCommunity}
@@ -165,11 +149,7 @@ export const VideoCallProvider = ({ children }) => {
           <p className="text-xl font-bold">{t.rooms.roomFullModal.title}</p>
           <p className="text-gray-400">{t.rooms.roomFullModal.message}</p>
           <PillButton
-            onClick={() => {
-              const communityLang =
-                localStorage.getItem("communityLanguage") || language || "vi"
-              navigate(`/${communityLang}/community`)
-            }}
+            onClick={() => navigate(getCommunityPath(language))}
             className="mt-2 min-w-[150px]"
           >
             {t.rooms.waitingScreen.backToCommunity}
@@ -194,7 +174,6 @@ export const VideoCallProvider = ({ children }) => {
     <MeetingProvider
       config={{
         ...meetingConfig,
-        apiKey: import.meta.env.VITE_VIDEOSDK_API_KEY,
         meetingId: session.videoSdkMeetingId,
         micEnabled: initMic,
         webcamEnabled: initCam,
@@ -208,9 +187,8 @@ export const VideoCallProvider = ({ children }) => {
       joinWithoutUserInteraction={false}
     >
       <VideoCallContent
+        user={user}
         session={session}
-        joinSession={joinSession}
-        leaveSession={leaveSession}
         sessionError={sessionError}
         sdkReady={sdkReady}
         sdkToken={sdkToken}

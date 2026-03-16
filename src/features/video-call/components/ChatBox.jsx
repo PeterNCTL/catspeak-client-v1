@@ -49,14 +49,14 @@ const ChatBox = ({
             {t.rooms.chatBox.empty}
           </p>
         ) : (
-          messages.map((msg) => {
+          messages.map((msg, index) => {
             if (msg.type === "system") {
               return (
                 <span
-                  key={msg.id}
+                  key={msg.id || `system-${index}`}
                   className="block text-xs text-center text-[#7A7574] italic my-2"
                 >
-                  {msg.content}
+                  {msg.message}
                 </span>
               )
             }
@@ -74,11 +74,14 @@ const ChatBox = ({
                 String(sender.accountId) === String(currentUser?.accountId))
             const senderName = isMe
               ? t.rooms.chatBox.you
-              : sender?.username || sender?.name || `User ${msg.senderId}`
+              : sender?.username ||
+                sender?.name ||
+                msg.senderName ||
+                `User ${msg.senderId}`
 
             return (
               <div
-                key={msg.id}
+                key={msg.id || `msg-${index}`}
                 className={`flex flex-col ${
                   isMe ? "items-end" : "items-start"
                 }`}
@@ -101,7 +104,7 @@ const ChatBox = ({
                     isMe ? { backgroundColor: colors.red[700] } : undefined
                   }
                 >
-                  <p className="text-sm m-0">{msg.content}</p>
+                  <p className="text-sm m-0">{msg.message}</p>
                 </div>
               </div>
             )

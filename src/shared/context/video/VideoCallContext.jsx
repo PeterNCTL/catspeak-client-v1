@@ -1,20 +1,28 @@
 import React, { createContext, useContext, useEffect, useState } from "react"
 import { useParams, useNavigate, useLocation } from "react-router-dom"
-import { useGetProfileQuery } from "@/features/auth"
 import { useVideoCall } from "@/features/video-call/hooks/useVideoCall"
 import toast from "react-hot-toast"
 import { useLanguage } from "@/shared/context/LanguageContext"
+import { getCommunityPath } from "@/shared/utils/navigation"
+import { useLeaveVideoSessionMutation } from "@/store/api/videoSessionsApi"
 
 const VideoCallContext = createContext()
 
-export const useVideoCallContext = () => useContext(VideoCallContext)
+export const useVideoCallContext = () => {
+  const context = useContext(VideoCallContext)
+
+  if (!context) {
+    throw new Error("useVideoCallContext must be used within VideoCallContent")
+  }
+
+  return context
+}
 
 // Internal component that has access to MeetingContext (provided by MeetingProvider upstream)
 export const VideoCallContent = ({
   children,
+  user,
   session,
-  joinSession,
-  leaveSession,
   sessionError,
   sdkReady,
   sdkToken,
@@ -22,125 +30,18 @@ export const VideoCallContent = ({
   const { id } = useParams()
   const navigate = useNavigate()
   const location = useLocation()
-  const { t } = useLanguage()
+  const { t, language } = useLanguage()
 
-  // Local UI state (Sync with passed state, default to off)
-  const [micOn, setMicOn] = useState(location.state?.micEnabled || false)
-  const [cameraOn, setCameraOn] = useState(
-    location.state?.webcamEnabled || false,
-  )
+  // UI-only state
   const [showChat, setShowChat] = useState(false)
   const [showParticipants, setShowParticipants] = useState(false)
-  const [hasJoined, setHasJoined] = useState(true) // Always join immediately when on this route
-  const [videoTrack, setVideoTrack] = useState(null)
-  const [audioTrack, setAudioTrack] = useState(null)
 
-  // -- Preview Stream Logic --
-
-  // Video Track Management
-  useEffect(() => {
-    if (hasJoined) {
-      setVideoTrack((prev) => {
-        if (prev) prev.stop()
-        return null
-      })
-      return
-    }
-
-    let active = true
-    let newTrack = null
-
-    const updateVideo = async () => {
-      if (cameraOn) {
-        try {
-          const stream = await navigator.mediaDevices.getUserMedia({
-            video: true,
-          })
-          newTrack = stream.getVideoTracks()[0]
-          if (active) setVideoTrack(newTrack)
-          else newTrack.stop()
-        } catch (err) {
-          console.error("Error getting video:", err)
-        }
-      } else {
-        setVideoTrack(null)
-      }
-    }
-
-    updateVideo()
-
-    return () => {
-      active = false
-      if (newTrack) newTrack.stop()
-      setVideoTrack((prev) => {
-        if (prev) prev.stop()
-        return null
-      })
-    }
-  }, [hasJoined, cameraOn])
-
-  // Audio Track Management (Similar logic)
-  useEffect(() => {
-    if (hasJoined) {
-      setAudioTrack((prev) => {
-        if (prev) prev.stop()
-        return null
-      })
-      return
-    }
-
-    let active = true
-    let newTrack = null
-
-    const updateAudio = async () => {
-      if (micOn) {
-        try {
-          const stream = await navigator.mediaDevices.getUserMedia({
-            audio: true,
-          })
-          newTrack = stream.getAudioTracks()[0]
-          if (active) setAudioTrack(newTrack)
-          else newTrack.stop()
-        } catch (err) {
-          console.error("Error getting audio:", err)
-        }
-      } else {
-        setAudioTrack(null)
-      }
-    }
-
-    updateAudio()
-
-    return () => {
-      active = false
-      if (newTrack) newTrack.stop()
-      setAudioTrack((prev) => {
-        if (prev) prev.stop()
-        return null
-      })
-    }
-  }, [hasJoined, micOn])
-
-  // Combine tracks into stream
-  const [previewStream, setPreviewStream] = useState(null)
-  useEffect(() => {
-    const tracks = []
-    if (videoTrack) tracks.push(videoTrack)
-    if (audioTrack) tracks.push(audioTrack)
-
-    if (tracks.length > 0) {
-      setPreviewStream(new MediaStream(tracks))
-    } else {
-      setPreviewStream(null)
-    }
-  }, [videoTrack, audioTrack])
-
-  const { data: userData, isLoading: isLoadingUser } = useGetProfileQuery()
-  const user = userData?.data
   const currentUserId = user?.accountId
 
   // Gate join() until provider is mounted, meetingId exists, token exists, and sdkReady=true
   const [providerMounted, setProviderMounted] = useState(false)
+  const [leaveSession] = useLeaveVideoSessionMutation()
+
   useEffect(() => {
     setProviderMounted(true)
   }, [])
@@ -151,6 +52,8 @@ export const VideoCallContent = ({
   const {
     participants,
     messages,
+    micOn,
+    cameraOn,
     toggleAudio,
     toggleVideo,
     sendMessage,
@@ -163,20 +66,20 @@ export const VideoCallContent = ({
     providerMounted,
   })
 
-  // Sync local UI toggles with hook actions
   const handleToggleMic = async () => {
-    const newState = !micOn
     try {
-      await toggleAudio(newState)
-      setMicOn(newState)
+      await toggleAudio()
     } catch (err) {
       console.error("Failed to toggle mic:", err)
       if (
         err.name === "NotAllowedError" ||
         err.name === "PermissionDeniedError" ||
-        err.name === "NotReadableError"
+        err.name === "NotFoundError" ||
+        err.name === "DevicesNotFoundError" ||
+        err.name === "NotReadableError" ||
+        err.name === "TrackStartError"
       ) {
-        toast.error(t.rooms.videoCall.error.micPermission)
+        toast.error(t.rooms.waitingScreen.micAccessError)
       } else {
         toast.error(t.rooms.videoCall.error.toggleMic)
       }
@@ -184,18 +87,19 @@ export const VideoCallContent = ({
   }
 
   const handleToggleCam = async () => {
-    const newState = !cameraOn
     try {
-      await toggleVideo(newState)
-      setCameraOn(newState)
+      await toggleVideo()
     } catch (err) {
       console.error("Failed to toggle camera:", err)
       if (
         err.name === "NotAllowedError" ||
         err.name === "PermissionDeniedError" ||
-        err.name === "NotReadableError"
+        err.name === "NotFoundError" ||
+        err.name === "DevicesNotFoundError" ||
+        err.name === "NotReadableError" ||
+        err.name === "TrackStartError"
       ) {
-        toast.error(t.rooms.videoCall.error.camPermission)
+        toast.error(t.rooms.waitingScreen.cameraAccessError)
       } else {
         toast.error(t.rooms.videoCall.error.toggleCam)
       }
@@ -218,8 +122,7 @@ export const VideoCallContent = ({
     // 2. Leave VideoSDK meeting
     leaveMeeting()
 
-    const communityLanguage = localStorage.getItem("communityLanguage") || "en"
-    navigate(`/${communityLanguage}/community`)
+    navigate(getCommunityPath(language))
   }
 
   const handleCopyLink = () => {
@@ -233,17 +136,12 @@ export const VideoCallContent = ({
     navigate,
     location,
     micOn,
-    setMicOn,
     cameraOn,
-    setCameraOn,
     showChat,
     setShowChat,
     showParticipants,
     setShowParticipants,
-    hasJoined,
-    setHasJoined,
     user,
-    isLoadingUser,
     currentUserId,
     session,
     sessionError,
@@ -252,7 +150,7 @@ export const VideoCallContent = ({
     activeParticipants: participants,
     messages,
     isConnected,
-    localStream: hasJoined ? localMediaStream : previewStream, // preview or live MediaStream
+    localStream: localMediaStream,
 
     // Actions
     handleToggleMic,
@@ -260,10 +158,6 @@ export const VideoCallContent = ({
     handleSendMessage,
     handleLeaveSession,
     handleCopyLink,
-
-    // Legacy support if needed
-    connection: null,
-    peers: {},
   }
 
   return (

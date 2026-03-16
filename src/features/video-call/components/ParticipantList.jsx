@@ -1,4 +1,5 @@
 import { Mic, MicOff, Video, VideoOff } from "lucide-react"
+import { useParticipant } from "@videosdk.live/react-sdk"
 import useAudioLevel from "../hooks/useAudioLevel"
 import { useVideoCallContext } from "@/shared/context/video/VideoCallContext"
 
@@ -9,10 +10,16 @@ const ParticipantItem = ({
   localMicOn,
   localCameraOn,
 }) => {
+  // For remote participants, subscribe via useParticipant so we get reactive
+  // mic/webcam events from the SDK. For local we rely on the already-reactive
+  // localMicOn/localCameraOn from context (driven by useParticipant there).
+  const { micOn: remoteMicOn, webcamOn: remoteWebcamOn } = useParticipant(
+    !isMe ? participant.id : ""
+  )
   const audioLevel = useAudioLevel(stream)
 
-  const isMicOn = isMe ? localMicOn : participant.isMicOn !== false
-  const isCameraOn = isMe ? localCameraOn : participant.isCameraOn !== false
+  const isMicOn = isMe ? localMicOn : (remoteMicOn ?? participant.isMicOn ?? false)
+  const isCameraOn = isMe ? localCameraOn : (remoteWebcamOn ?? participant.isCameraOn ?? false)
   const username = participant.username || "Unknown"
   const initial = username.charAt(0).toUpperCase()
 
@@ -77,7 +84,7 @@ const ParticipantList = ({ participants, currentUserId }) => {
 
       <div className="flex-1 overflow-y-auto p-2">
         <ul className="flex flex-col">
-          {participants?.map((p) => {
+          {participants?.map((p, index) => {
             const currentId = String(currentUserId)
             const isMe =
               String(p.accountId ?? "") === currentId ||
@@ -85,7 +92,7 @@ const ParticipantList = ({ participants, currentUserId }) => {
               String(p.id ?? "") === currentId
 
             return (
-              <li key={p.accountId ?? p.id ?? p.userId}>
+              <li key={p.accountId ?? p.id ?? p.userId ?? `p-${index}`}>
                 <ParticipantItem
                   participant={p}
                   isMe={isMe}

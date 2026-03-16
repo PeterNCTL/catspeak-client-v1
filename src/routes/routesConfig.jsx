@@ -41,12 +41,6 @@ import { useAuth } from "@/features/auth"
 import { AuthGuard } from "@/shared/components"
 
 const RootRoute = () => {
-  const { isAuthenticated, user } = useAuth()
-
-  if (isAuthenticated && user?.roleName === "Admin") {
-    return <Navigate to="/admin" replace />
-  }
-
   return <LandingPage />
 }
 
