@@ -18,6 +18,7 @@ export default {
   specialNames: {
     doYouLikeToGoOut: "Bạn thích đi chơi không?",
     hskExamPrep: "Phòng luyện thi HSK",
+    doYouHavePets: "Bạn có nuôi thú cưng không?",
   },
   heroCarousel: {
     comingSoonTitle: "Sắp ra mắt",

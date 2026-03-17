@@ -16,5 +16,9 @@ export const getTranslatedRoomName = (name, t) => {
     return t.rooms.specialNames.hskExamPrep || name;
   }
 
+  if (name === "你有养宠物吗?" || name === "你有养宠物吗？") {
+    return t.rooms.specialNames.doYouHavePets || name;
+  }
+
   return name;
 };

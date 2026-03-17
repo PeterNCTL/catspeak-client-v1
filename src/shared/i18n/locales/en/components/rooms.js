@@ -17,6 +17,7 @@ export default {
   specialNames: {
     doYouLikeToGoOut: "Do you like to go out?",
     hskExamPrep: "HSK Exam Prep Room",
+    doYouHavePets: "Do you have pets?",
   },
   heroCarousel: {
     comingSoonTitle: "Coming Soon",
