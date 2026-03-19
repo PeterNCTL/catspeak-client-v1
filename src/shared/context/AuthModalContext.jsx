@@ -1,5 +1,13 @@
 import { createContext, useContext } from 'react'
 
+/**
+ * AuthModalContext
+ *
+ * Value shape:
+ *   openAuthModal(mode?: string, redirectPath?: string) — opens the modal
+ *   closeAuthModal()                                    — closes the modal
+ *   redirectAfterLogin: string | null                   — path to navigate after successful login
+ */
 const AuthModalContext = createContext(null)
 
 export const useAuthModal = () => {

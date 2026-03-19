@@ -140,9 +140,21 @@ const routesConfig = [
     ],
   },
   {
-    path: "/room/:id",
-    element: <RoomDetailPage />,
+    // Wrap with MainLayout so AuthModalContext is available for AuthGuard's login-and-redirect flow
+    path: "/room",
+    element: <MainLayout showHeader={false} showFooter={false} />,
+    children: [
+      {
+        path: ":id",
+        element: (
+          <AuthGuard>
+            <RoomDetailPage />
+          </AuthGuard>
+        ),
+      },
+    ],
   },
+
   {
     path: "/policy",
     element: <PolicyPage />,

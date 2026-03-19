@@ -155,7 +155,8 @@ export default {
     isHere: "đang ở đây",
     loading: "Đang tải...",
     roomNotFound: "Không tìm thấy phòng",
-    roomNotFoundSubtext: "Phòng bạn đang tìm không tồn tại hoặc đã bị đóng. Hãy khám phá những phòng khác đang diễn ra sôi nổi nhé!",
+    roomNotFoundSubtext:
+      "Phòng bạn đang tìm không tồn tại hoặc đã bị đóng. Hãy khám phá những phòng khác đang diễn ra sôi nổi nhé!",
     roomFull: "Phòng đã đủ người (tối đa 5).",
     joinError: "Có lỗi xảy ra khi tham gia phòng.",
     createSessionError: "Không thể tạo phiên. Vui lòng thử lại.",
@@ -165,10 +166,14 @@ export default {
       "Không thể truy cập micro. Kiểm tra quyền hoặc thiết bị đang được sử dụng.",
     micNotFound: "Không tìm thấy phần cứng micro.",
     cameraNotFound: "Không tìm thấy phần cứng camera.",
-    micInUse: "Micro đang được sử dụng bởi ứng dụng khác hoặc không thể khởi động.",
-    cameraInUse: "Camera đang được sử dụng bởi ứng dụng khác hoặc không thể khởi động.",
-    micPermissionDenied: "Quyền truy cập micro bị từ chối. Vui lòng cho phép trong cài đặt.",
-    cameraPermissionDenied: "Quyền truy cập camera bị từ chối. Vui lòng cho phép trong cài đặt.",
+    micInUse:
+      "Micro đang được sử dụng bởi ứng dụng khác hoặc không thể khởi động.",
+    cameraInUse:
+      "Camera đang được sử dụng bởi ứng dụng khác hoặc không thể khởi động.",
+    micPermissionDenied:
+      "Quyền truy cập micro bị từ chối. Vui lòng cho phép trong cài đặt.",
+    cameraPermissionDenied:
+      "Quyền truy cập camera bị từ chối. Vui lòng cho phép trong cài đặt.",
   },
   videoCall: {
     provider: {
@@ -193,5 +198,6 @@ export default {
     subMessage: "Vui lòng chọn phòng khác hoặc thử lại sau.",
     close: "Đóng",
   },
+  participants: "người",
   noLimit: "Không giới hạn",
 }

@@ -15,10 +15,11 @@ import { FluentAnimation } from "@/shared/animations"
 
 const { Content } = Layout
 
-const MainLayout = ({ showFooter = true }) => {
+const MainLayout = ({ showHeader = true, showFooter = true }) => {
   const [authModal, setAuthModal] = useState({
     isOpen: false,
     mode: "login",
+    redirectAfterLogin: null,
   })
 
   const location = useLocation()
@@ -32,6 +33,7 @@ const MainLayout = ({ showFooter = true }) => {
       setAuthModal({
         isOpen: true,
         mode: "reset-password",
+        redirectAfterLogin: null,
       })
     }
     // Alternatively, check for "mode" param in query string if backend link is like /?mode=reset
@@ -39,20 +41,23 @@ const MainLayout = ({ showFooter = true }) => {
       setAuthModal({
         isOpen: true,
         mode: "reset-password",
+        redirectAfterLogin: null,
       })
     }
   }, [location.pathname, searchParams])
 
-  const openAuthModal = (mode = "login") =>
+  const openAuthModal = (mode = "login", redirectPath = null) =>
     setAuthModal({
       isOpen: true,
       mode,
+      redirectAfterLogin: redirectPath,
     })
 
   const closeAuthModal = () =>
     setAuthModal((prev) => ({
       ...prev,
       isOpen: false,
+      redirectAfterLogin: null,
     }))
 
   const {
@@ -60,10 +65,10 @@ const MainLayout = ({ showFooter = true }) => {
   } = theme.useToken()
 
   return (
-    <AuthModalContext.Provider value={{ openAuthModal, closeAuthModal }}>
+    <AuthModalContext.Provider value={{ openAuthModal, closeAuthModal, redirectAfterLogin: authModal.redirectAfterLogin }}>
       <Layout className="flex justify-center bg-white">
         {/* Header full width */}
-        <HeaderBar onGetStarted={() => openAuthModal("login")} />
+        {showHeader && <HeaderBar onGetStarted={() => openAuthModal("login")} />}
 
         <Content className="w-full flex justify-center">
           <Outlet />

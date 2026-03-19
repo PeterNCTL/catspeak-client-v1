@@ -17,10 +17,11 @@ const RoomsTabs = ({ tab, setTab }) => {
   ]
 
   return (
-    <div className="flex gap-2 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+    <div className="flex gap-8 overflow-x-auto border-b border-gray-200 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
       {tabs.map((tItem) => {
         const isSelected = tab === tItem.value
-        const isDisabled = tItem.value !== "communicate"
+        // const isDisabled = tItem.value !== "communicate"
+        const isDisabled = false
         const Icon = tItem.icon
         return (
           <button
@@ -28,18 +29,23 @@ const RoomsTabs = ({ tab, setTab }) => {
             onClick={() => !isDisabled && setTab(tItem.value)}
             disabled={isDisabled}
             className={`
-              flex text-sm items-center gap-3 px-4 min-h-[48px] whitespace-nowrap rounded-lg transition-colors
+              relative flex items-center gap-2 py-4 px-1 text-sm font-medium transition-all duration-200 whitespace-nowrap
               ${
                 isSelected
-                  ? "bg-[#F2F2F2] text-[#990011]"
+                  ? "text-[#990011]"
                   : isDisabled
-                    ? "text-gray-400 opacity-60 cursor-not-allowed"
-                    : "hover:bg-[#E5E5E5] hover:text-[#990011] text-gray-700"
+                    ? "text-gray-400 cursor-not-allowed"
+                    : "text-gray-500 hover:text-black"
               }
             `}
           >
-            <Icon />
+            <Icon size={18} />
             <span>{tItem.label}</span>
+
+            {/* Underline Indicator */}
+            {isSelected && (
+              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#990011] rounded-t-full" />
+            )}
           </button>
         )
       })}

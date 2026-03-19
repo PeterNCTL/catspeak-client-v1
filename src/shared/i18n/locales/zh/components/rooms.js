@@ -152,7 +152,8 @@ export default {
     isHere: "在这里",
     loading: "加载中...",
     roomNotFound: "未找到房间",
-    roomNotFoundSubtext: "您查找的房间不存在或已关闭。不如去看看社区里其他正在进行的房间吧？",
+    roomNotFoundSubtext:
+      "您查找的房间不存在或已关闭。不如去看看社区里其他正在进行的房间吧？",
     roomFull: "房间已满（最多 5 人）。",
     joinError: "加入房间时出错。",
     createSessionError: "无法创建会话。请重试。",
@@ -188,5 +189,6 @@ export default {
     subMessage: "请选择其他房间或稍后再试。",
     close: "关闭",
   },
+  participants: "人",
   noLimit: "无限制",
 }

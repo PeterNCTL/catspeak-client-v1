@@ -8,7 +8,7 @@ import {
 } from "@/store/api/videoSessionsApi"
 import { useLanguage } from "@/shared/context/LanguageContext"
 
-export const useJoinVideoSession = ({ roomId }) => {
+export const useJoinVideoSession = ({ roomId, isAuthenticated = true }) => {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const { t } = useLanguage()
@@ -17,7 +17,9 @@ export const useJoinVideoSession = ({ roomId }) => {
     data: activeSessions,
     isLoading: isLoadingSessions,
     refetch: refetchActiveSessions,
-  } = useGetActiveVideoSessionsQuery()
+  } = useGetActiveVideoSessionsQuery(undefined, {
+    skip: !isAuthenticated || !roomId,
+  })
 
   const [joinVideoSession, { isLoading: isJoining }] =
     useJoinVideoSessionMutation()

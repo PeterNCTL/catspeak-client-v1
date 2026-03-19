@@ -111,47 +111,42 @@ const RoomCard = ({ room }) => {
         </div>
 
         {/* Content Section */}
-        <div className="flex flex-1 flex-col p-5">
+        <div className="flex flex-1 flex-col p-3">
           {/* Title */}
-          <h3 className="mb-2 text-lg font-bold text-gray-900 line-clamp-1">
-            {translatedName}
-          </h3>
+          <h3 className="text-base font-bold line-clamp-1">{translatedName}</h3>
           {/* Room Link/Code */}
-          <div className="mb-4 flex items-center gap-2">
+          <div className="mb-2 flex items-center gap-2">
             <Link className="h-5 w-5 text-yellow-500" />
-            <span className="h-4 w-[1px] bg-gray-300"></span>
             <span className="text-sm font-medium text-yellow-500">
               {roomCode}
             </span>
           </div>
 
           {/* Divider */}
-          <div className="mb-4 h-px w-full bg-gray-200" />
+          <div className="mb-3 h-px w-full bg-gray-200" />
 
           {/* Footer Info */}
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 md:gap-0">
             {/* Participants */}
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-sm border border-gray-200">
-                <Users className="h-5 w-5 text-[#990011]" />
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-sm border border-gray-200">
+                <Users size={16} className="text-[#990011]" />
               </div>
-              <span className="text-base font-bold whitespace-nowrap">
-                {room.currentParticipantCount || 0}
+              <span className="text-sm whitespace-nowrap">
                 {room.maxParticipants === null
-                  ? ` / ${t.rooms.noLimit}`
-                  : `/${room.maxParticipants}`}
+                  ? `${room.currentParticipantCount || 0} ${t.rooms.participants}`
+                  : `${room.currentParticipantCount || 0}/${room.maxParticipants} ${t.rooms.participants}`}
               </span>
             </div>
 
             {/* Date/Time */}
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-sm border border-gray-200">
-                <Clock className="h-5 w-5 text-[#990011]" />
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-sm border border-gray-200">
+                <Clock size={16} className="text-[#990011]" />
               </div>
-              <div className="flex flex-col text-left">
-                <span className="text-xs text-gray-500 whitespace-nowrap">
-                  {timeStr}
-                </span>
+              <div className="flex items-center gap-2 text-sm">
+                {/* <span>{dateStr}</span> */}
+                <span>{timeStr}</span>
               </div>
             </div>
           </div>

@@ -179,7 +179,8 @@ export default {
     isHere: "is here",
     loading: "Loading...",
     roomNotFound: "Room not found",
-    roomNotFoundSubtext: "The room you're looking for doesn't exist or has been closed. Why not explore other active rooms in the community?",
+    roomNotFoundSubtext:
+      "The room you're looking for doesn't exist or has been closed. Why not explore other active rooms in the community?",
     roomFull: "This room is full (max 5 people).",
     joinError: "Something went wrong joining the room.",
     createSessionError: "Failed to create session. Please try again.",
@@ -191,8 +192,10 @@ export default {
     cameraNotFound: "Camera hardware not found.",
     micInUse: "Microphone is in use by another app or could not be started.",
     cameraInUse: "Camera is in use by another app or could not be started.",
-    micPermissionDenied: "Microphone access denied. Please allow it in settings.",
-    cameraPermissionDenied: "Camera access denied. Please allow it in settings.",
+    micPermissionDenied:
+      "Microphone access denied. Please allow it in settings.",
+    cameraPermissionDenied:
+      "Camera access denied. Please allow it in settings.",
   },
   videoCall: {
     provider: {
@@ -217,5 +220,6 @@ export default {
     subMessage: "Please choose another room or try again later.",
     close: "Close",
   },
+  participants: "participants",
   noLimit: "No limit",
 }

@@ -43,6 +43,9 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
       state.refreshToken || localStorage.getItem("refreshToken")
 
     if (!refreshToken || !token) {
+      api.dispatch(logout())
+      localStorage.removeItem("token")
+      localStorage.removeItem("refreshToken")
       return result
     }
 
@@ -59,6 +62,14 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
             extraOptions,
           )
 
+          if (refreshResult.error?.status === 401) {
+            // Refresh token invalid → logout
+            api.dispatch(logout())
+            localStorage.removeItem("token")
+            localStorage.removeItem("refreshToken")
+            return false
+          }
+
           if (refreshResult.data) {
             const { user } = api.getState().auth
             api.dispatch(
@@ -71,6 +82,9 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
           }
           return false
         } catch (err) {
+          api.dispatch(logout())
+          localStorage.removeItem("token")
+          localStorage.removeItem("refreshToken")
           return false
         } finally {
           refreshPromise = null

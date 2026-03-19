@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { useNavigate } from "react-router-dom"
 import { FiX } from "react-icons/fi"
 import {
   Box,
@@ -22,12 +23,17 @@ import { useLanguage } from "@/shared/context/LanguageContext.jsx"
 import AuthButton from "../../ui/AuthButton"
 import { useLoginMutation } from "../../../api/authApi"
 import { colors } from "@/shared/utils/colors"
+import { useAuthModal } from "@/shared/context/AuthModalContext"
 
 const LoginPopup = ({ open, onClose, onSwitchMode }) => {
   const { t } = useLanguage()
   const authText = t.auth
   const theme = useTheme()
   const fullScreen = useMediaQuery(theme.breakpoints.down("sm"))
+  const navigate = useNavigate()
+
+  // May be null if the modal wasn't opened from AuthGuard redirect
+  const { redirectAfterLogin } = useAuthModal()
 
   const [apiError, setApiError] = useState(null)
   const [email, setEmail] = useState("")
@@ -78,6 +84,11 @@ const LoginPopup = ({ open, onClose, onSwitchMode }) => {
         password,
       }).unwrap()
       onClose()
+      // If the user was redirected here from a protected page (e.g. shared /room/:id link),
+      // take them back there after a successful login.
+      if (redirectAfterLogin) {
+        navigate(redirectAfterLogin, { replace: true })
+      }
     } catch (err) {
       console.error("Login failed:", err)
       setApiError(

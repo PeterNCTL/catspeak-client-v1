@@ -28,7 +28,7 @@ const RoomDetailPage = () => {
     data: room,
     isLoading: isLoadingRoom,
     error,
-  } = useGetRoomByIdQuery(id)
+  } = useGetRoomByIdQuery(id, { skip: !id || !user })
 
   const {
     handleJoin: hookJoin,
@@ -36,6 +36,7 @@ const RoomDetailPage = () => {
     activeSession,
   } = useJoinVideoSession({
     roomId: id,
+    isAuthenticated: !!user,
   })
 
   const currentParticipantCount = room?.currentParticipantCount ?? 0

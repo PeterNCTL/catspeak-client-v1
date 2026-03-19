@@ -142,17 +142,21 @@ const RoomsPage = () => {
             {/* Content area */}
             <div className="flex flex-col min-w-0">
               <div className="w-full">
-                <div className="flex items-start justify-between gap-2 overflow-hidden">
-                  <div className="flex-1 min-w-0">
-                    <RoomsTabs tab={tab} setTab={setTab} />
-                  </div>
+                <div className="w-full">
+                  <RoomsTabs tab={tab} setTab={setTab} />
+                </div>
 
-                  {/* Mobile Filter Button */}
+                {/* Mobile Filter Button - Moved below tabs */}
+                <div className="mt-4 lg:hidden">
                   <button
                     onClick={() => setMobileFiltersOpen(true)}
-                    className="lg:hidden flex items-center gap-3 rounded-full bg-white h-12 px-4 text-base font-medium hover:bg-[#E5E5E5]"
+                    className={`flex items-center justify-center gap-2 rounded-lg h-9 px-4 text-sm font-medium shadow-sm transition-all duration-200 ${
+                      mobileFiltersOpen
+                        ? "bg-[#990011] text-white border-[#990011]"
+                        : "bg-[#F2F2F2] text-gray-700 hover:bg-gray-50"
+                    }`}
                   >
-                    <Filter />
+                    <Filter size={20} />
                     <span>{t.rooms?.filters?.title || "Filters"}</span>
                   </button>
                 </div>

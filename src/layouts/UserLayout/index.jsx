@@ -12,18 +12,21 @@ const UserLayout = ({ showFooter = true }) => {
   const [authModal, setAuthModal] = useState({
     isOpen: false,
     mode: "login",
+    redirectAfterLogin: null,
   })
 
-  const openAuthModal = (mode = "login") =>
+  const openAuthModal = (mode = "login", redirectPath = null) =>
     setAuthModal({
       isOpen: true,
       mode,
+      redirectAfterLogin: redirectPath,
     })
 
   const closeAuthModal = () =>
     setAuthModal((prev) => ({
       ...prev,
       isOpen: false,
+      redirectAfterLogin: null,
     }))
 
   const {
@@ -31,7 +34,7 @@ const UserLayout = ({ showFooter = true }) => {
   } = theme.useToken()
 
   return (
-    <AuthModalContext.Provider value={{ openAuthModal, closeAuthModal }}>
+    <AuthModalContext.Provider value={{ openAuthModal, closeAuthModal, redirectAfterLogin: authModal.redirectAfterLogin }}>
       <Layout className="flex justify-center bg-white">
         {/* Header full width */}
         <HeaderBar onGetStarted={() => openAuthModal("login")} />
