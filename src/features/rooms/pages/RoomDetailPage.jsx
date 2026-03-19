@@ -4,15 +4,10 @@ import {
   useGetRoomByIdQuery,
   WaitingScreen,
   useMediaPreview,
+  useJoinVideoSession,
 } from "@/features/rooms"
-import {
-  useGetActiveVideoSessionsQuery,
-  useJoinVideoSessionMutation,
-  useCreateVideoSessionMutation,
-} from "@/store/api/videoSessionsApi"
 import { useAuth } from "@/features/auth"
 import { useLanguage } from "@/shared/context/LanguageContext"
-import { Snackbar, Alert } from "@mui/material"
 
 const RoomDetailPage = () => {
   const { id } = useParams()
@@ -36,134 +31,38 @@ const RoomDetailPage = () => {
   } = useGetRoomByIdQuery(id)
 
   const {
-    data: activeSessions,
-    isLoading: isLoadingSessions,
-    refetch: refetchActiveSessions,
-  } = useGetActiveVideoSessionsQuery()
+    handleJoin: hookJoin,
+    isLoadingSessions,
+    activeSession,
+  } = useJoinVideoSession({
+    roomId: id,
+  })
 
-  const [joinVideoSession, { isLoading: isJoining }] =
-    useJoinVideoSessionMutation()
-  const [createVideoSession, { isLoading: isCreating }] =
-    useCreateVideoSessionMutation()
-
-  const activeSession = activeSessions?.find((s) => s.roomId === parseInt(id))
   const currentParticipantCount = room?.currentParticipantCount ?? 0
   const maxParticipants = room?.maxParticipants ?? null
   const isRoomFull =
     maxParticipants !== null && currentParticipantCount >= maxParticipants
 
-  // -- Snackbar State --
-  const [snackbar, setSnackbar] = useState({
-    open: false,
-    message: "",
-    severity: "error", // 'error' | 'warning' | 'info' | 'success'
-  })
-
   // -- Media Preview Hook --
-  const { micOn, cameraOn, localStream, toggleMic, toggleCamera } =
-    useMediaPreview({
-      onError: (type) => {
-        setSnackbar({
-          open: true,
-          message:
-            type === "camera"
-              ? t.rooms.waitingScreen.cameraAccessError
-              : t.rooms.waitingScreen.micAccessError,
-          severity: "error",
-        })
-      },
-    })
+  const {
+    micOn,
+    cameraOn,
+    localStream,
+    toggleMic: hookToggleMic,
+    toggleCamera: hookToggleCamera,
+  } = useMediaPreview()
 
-  const handleCloseSnackbar = (event, reason) => {
-    if (reason === "clickaway") {
-      return
-    }
-    setSnackbar({ ...snackbar, open: false })
+  const toggleMic = async () => {
+    await hookToggleMic()
+  }
+
+  const toggleCamera = async () => {
+    await hookToggleCamera()
   }
 
   // -- Handlers --
-
   const handleJoin = async () => {
-    try {
-      if (isRoomFull) {
-        setSnackbar({
-          open: true,
-          message: t.rooms.waitingScreen.roomFull,
-          severity: "warning",
-        })
-        return
-      }
-
-      let sessionId
-
-      if (activeSession) {
-        try {
-          // Session exists -> Join it explicitly
-          await joinVideoSession(activeSession.sessionId).unwrap()
-          sessionId = activeSession.sessionId
-        } catch (err) {
-          console.warn(
-            "Failed to join active session, falling back to create:",
-            err,
-          )
-        }
-      }
-
-      if (!sessionId) {
-        // No session or failed to join -> create new session
-        try {
-          const newSession = await createVideoSession({
-            roomId: parseInt(id),
-          }).unwrap()
-          sessionId = newSession.sessionId
-        } catch (err) {
-          console.warn(
-            "Create session failed, checking for active session...",
-            err,
-          )
-          const { data: refreshedSessions } = await refetchActiveSessions()
-          const retrySession = refreshedSessions?.find(
-            (s) => s.roomId === parseInt(id),
-          )
-
-          if (retrySession) {
-            sessionId = retrySession.sessionId
-          } else {
-            console.error("Failed to create or join session:", err)
-            setSnackbar({
-              open: true,
-              message: t.rooms.waitingScreen.createSessionError,
-              severity: "error",
-            })
-            return
-          }
-        }
-      }
-
-      // Preserve language param
-      const search = searchParams.toString()
-      const searchStr = search ? `?${search}` : ""
-
-      navigate(
-        {
-          pathname: `/meet/${sessionId}`,
-          search: searchStr,
-        },
-        {
-          state: {
-            micEnabled: micOn,
-            webcamEnabled: cameraOn,
-          },
-        },
-      )
-    } catch (err) {
-      console.error("Failed to process join:", err)
-      setSnackbar({
-        open: true,
-        message: t.rooms.waitingScreen.joinError,
-        severity: "error",
-      })
-    }
+    await hookJoin({ isRoomFull, micOn, cameraOn })
   }
 
   // -- Render --
@@ -198,30 +97,16 @@ const RoomDetailPage = () => {
       <WaitingScreen
         session={displaySession}
         participantCount={currentParticipantCount}
-        localStream={localStream}
+        user={user}
         micOn={micOn}
         cameraOn={cameraOn}
-        user={user}
+        localStream={localStream}
         onToggleMic={toggleMic}
         onToggleCam={toggleCamera}
         onJoin={handleJoin}
         isFull={isRoomFull}
         maxParticipants={maxParticipants}
       />
-      <Snackbar
-        open={snackbar.open}
-        autoHideDuration={6000}
-        onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
-      >
-        <Alert
-          onClose={handleCloseSnackbar}
-          severity={snackbar.severity}
-          sx={{ width: "100%" }}
-        >
-          {snackbar.message}
-        </Alert>
-      </Snackbar>
     </>
   )
 }

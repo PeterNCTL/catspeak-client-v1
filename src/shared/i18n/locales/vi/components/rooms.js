@@ -163,6 +163,12 @@ export default {
       "Không thể truy cập camera. Kiểm tra quyền hoặc thiết bị đang được sử dụng.",
     micAccessError:
       "Không thể truy cập micro. Kiểm tra quyền hoặc thiết bị đang được sử dụng.",
+    micNotFound: "Không tìm thấy phần cứng micro.",
+    cameraNotFound: "Không tìm thấy phần cứng camera.",
+    micInUse: "Micro đang được sử dụng bởi ứng dụng khác hoặc không thể khởi động.",
+    cameraInUse: "Camera đang được sử dụng bởi ứng dụng khác hoặc không thể khởi động.",
+    micPermissionDenied: "Quyền truy cập micro bị từ chối. Vui lòng cho phép trong cài đặt.",
+    cameraPermissionDenied: "Quyền truy cập camera bị từ chối. Vui lòng cho phép trong cài đặt.",
   },
   videoCall: {
     provider: {

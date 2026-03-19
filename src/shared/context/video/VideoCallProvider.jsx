@@ -166,8 +166,8 @@ export const VideoCallProvider = ({ children }) => {
   }
 
   // Read initial state from navigation (default to false if not set)
-  const initMic = location.state?.micEnabled || false
-  const initCam = location.state?.webcamEnabled || false
+  const initMic = location.state?.micEnabled ?? false
+  const initCam = location.state?.webcamEnabled ?? false
 
   // Render Provider
   return (

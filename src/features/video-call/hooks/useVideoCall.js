@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from "react"
-import { useMeeting, usePubSub, useParticipant } from "@videosdk.live/react-sdk"
+import { useMeeting, useParticipant } from "@videosdk.live/react-sdk"
 
 export const useVideoCall = (
   shouldJoin = false,
@@ -25,15 +25,8 @@ export const useVideoCall = (
     },
   })
 
-  // -- Chat (PubSub) --
-  const { publish, messages: pubSubMessages } = usePubSub("CHAT", {
-    onMessageReceived: (message) => {
-      // console.log("New Message", message)
-    },
-    onOldMessagesReceived: (messages) => {
-      // console.log("Old Messages", messages)
-    },
-  })
+
+  // values: null | "BLOCKED" | "NOT_FOUND" | "IN_USE" | "UNKNOWN"
 
   // -- Lifecycle --
   const hasJoinedRef = useRef(false)
@@ -127,38 +120,21 @@ export const useVideoCall = (
     localParticipant?.micOn,
   ])
 
-  // -- Local Media Stream for ControlBar mic-level indicator --
-  // Memoized on the actual track objects (stable SDK references) rather than
-  // wrapping them in a new MediaStream on every render, which would restart
-  // the AudioContext analyser chain in useAudioLevel on each re-render.
-  const localVideoTrack = localParticipant?.streams?.get("webcam")?.track ?? null
-  const localAudioTrack = localParticipant?.streams?.get("mic")?.track ?? null
-
-  const localMediaStream = useMemo(() => {
-    const tracks = []
-    if (localVideoTrack) tracks.push(localVideoTrack)
-    if (localAudioTrack) tracks.push(localAudioTrack)
-    return tracks.length > 0 ? new MediaStream(tracks) : null
-  }, [localVideoTrack, localAudioTrack])
 
   // -- Reactive local participant state --
   // useParticipant subscribes to per-participant events (mic/webcam toggles),
   // so micOn/cameraOn here will always re-render when the SDK fires changes.
   // Reading localParticipant.micOn directly from useMeeting() is NOT reliably
   // reactive for those properties.
-  const {
-    micOn: localMicOn,
-    webcamOn: localWebcamOn,
-  } = useParticipant(localParticipant?.id || "")
+  const { micOn: localMicOn, webcamOn: localWebcamOn } = useParticipant(
+    localParticipant?.id || "",
+  )
 
   const micOn = localMicOn ?? false
   const cameraOn = localWebcamOn ?? false
 
   // -- Actions --
 
-  const sendMessage = (text) => {
-    publish(text, { persist: true })
-  }
 
   const toggleAudio = async () => {
     if (!micOn) {
@@ -167,16 +143,7 @@ export const useVideoCall = (
       try {
         probeStream = await navigator.mediaDevices.getUserMedia({ audio: true })
       } catch (err) {
-        // Re-throw media errors so callers can show UI feedback
-        if (
-          err.name === "NotAllowedError" ||
-          err.name === "PermissionDeniedError" ||
-          err.name === "NotFoundError" ||
-          err.name === "DevicesNotFoundError" ||
-          err.name === "NotReadableError" ||
-          err.name === "TrackStartError"
-        )
-          throw err
+        throw err
         // Unknown error — proceed optimistically
       } finally {
         // Stop probe tracks immediately; we only needed them to check access
@@ -193,17 +160,7 @@ export const useVideoCall = (
       try {
         probeStream = await navigator.mediaDevices.getUserMedia({ video: true })
       } catch (err) {
-        // Re-throw media errors so callers can show UI feedback
-        if (
-          err.name === "NotAllowedError" ||
-          err.name === "PermissionDeniedError" ||
-          err.name === "NotFoundError" ||
-          err.name === "DevicesNotFoundError" ||
-          err.name === "NotReadableError" ||
-          err.name === "TrackStartError"
-        )
-          throw err
-        // Unknown error — proceed optimistically
+        throw err
       } finally {
         // Stop probe tracks immediately; we only needed them to check access
         probeStream?.getTracks().forEach((t) => t.stop())
@@ -214,15 +171,12 @@ export const useVideoCall = (
 
   return {
     participants: mappedParticipants,
-    messages: pubSubMessages,
     micOn,
     cameraOn,
     toggleAudio,
     toggleVideo,
-    sendMessage,
     leaveMeeting: leave,
     isConnected: !!localParticipant, // Rough check
     localParticipant, // Exposed for raw access if needed
-    localMediaStream, // Stable stream for ControlBar mic-level preview
   }
 }

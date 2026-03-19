@@ -1,10 +1,12 @@
 import React, { createContext, useContext, useEffect, useState } from "react"
 import { useParams, useNavigate, useLocation } from "react-router-dom"
+import { useMeeting, usePubSub } from "@videosdk.live/react-sdk"
 import { useVideoCall } from "@/features/video-call/hooks/useVideoCall"
 import toast from "react-hot-toast"
 import { useLanguage } from "@/shared/context/LanguageContext"
 import { getCommunityPath } from "@/shared/utils/navigation"
 import { useLeaveVideoSessionMutation } from "@/store/api/videoSessionsApi"
+import { handleMediaError } from "@/shared/utils/mediaErrorUtils"
 
 const VideoCallContext = createContext()
 
@@ -51,38 +53,33 @@ export const VideoCallContent = ({
 
   const {
     participants,
-    messages,
     micOn,
     cameraOn,
     toggleAudio,
     toggleVideo,
-    sendMessage,
     leaveMeeting,
     isConnected,
-    localMediaStream,
   } = useVideoCall(shouldJoinMeeting, {
     meetingId: session?.videoSdkMeetingId,
     token: sdkToken,
     providerMounted,
   })
 
+  // -- Chat Logic (moved from useVideoCall) --
+  const { publish, messages } = usePubSub("CHAT", {
+    onMessageReceived: (message) => {
+      // console.log("New Message", message)
+    },
+    onOldMessagesReceived: (messages) => {
+      // console.log("Old Messages", messages)
+    },
+  })
+
   const handleToggleMic = async () => {
     try {
       await toggleAudio()
     } catch (err) {
-      console.error("Failed to toggle mic:", err)
-      if (
-        err.name === "NotAllowedError" ||
-        err.name === "PermissionDeniedError" ||
-        err.name === "NotFoundError" ||
-        err.name === "DevicesNotFoundError" ||
-        err.name === "NotReadableError" ||
-        err.name === "TrackStartError"
-      ) {
-        toast.error(t.rooms.waitingScreen.micAccessError)
-      } else {
-        toast.error(t.rooms.videoCall.error.toggleMic)
-      }
+      handleMediaError(err, "mic", t, { isToggle: true })
     }
   }
 
@@ -90,24 +87,12 @@ export const VideoCallContent = ({
     try {
       await toggleVideo()
     } catch (err) {
-      console.error("Failed to toggle camera:", err)
-      if (
-        err.name === "NotAllowedError" ||
-        err.name === "PermissionDeniedError" ||
-        err.name === "NotFoundError" ||
-        err.name === "DevicesNotFoundError" ||
-        err.name === "NotReadableError" ||
-        err.name === "TrackStartError"
-      ) {
-        toast.error(t.rooms.waitingScreen.cameraAccessError)
-      } else {
-        toast.error(t.rooms.videoCall.error.toggleCam)
-      }
+      handleMediaError(err, "camera", t, { isToggle: true })
     }
   }
 
   const handleSendMessage = (text) => {
-    sendMessage(text)
+    publish(text, { persist: true })
   }
 
   const handleLeaveSession = async () => {
@@ -150,7 +135,6 @@ export const VideoCallContent = ({
     activeParticipants: participants,
     messages,
     isConnected,
-    localStream: localMediaStream,
 
     // Actions
     handleToggleMic,

@@ -1,143 +1,106 @@
 import { useState, useEffect, useRef } from "react"
+import { toast } from "react-hot-toast"
+import { useLanguage } from "@/shared/context/LanguageContext"
+import { handleMediaError } from "@/shared/utils/mediaErrorUtils"
 
-/**
- * Custom hook to manage media preview (mic/camera) for the Waiting Room.
- *
- * @param {Object} options
- * @param {Function} options.onError - Callback to handle errors (e.g., permission denied)
- * @returns {Object} { micOn, cameraOn, localStream, toggleMic, toggleCamera }
- */
-export const useMediaPreview = ({ onError }) => {
+export const useMediaPreview = () => {
+  const { t } = useLanguage()
   const [micOn, setMicOn] = useState(false)
   const [cameraOn, setCameraOn] = useState(false)
-
-  const [videoTrack, setVideoTrack] = useState(null)
-  const [audioTrack, setAudioTrack] = useState(null)
   const [localStream, setLocalStream] = useState(null)
 
-  const onErrorRef = useRef(onError)
+  const streamRef = useRef(null)
 
+  // Cleanup on unmount
   useEffect(() => {
-    onErrorRef.current = onError
-  }, [onError])
-
-  // -- Video Effect --
-  useEffect(() => {
-    let active = true
-    let newTrack = null
-
-    const updateVideo = async () => {
-      if (cameraOn) {
-        try {
-          const stream = await navigator.mediaDevices.getUserMedia({
-            video: true,
-          })
-          newTrack = stream.getVideoTracks()[0]
-          if (active) {
-            setVideoTrack((prev) => {
-              if (prev) prev.stop()
-              return newTrack
-            })
-          } else {
-            newTrack.stop()
-          }
-        } catch (err) {
-          console.error("Error getting video:", err)
-          if (
-            err.name === "NotAllowedError" ||
-            err.name === "PermissionDeniedError" ||
-            err.name === "NotReadableError"
-          ) {
-            setCameraOn(false)
-            if (onErrorRef.current) onErrorRef.current("camera")
-          }
-        }
-      } else {
-        setVideoTrack((prev) => {
-          if (prev) prev.stop()
-          return null
-        })
-      }
-    }
-
-    updateVideo()
-
     return () => {
-      active = false
-      if (newTrack) newTrack.stop()
-      setVideoTrack((prev) => {
-        if (prev) prev.stop()
-        return null
-      })
+      streamRef.current?.getTracks().forEach((t) => t.stop())
     }
-  }, [cameraOn])
+  }, [])
 
-  // -- Audio Effect --
-  useEffect(() => {
-    let active = true
-    let newTrack = null
+  // Helper to request media
+  const getMediaStream = async ({ audio, video, device }) => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio, video })
+      streamRef.current = stream
+      setLocalStream(stream)
+      return stream
+    } catch (err) {
+      handleMediaError(err, device === "mic" ? "mic" : "camera", t)
+      return null
+    }
+  }
 
-    const updateAudio = async () => {
-      if (micOn) {
-        try {
-          const stream = await navigator.mediaDevices.getUserMedia({
-            audio: true,
-          })
-          newTrack = stream.getAudioTracks()[0]
-          if (active) {
-            setAudioTrack((prev) => {
-              if (prev) prev.stop()
-              return newTrack
-            })
-          } else {
-            newTrack.stop()
-          }
-        } catch (err) {
-          console.error("Error getting audio:", err)
-          if (
-            err.name === "NotAllowedError" ||
-            err.name === "PermissionDeniedError" ||
-            err.name === "NotReadableError"
-          ) {
-            setMicOn(false)
-            if (onErrorRef.current) onErrorRef.current("mic")
-          }
-        }
+  // Toggle mic
+  const toggleMic = async () => {
+    let audioTracks = streamRef.current?.getAudioTracks() || []
+
+    if (audioTracks.length === 0) {
+      const stream = await getMediaStream({
+        audio: true,
+        video: false,
+        device: "mic",
+      })
+      audioTracks = stream?.getAudioTracks() || []
+    }
+
+    if (audioTracks.length === 0) return false
+
+    setMicOn((prev) => {
+      const next = !prev
+
+      if (next) {
+        audioTracks.forEach((t) => (t.enabled = true))
       } else {
-        setAudioTrack((prev) => {
-          if (prev) prev.stop()
-          return null
-        })
+        // Stop mic tracks completely if turning off
+        audioTracks.forEach((t) => t.stop())
+        // Remove stopped tracks from streamRef
+        streamRef.current = new MediaStream(
+          streamRef.current.getVideoTracks(), // keep only video
+        )
+        setLocalStream(streamRef.current)
       }
-    }
 
-    updateAudio()
+      return next
+    })
 
-    return () => {
-      active = false
-      if (newTrack) newTrack.stop()
-      setAudioTrack((prev) => {
-        if (prev) prev.stop()
-        return null
+    return true
+  }
+
+  // Toggle camera
+  const toggleCamera = async () => {
+    let videoTracks = streamRef.current?.getVideoTracks() || []
+
+    if (videoTracks.length === 0) {
+      const stream = await getMediaStream({
+        audio: false,
+        video: true,
+        device: "camera",
       })
+      videoTracks = stream?.getVideoTracks() || []
     }
-  }, [micOn])
 
-  // -- Local Stream Assembly --
-  useEffect(() => {
-    const tracks = []
-    if (videoTrack) tracks.push(videoTrack)
-    if (audioTrack) tracks.push(audioTrack)
+    if (videoTracks.length === 0) return false
 
-    if (tracks.length > 0) {
-      setLocalStream(new MediaStream(tracks))
-    } else {
-      setLocalStream(null)
-    }
-  }, [videoTrack, audioTrack])
+    setCameraOn((prev) => {
+      const next = !prev
 
-  const toggleMic = () => setMicOn((prev) => !prev)
-  const toggleCamera = () => setCameraOn((prev) => !prev)
+      if (next) {
+        videoTracks.forEach((t) => (t.enabled = true))
+      } else {
+        videoTracks.forEach((t) => t.stop())
+        // Remove stopped tracks from streamRef
+        streamRef.current = new MediaStream(
+          streamRef.current.getAudioTracks(), // keep only mic
+        )
+        setLocalStream(streamRef.current)
+      }
+
+      return next
+    })
+
+    return true
+  }
 
   return {
     micOn,
@@ -147,5 +110,3 @@ export const useMediaPreview = ({ onError }) => {
     toggleCamera,
   }
 }
-
-export default useMediaPreview

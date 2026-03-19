@@ -38,13 +38,11 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
     }
 
     const state = api.getState().auth
-
     const token = state.token || localStorage.getItem("token")
     const refreshToken =
       state.refreshToken || localStorage.getItem("refreshToken")
 
     if (!refreshToken || !token) {
-      api.dispatch(logout())
       return result
     }
 
@@ -84,8 +82,6 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
 
     if (success) {
       result = await baseQuery(args, api, extraOptions)
-    } else {
-      api.dispatch(logout())
     }
   }
 

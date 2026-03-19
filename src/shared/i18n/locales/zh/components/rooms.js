@@ -158,6 +158,12 @@ export default {
     createSessionError: "无法创建会话。请重试。",
     cameraAccessError: "无法访问摄像头。请检查权限或是否被其他应用占用。",
     micAccessError: "无法访问麦克风。请检查权限或是否被其他应用占用。",
+    micNotFound: "未找到麦克风硬件。",
+    cameraNotFound: "未找到摄像头硬件。",
+    micInUse: "麦克风正被其他应用使用中或无法启动。",
+    cameraInUse: "摄像头正被其他应用使用中或无法启动。",
+    micPermissionDenied: "麦克风访问被拒绝，请在设置中允许。",
+    cameraPermissionDenied: "摄像头访问被拒绝，请在设置中允许。",
   },
   videoCall: {
     provider: {

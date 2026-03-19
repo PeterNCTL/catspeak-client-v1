@@ -3,34 +3,13 @@ import useAudioLevel from "../../hooks/useAudioLevel"
 import { useEffect, useRef, useMemo } from "react"
 import { useParticipant } from "@videosdk.live/react-sdk"
 
-const VideoTile = ({
-  participantId, // New prop
-  stream: propStream,
-  name: propName,
-  avatar: propAvatar,
-  isLocal: propIsLocal,
-  micOn: propMicOn = true,
-  videoOn: propVideoOn = true,
-}) => {
+const VideoTile = ({ participantId, avatar: propAvatar }) => {
   // -- VideoSDK Hook --
-  // If participantId is provided, we use the hook to get reactive state/streams
-  const {
-    displayName,
-    webcamStream,
-    micStream,
-    webcamOn,
-    micOn: sdkMicOn,
-    isLocal: sdkIsLocal,
-  } = useParticipant(participantId || null)
+  const { displayName, webcamStream, micStream, webcamOn, micOn, isLocal } =
+    useParticipant(participantId)
 
-  // -- Derived State --
-  // Prefer SDK values if available (participantId exists), otherwise fallback to props
-  const useSdk = !!participantId
-
-  const name = useSdk ? displayName : propName
-  const isLocal = useSdk ? sdkIsLocal : propIsLocal
-  const micOn = useSdk ? sdkMicOn : propMicOn
-  const videoOn = useSdk ? webcamOn : propVideoOn
+  const name = displayName
+  const videoOn = webcamOn
 
   // Derive stable track references from the SDK stream wrappers.
   // The SDK may return a new stream wrapper object on every render even when
@@ -41,19 +20,68 @@ const VideoTile = ({
   const videoTrack = webcamStream?.track ?? null
   const audioTrack = micStream?.track ?? null
 
-  const sdkStream = useMemo(() => {
-    if (!useSdk) return null
-    const tracks = []
-    if (videoTrack) tracks.push(videoTrack)
-    if (audioTrack) tracks.push(audioTrack)
-    return tracks.length > 0 ? new MediaStream(tracks) : null
-  }, [videoTrack, audioTrack, useSdk])
+  useEffect(() => {
+    console.log(`👤 [VideoTile][${participantId}] JOINED`)
+  }, [])
 
-  const stream = useSdk ? sdkStream : propStream
+  const prevMicRef = useRef(micOn)
+
+  useEffect(() => {
+    if (prevMicRef.current !== micOn) {
+      if (micOn) {
+        console.log(`🎤 [VideoTile][${participantId}] MIC ON`)
+      } else {
+        console.log(`🔇 [VideoTile][${participantId}] MIC OFF`)
+      }
+
+      prevMicRef.current = micOn
+    }
+  }, [micOn])
+
+  useEffect(() => {
+    if (audioTrack) {
+      console.log(`🎧 [VideoTile][${participantId}] AUDIO READY`, {
+        id: audioTrack.id,
+        state: audioTrack.readyState,
+      })
+    }
+  }, [audioTrack])
+
+  const sdkStream = useMemo(() => {
+    const hasAudio = audioTrack && micOn
+    const hasVideo = videoTrack && webcamOn
+
+    // 🚨 Prevent invalid state: mic ON but no track yet
+    if (micOn && !audioTrack) {
+      console.log(`⏳ [VideoTile][${participantId}] Waiting for audio track...`)
+    }
+
+    const tracks = []
+
+    if (hasVideo) tracks.push(videoTrack)
+    if (hasAudio) tracks.push(audioTrack)
+
+    return tracks.length > 0 ? new MediaStream(tracks) : null
+  }, [videoTrack, audioTrack, micOn, webcamOn])
+
+  const stream = sdkStream
 
   // -- Existing Logic --
-  const audioLevel = useAudioLevel(stream)
+  const audioLevel = useAudioLevel(audioTrack)
   const isSpeaking = micOn && audioLevel > 5
+
+  // Optional debug logging for RMS audio level
+  // useEffect(() => {
+  //   if (audioTrack) {
+  //     console.log(`🔊 [VideoTile][${participantId}] RMS AUDIO LEVEL`, {
+  //       rms: audioLevel.toFixed(2),
+  //       micOn,
+  //       trackId: audioTrack.id,
+  //       readyState: audioTrack.readyState,
+  //     })
+  //   }
+  // }, [audioLevel, micOn, audioTrack, participantId])
+
   const videoRef = useRef(null)
 
   // Check if stream actually has video tracks (Hardware check)
@@ -61,11 +89,44 @@ const VideoTile = ({
   const isVideoVisible = videoOn && hasVideoTrack
 
   useEffect(() => {
-    // Assign stream if ref exists and stream exists (regardless of videoOn)
-    if (videoRef.current && stream) {
-      videoRef.current.srcObject = stream
+    if (!videoRef.current) return
+
+    if (!stream) {
+      videoRef.current.srcObject = null
+      console.log(`⚠️ [VideoTile][${participantId}] STREAM CLEARED`)
+      return
     }
-  }, [stream])
+
+    // Log detailed stream info before attaching
+    const audioTracks = stream.getAudioTracks()
+    const videoTracks = stream.getVideoTracks()
+    console.log(`🎬 [VideoTile][${participantId}] ATTACH STREAM`, {
+      audioTracks: audioTracks.map((t) => ({
+        id: t.id,
+        enabled: t.enabled,
+        readyState: t.readyState,
+      })),
+      videoTracks: videoTracks.map((t) => ({
+        id: t.id,
+        enabled: t.enabled,
+        readyState: t.readyState,
+      })),
+    })
+
+    // Attach stream to video element
+    videoRef.current.srcObject = stream
+    videoRef.current.play().catch((err) => {
+      console.error(`❌ [VideoTile][${participantId}] VIDEO PLAY ERROR`, err)
+    })
+
+    // Log video element state after attach
+    console.log(`🔊 [VideoTile][${participantId}] VIDEO ELEMENT STATUS`, {
+      paused: videoRef.current.paused,
+      muted: videoRef.current.muted,
+      readyState: videoRef.current.readyState,
+      srcObjectTracks: videoRef.current.srcObject?.getTracks().map((t) => t.id),
+    })
+  }, [stream, participantId])
 
   return (
     <div

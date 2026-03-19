@@ -32,15 +32,10 @@ const CategoryRoomSection = ({
   const renderHeader = () => (
     <button
       onClick={() => onSeeMore(categoryKey)}
-      className="group w-fit flex h-12 items-center gap-2 rounded-md hover:bg-[#E5E5E5] pr-6"
+      className="group w-fit flex h-12 items-center gap-2 rounded-md hover:bg-[#E5E5E5]"
     >
       <div className="flex items-center gap-2 transition-transform duration-300 group-hover:translate-x-4">
-        <h6
-          className="mb-0 text-xl font-bold"
-          style={{ color: colors.headingColor }}
-        >
-          {title}
-        </h6>
+        <h6 className="mb-0 text-lg font-bold truncate">{title}</h6>
 
         <ChevronRight size={24} color="#990011" />
       </div>

@@ -58,10 +58,10 @@ const WaitingScreen = ({
       </div>
 
       <VideoPreview
+        user={user}
         localStream={localStream}
         micOn={micOn}
         cameraOn={cameraOn}
-        user={user}
         onToggleMic={onToggleMic}
         onToggleCam={onToggleCam}
       />

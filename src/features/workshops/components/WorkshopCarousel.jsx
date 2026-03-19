@@ -40,7 +40,7 @@ const WorkshopCarousel = ({ slides: propSlides = [] }) => {
 
   return (
     <>
-      <div className="mx-auto max-w-3xl w-full px-4 sm:px-6 md:px-8 lg:px-0">
+      <div className="mx-auto max-w-3xl w-full">
         <div className="relative overflow-hidden rounded-xl bg-black/5 shadow-[0_20px_50px_rgba(0,0,0,0.2)] group aspect-video w-full">
           {/* Carousel Slides */}
           {slides.map((slide, idx) => (
@@ -57,18 +57,22 @@ const WorkshopCarousel = ({ slides: propSlides = [] }) => {
                 alt={slide.title}
                 className="h-full w-full object-cover transform transition-transform duration-[2000ms] ease-out"
               />
-              {/* Gradient Overlay for better legibility */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
-              <div className="absolute inset-0 bg-gradient-to-r from-black/20 via-transparent to-transparent hidden md:block" />
+              {/* Vertical gradient overlay (darker at bottom) */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
 
-              <div className="absolute inset-0 flex flex-col justify-end px-8 pb-20 text-white text-left">
+              {/* Horizontal subtle gradient (only on md+) */}
+              <div className="absolute inset-0 bg-gradient-to-r from-black/30 via-transparent to-transparent hidden md:block" />
+
+              <div className="absolute inset-0 flex flex-col justify-center sm:justify-end p-6 sm:p-10 md:p-16 text-white text-left">
                 <div className="max-w-xl space-y-3 sm:space-y-5 animate-in fade-in slide-in-from-bottom-5 duration-700">
                   <div className="space-y-1.5 sm:space-y-2">
-                    <h2 className="text-3xl font-bold drop-shadow-lg">
+                    <h2 className="text-xl sm:text-2xl md:text-3xl font-bold drop-shadow-lg line-clamp-1">
                       {slide.title || t.workshops.heroCarousel.comingSoonTitle}
                     </h2>
                     {slide.subtext && (
-                      <p className="text-sm leading-relaxed">{slide.subtext}</p>
+                      <p className="text-sm leading-relaxed line-clamp-2">
+                        {slide.subtext}
+                      </p>
                     )}
                   </div>
 

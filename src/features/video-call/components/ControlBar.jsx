@@ -1,14 +1,14 @@
-import React from "react"
+import React, { useState } from "react"
 import {
   Video,
   VideoOff,
   MonitorUp,
   MessageSquare,
   Users,
-  MoreVertical,
+  Mic,
+  MicOff,
 } from "lucide-react"
 
-import MicButton from "./MicButton"
 import InDevelopmentModal from "@/shared/components/common/InDevelopmentModal"
 import PillButton from "@/shared/components/ui/PillButton"
 
@@ -20,13 +20,12 @@ const VideoCallControlBar = ({
   showParticipants,
   setShowParticipants,
   unreadMessages,
-  localStream,
   isLeaving,
   handleToggleMic,
   handleToggleCam,
   handleLeaveSession,
 }) => {
-  const [showDevModal, setShowDevModal] = React.useState(false)
+  const [showDevModal, setShowDevModal] = useState(false)
 
   // Common button styles
   const buttonBaseClass =
@@ -44,12 +43,22 @@ const VideoCallControlBar = ({
         <div className="hidden w-32 text-sm font-semibold text-gray-900 sm:block"></div>
 
         <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3">
-          <MicButton
-            micOn={micOn}
-            onToggle={handleToggleMic}
-            stream={localStream}
-            className="z-10"
-          />
+          <div className="relative z-10 flex items-center justify-center">
+            <button
+              onClick={handleToggleMic}
+              className={`relative z-10 flex h-12 w-12 items-center justify-center rounded-full transition shadow-sm ${
+                micOn
+                  ? "bg-cath-red-600 text-white hover:bg-cath-red-700"
+                  : "bg-[#F2F2F2] text-gray-600 hover:bg-[#D9D9D9] hover:text-gray-900"
+              }`}
+            >
+              {micOn ? (
+                <Mic className="h-5 w-5" />
+              ) : (
+                <MicOff className="h-5 w-5" />
+              )}
+            </button>
+          </div>
 
           <button
             onClick={handleToggleCam}

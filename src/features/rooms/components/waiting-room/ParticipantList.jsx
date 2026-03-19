@@ -12,7 +12,7 @@ const ParticipantList = ({ participants = [], participantCount }) => {
   // Cap at 5 for AvatarGroup display equivalent
   const displayParticipants = participants.slice(0, 5)
   const remainingCount = Math.max(0, count - displayParticipants.length)
-  
+
   return (
     <div className="mt-2 flex flex-col items-center gap-1">
       <div className="flex -space-x-3">

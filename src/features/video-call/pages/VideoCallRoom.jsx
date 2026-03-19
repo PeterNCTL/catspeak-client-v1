@@ -29,7 +29,6 @@ const VideoCallRoomContent = () => {
     isLoadingUser,
     currentUserId,
     session,
-    localStream,
     activeParticipants,
     messages,
     isConnected,
@@ -107,11 +106,7 @@ const VideoCallRoomContent = () => {
         {/* Video Area */}
         <div className="relative flex flex-1 flex-col min-h-0 overflow-hidden bg-gradient-to-br from-primary2 via-white to-primary2">
           <div className="absolute inset-0 bg-[url('/bg-pattern.svg')] opacity-[0.03] pointer-events-none" />
-          <VideoGrid
-            localStream={localStream}
-            participants={activeParticipants}
-            currentUserId={currentUserId}
-          />
+          <VideoGrid participants={activeParticipants} />
         </div>
 
         {/* Desktop Side Panel (Chat or Participants) */}
@@ -200,7 +195,6 @@ const VideoCallRoomContent = () => {
         showParticipants={showParticipants}
         setShowParticipants={setShowParticipants}
         unreadMessages={unreadMessages}
-        localStream={localStream}
         handleToggleMic={handleToggleMic}
         handleToggleCam={handleToggleCam}
         handleLeaveSession={handleLeaveSession}

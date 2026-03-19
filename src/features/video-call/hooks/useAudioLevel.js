@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 
 let sharedAudioContext = null
 
@@ -8,70 +8,80 @@ const getAudioContext = () => {
       window.AudioContext || window.webkitAudioContext
     )()
   }
+
   if (sharedAudioContext.state === "suspended") {
     sharedAudioContext.resume()
   }
+
   return sharedAudioContext
 }
 
-const useAudioLevel = (stream) => {
+const useAudioLevel = (audioTrack) => {
   const [level, setLevel] = useState(0)
 
-  // Derive a stable key from the actual audio track IDs rather than the
-  // MediaStream object reference. This means the analyser chain is only
-  // rebuilt when a genuinely different microphone track arrives, not when
-  // the same tracks are rewrapped in a new MediaStream on a re-render.
-  const audioTrackIds = stream
-    ? stream.getAudioTracks().map((t) => t.id).join(",")
-    : ""
+  const analyserRef = useRef(null)
+  const sourceRef = useRef(null)
+  const rafRef = useRef(null)
+  const trackIdRef = useRef(null)
 
   useEffect(() => {
-    if (!stream || !audioTrackIds) {
+    if (!audioTrack) {
       setLevel(0)
       return
     }
 
-    const audioTracks = stream.getAudioTracks()
-    if (audioTracks.length === 0) return
+    // Only re-init if track changed
+    if (trackIdRef.current === audioTrack.id) return
+    trackIdRef.current = audioTrack.id
 
-    let analyser
-    let source
-    let animationFrameId
+    // Cleanup previous
+    if (rafRef.current) cancelAnimationFrame(rafRef.current)
+    if (sourceRef.current) sourceRef.current.disconnect()
+    if (analyserRef.current) analyserRef.current.disconnect()
 
-    const initAudio = () => {
-      try {
-        const audioContext = getAudioContext()
-        analyser = audioContext.createAnalyser()
-        analyser.fftSize = 256
-        analyser.smoothingTimeConstant = 0.8
+    try {
+      const audioContext = getAudioContext()
 
-        source = audioContext.createMediaStreamSource(stream)
-        source.connect(analyser)
+      const analyser = audioContext.createAnalyser()
+      analyser.fftSize = 256
+      analyser.smoothingTimeConstant = 0.8
 
-        const dataArray = new Uint8Array(analyser.frequencyBinCount)
+      const stream = new MediaStream([audioTrack])
+      const source = audioContext.createMediaStreamSource(stream)
 
-        const updateLevel = () => {
-          analyser.getByteFrequencyData(dataArray)
-          const sum = dataArray.reduce((a, b) => a + b, 0)
-          const avg = sum / dataArray.length
-          setLevel(avg)
-          animationFrameId = requestAnimationFrame(updateLevel)
+      source.connect(analyser)
+
+      analyserRef.current = analyser
+      sourceRef.current = source
+
+      const dataArray = new Uint8Array(analyser.fftSize)
+
+      const update = () => {
+        analyser.getByteTimeDomainData(dataArray)
+
+        let sum = 0
+        for (let i = 0; i < dataArray.length; i++) {
+          const normalized = (dataArray[i] - 128) / 128
+          sum += normalized * normalized
         }
-        updateLevel()
-      } catch (error) {
-        console.error("Error initializing audio context:", error)
-      }
-    }
 
-    initAudio()
+        const rms = Math.sqrt(sum / dataArray.length)
+        setLevel(rms * 100)
+
+        rafRef.current = requestAnimationFrame(update)
+      }
+
+      update()
+    } catch (err) {
+      console.error("AudioLevel error:", err)
+    }
 
     return () => {
-      if (animationFrameId) cancelAnimationFrame(animationFrameId)
-      if (source) source.disconnect()
-      if (analyser) analyser.disconnect()
+      if (rafRef.current) cancelAnimationFrame(rafRef.current)
+      if (sourceRef.current) sourceRef.current.disconnect()
+      if (analyserRef.current) analyserRef.current.disconnect()
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [audioTrackIds]) // depend on track identity, not the stream wrapper object
+  }, [audioTrack])
 
   return level
 }

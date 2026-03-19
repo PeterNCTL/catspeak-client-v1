@@ -40,9 +40,7 @@ const RoomCard = ({ room }) => {
     }
 
     // If authenticated, open room in the same page
-    const url = `/room/${room.roomId}`
-    // window.open(url, "_blank")
-    navigate(url)
+    navigate(`/room/${room.roomId}`)
   }
 
   // Date and time formatting using locale-aware utilities
@@ -118,7 +116,6 @@ const RoomCard = ({ room }) => {
           <h3 className="mb-2 text-lg font-bold text-gray-900 line-clamp-1">
             {translatedName}
           </h3>
-
           {/* Room Link/Code */}
           <div className="mb-4 flex items-center gap-2">
             <Link className="h-5 w-5 text-yellow-500" />
@@ -132,7 +129,7 @@ const RoomCard = ({ room }) => {
           <div className="mb-4 h-px w-full bg-gray-200" />
 
           {/* Footer Info */}
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 md:gap-0">
             {/* Participants */}
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-sm border border-gray-200">
@@ -152,7 +149,6 @@ const RoomCard = ({ room }) => {
                 <Clock className="h-5 w-5 text-[#990011]" />
               </div>
               <div className="flex flex-col text-left">
-                <span className="text-sm font-bold">{dateStr}</span>
                 <span className="text-xs text-gray-500 whitespace-nowrap">
                   {timeStr}
                 </span>

@@ -1,11 +1,6 @@
 import VideoTile from "./VideoTile"
 
-const VideoGrid = ({ localStream, peers, participants, currentUserId }) => {
-  // Merge participants with peers to get streams
-  // We want to show:
-  // 1. Local User
-  // 2. Remote Participants (matched with peers streams)
-
+const VideoGrid = ({ participants }) => {
   // Calculate grid columns based on count
   const count = participants.length
 
@@ -38,26 +33,14 @@ const VideoGrid = ({ localStream, peers, participants, currentUserId }) => {
       className={`grid h-full w-full gap-2 overflow-y-auto p-2 place-content-start justify-center sm:gap-3 sm:p-3 md:gap-4 md:p-4 ${gridClassName} ${scrollbarClasses}`}
     >
       {participants.map((participant, index) => {
-        // Note: isLocal calculation is still useful for UI,
-        // but stream access is now normalized in `participant.stream`
-        const isLocal = participant.isLocal
-
-        // Use the stream directly attached to the participant object by useVideoCall
-        const stream = participant.stream
-
         return (
           <div
             key={participant.id || participant.accountId || `v-${index}`}
             className="relative w-full aspect-video max-w-full"
           >
             <VideoTile
-              participantId={participant.id} // Pass SDK ID for internal hook usage
-              stream={stream}
-              name={participant.username}
-              avatar={participant.avatarImageUrl} // Note: VideoSDK might not pass this in metaData, check implementation
-              isLocal={isLocal}
-              micOn={participant.isMicOn !== false} // Default to true if undefined
-              videoOn={participant.isCameraOn !== false} // Default to true if undefined
+              participantId={participant.id}
+              avatar={participant.avatarImageUrl}
             />
           </div>
         )
