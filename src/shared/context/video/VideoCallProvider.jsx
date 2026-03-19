@@ -82,10 +82,36 @@ export const VideoCallProvider = ({ children }) => {
   }, [id, session, user, getVideoSdkToken, isLoadingRoom, isRoomFull])
 
   // Loading state
-  if (isLoadingSession || !userData || (session?.roomId && isLoadingRoom)) {
+  const isLoading =
+    isLoadingSession ||
+    !userData ||
+    (session?.roomId && isLoadingRoom) ||
+    !sdkReady
+
+  if (isLoading) {
+    let message = t.rooms.videoCall.provider.loadingSession
+    if (!sdkReady && session) {
+      message = t.rooms.videoCall.provider.preparingSession ?? t.rooms.videoCall.provider.loadingSession
+    }
+
+    if (isRoomFull) {
+      return (
+        <div className="flex flex-col items-center justify-center h-screen bg-neutral-950 text-white gap-4">
+          <p className="text-xl font-bold">{t.rooms.roomFullModal.title}</p>
+          <p className="text-gray-400">{t.rooms.roomFullModal.message}</p>
+          <PillButton
+            onClick={() => navigate(getCommunityPath(language))}
+            className="mt-2 min-w-[150px]"
+          >
+            {t.rooms.waitingScreen.backToCommunity}
+          </PillButton>
+        </div>
+      )
+    }
+
     return (
       <div className="flex items-center justify-center h-screen bg-neutral-950 text-white">
-        <p>{t.rooms.videoCall.provider.loadingSession}</p>
+        <p>{message}</p>
       </div>
     )
   }
@@ -142,30 +168,6 @@ export const VideoCallProvider = ({ children }) => {
     )
   }
 
-  if (!sdkReady) {
-    if (isRoomFull) {
-      return (
-        <div className="flex flex-col items-center justify-center h-screen bg-neutral-950 text-white gap-4">
-          <p className="text-xl font-bold">{t.rooms.roomFullModal.title}</p>
-          <p className="text-gray-400">{t.rooms.roomFullModal.message}</p>
-          <PillButton
-            onClick={() => navigate(getCommunityPath(language))}
-            className="mt-2 min-w-[150px]"
-          >
-            {t.rooms.waitingScreen.backToCommunity}
-          </PillButton>
-        </div>
-      )
-    }
-
-    return (
-      <div className="flex items-center justify-center h-screen bg-neutral-950 text-white">
-        <p>{t.rooms.videoCall.provider.connecting}</p>
-      </div>
-    )
-  }
-
-  // Read initial state from navigation (default to false if not set)
   const initMic = location.state?.micEnabled ?? false
   const initCam = location.state?.webcamEnabled ?? false
 

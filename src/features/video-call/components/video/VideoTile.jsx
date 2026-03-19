@@ -93,39 +93,13 @@ const VideoTile = ({ participantId, avatar: propAvatar }) => {
 
     if (!stream) {
       videoRef.current.srcObject = null
-      console.log(`⚠️ [VideoTile][${participantId}] STREAM CLEARED`)
       return
     }
 
-    // Log detailed stream info before attaching
-    const audioTracks = stream.getAudioTracks()
-    const videoTracks = stream.getVideoTracks()
-    console.log(`🎬 [VideoTile][${participantId}] ATTACH STREAM`, {
-      audioTracks: audioTracks.map((t) => ({
-        id: t.id,
-        enabled: t.enabled,
-        readyState: t.readyState,
-      })),
-      videoTracks: videoTracks.map((t) => ({
-        id: t.id,
-        enabled: t.enabled,
-        readyState: t.readyState,
-      })),
-    })
-
-    // Attach stream to video element
+    // Attach stream — autoPlay on the <video> element handles playback.
+    // We must NOT call .play() here: it fires before user interaction and
+    // triggers NotAllowedError under the browser's autoplay policy.
     videoRef.current.srcObject = stream
-    videoRef.current.play().catch((err) => {
-      console.error(`❌ [VideoTile][${participantId}] VIDEO PLAY ERROR`, err)
-    })
-
-    // Log video element state after attach
-    console.log(`🔊 [VideoTile][${participantId}] VIDEO ELEMENT STATUS`, {
-      paused: videoRef.current.paused,
-      muted: videoRef.current.muted,
-      readyState: videoRef.current.readyState,
-      srcObjectTracks: videoRef.current.srcObject?.getTracks().map((t) => t.id),
-    })
   }, [stream, participantId])
 
   return (
@@ -144,11 +118,6 @@ const VideoTile = ({ participantId, avatar: propAvatar }) => {
           muted={isLocal}
           ref={videoRef}
           className={`h-full w-full object-cover ${isVideoVisible ? "block" : "hidden"}`}
-          onLoadedMetadata={() => {
-            if (videoRef.current) {
-              videoRef.current.play().catch(() => {})
-            }
-          }}
           onError={() => {
             // Silenced video error
           }}

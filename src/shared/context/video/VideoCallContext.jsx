@@ -51,6 +51,7 @@ export const VideoCallContent = ({
   const shouldJoinMeeting =
     sdkReady && !!session?.videoSdkMeetingId && !!sdkToken && providerMounted
 
+
   const {
     participants,
     micOn,
@@ -142,6 +143,14 @@ export const VideoCallContent = ({
     handleSendMessage,
     handleLeaveSession,
     handleCopyLink,
+  }
+
+  if (!isConnected) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-neutral-950 text-white">
+        <p>{t.rooms.videoCall.provider.connecting}</p>
+      </div>
+    )
   }
 
   return (
