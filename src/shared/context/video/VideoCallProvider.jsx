@@ -22,8 +22,7 @@ export const VideoCallProvider = ({ children }) => {
   const { t, language } = useLanguage()
 
   const [sdkToken, setSdkToken] = useState(null)
-  const [sdkReady, setSdkReady] = useState(false)
-  const hasJoinedRef = useRef(false)
+  const hasInitRef = useRef(false)
 
   const { data: userData } = useGetProfileQuery()
   const user = userData?.data ?? null
@@ -38,9 +37,7 @@ export const VideoCallProvider = ({ children }) => {
 
   const { data: room, isLoading: isLoadingRoom } = useGetRoomByIdQuery(
     session?.roomId,
-    {
-      skip: !session?.roomId,
-    },
+    { skip: !session?.roomId },
   )
 
   const isUserParticipant = session?.participants?.some(
@@ -53,13 +50,18 @@ export const VideoCallProvider = ({ children }) => {
     (room.currentParticipantCount || 0) >= room.maxParticipants &&
     !isUserParticipant
 
+  // Fetch the VideoSDK token once all prerequisites are ready.
   useEffect(() => {
     if (!id || !session || !user || isLoadingRoom || isRoomFull) return
-    if (hasJoinedRef.current) return
+    if (hasInitRef.current) return
 
     const initMeeting = async () => {
       try {
-        hasJoinedRef.current = true
+        hasInitRef.current = true
+        console.log(
+          "[VideoCall] Fetching VideoSDK token for meeting:",
+          session.videoSdkMeetingId,
+        )
 
         const res = await getVideoSdkToken({
           meetingId: session.videoSdkMeetingId,
@@ -67,56 +69,40 @@ export const VideoCallProvider = ({ children }) => {
         }).unwrap()
 
         const token = res?.token
+        console.log("[VideoCall] Token fetched from backend:", res)
+
         if (typeof token !== "string" || token.trim().split(".").length !== 3) {
           throw new Error("Invalid VideoSDK token received from backend")
         }
 
         setSdkToken(token)
-        setSdkReady(true)
+        console.log("[VideoCall] sdkToken set in state ✅")
       } catch (err) {
-        console.error("Meeting init failed:", err)
+        console.error("[VideoCall] Meeting init failed:", err)
+        hasInitRef.current = false // allow retry on next render
       }
     }
 
     initMeeting()
   }, [id, session, user, getVideoSdkToken, isLoadingRoom, isRoomFull])
 
-  // Loading state
-  const isLoading =
-    isLoadingSession ||
-    !userData ||
-    (session?.roomId && isLoadingRoom) ||
-    !sdkReady
+  // --- Loading / error guards ---
 
-  if (isLoading) {
-    let message = t.rooms.videoCall.provider.loadingSession
-    if (!sdkReady && session) {
-      message = t.rooms.videoCall.provider.preparingSession ?? t.rooms.videoCall.provider.loadingSession
-    }
-
-    if (isRoomFull) {
-      return (
-        <div className="flex flex-col items-center justify-center h-screen bg-neutral-950 text-white gap-4">
-          <p className="text-xl font-bold">{t.rooms.roomFullModal.title}</p>
-          <p className="text-gray-400">{t.rooms.roomFullModal.message}</p>
-          <PillButton
-            onClick={() => navigate(getCommunityPath(language))}
-            className="mt-2 min-w-[150px]"
-          >
-            {t.rooms.waitingScreen.backToCommunity}
-          </PillButton>
-        </div>
-      )
-    }
-
+  if (isRoomFull) {
     return (
-      <div className="flex items-center justify-center h-screen bg-neutral-950 text-white">
-        <p>{message}</p>
+      <div className="flex flex-col items-center justify-center h-screen bg-neutral-950 text-white gap-4">
+        <p className="text-xl font-bold">{t.rooms.roomFullModal.title}</p>
+        <p className="text-gray-400">{t.rooms.roomFullModal.message}</p>
+        <PillButton
+          onClick={() => navigate(getCommunityPath(language))}
+          className="mt-2 min-w-[150px]"
+        >
+          {t.rooms.waitingScreen.backToCommunity}
+        </PillButton>
       </div>
     )
   }
 
-  // Handle API session loading errors
   if (sessionError) {
     console.error("Failed to load session:", sessionError)
     return (
@@ -146,7 +132,6 @@ export const VideoCallProvider = ({ children }) => {
     )
   }
 
-  // Handle missing session (e.g. room not found)
   if (!isLoadingSession && !session) {
     return (
       <div className="flex items-center justify-center h-screen bg-neutral-950 text-white flex-col gap-4">
@@ -156,14 +141,31 @@ export const VideoCallProvider = ({ children }) => {
         <p className="text-gray-400 text-sm text-center max-w-[400px]">
           {t.rooms.waitingScreen.roomNotFoundSubtext}
         </p>
-        <div className="flex flex-col gap-3 min-w-[200px]">
-          <PillButton
-            onClick={() => navigate(getCommunityPath(language))}
-            variant="primary"
-          >
-            {t.rooms.waitingScreen.backToCommunity}
-          </PillButton>
-        </div>
+        <PillButton
+          onClick={() => navigate(getCommunityPath(language))}
+          variant="primary"
+        >
+          {t.rooms.waitingScreen.backToCommunity}
+        </PillButton>
+      </div>
+    )
+  }
+
+  // Show loading until we have a token (session + user must exist first).
+  if (
+    isLoadingSession ||
+    !userData ||
+    (session?.roomId && isLoadingRoom) ||
+    !sdkToken
+  ) {
+    const message =
+      sdkToken == null && session
+        ? (t.rooms.videoCall.provider.preparingSession ??
+          t.rooms.videoCall.provider.loadingSession)
+        : t.rooms.videoCall.provider.loadingSession
+    return (
+      <div className="flex items-center justify-center h-screen bg-neutral-950 text-white">
+        <p>{message}</p>
       </div>
     )
   }
@@ -171,7 +173,6 @@ export const VideoCallProvider = ({ children }) => {
   const initMic = location.state?.micEnabled ?? false
   const initCam = location.state?.webcamEnabled ?? false
 
-  // Render Provider
   return (
     <MeetingProvider
       config={{
@@ -192,7 +193,6 @@ export const VideoCallProvider = ({ children }) => {
         user={user}
         session={session}
         sessionError={sessionError}
-        sdkReady={sdkReady}
         sdkToken={sdkToken}
       >
         {children}

@@ -66,7 +66,9 @@ export const ConversationSignalRProvider = ({ children }) => {
   }, [])
 
   useEffect(() => {
+    // Only start SignalR when token is ready
     if (!token) {
+      console.warn("[ConversationSignalR] Token not ready, waiting...")
       return
     }
 
@@ -98,20 +100,12 @@ export const ConversationSignalRProvider = ({ children }) => {
     const start = async () => {
       try {
         await newConnection.start()
+
         setIsConnected(true)
         setConnectionId(newConnection.connectionId)
         notifySubscribers("OnConnected", newConnection)
       } catch (err) {
-        // Ignore errors if the connection was stopped intentionally during negotiation
-        const errorMessage = err.toString()
-        if (
-          !errorMessage.includes("AbortError") &&
-          !errorMessage.includes(
-            "The connection was stopped during negotiation",
-          )
-        ) {
-          console.error("[ConversationSignalR] Connection Error:", err)
-        }
+        // console.error("[ConversationSignalR] Connection failed:", err)
         setIsConnected(false)
       }
     }

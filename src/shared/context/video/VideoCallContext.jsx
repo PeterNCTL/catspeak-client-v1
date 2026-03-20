@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from "react"
+import React, { createContext, useContext, useState } from "react"
 import { useParams, useNavigate, useLocation } from "react-router-dom"
 import { useMeeting, usePubSub } from "@videosdk.live/react-sdk"
 import { useVideoCall } from "@/features/video-call/hooks/useVideoCall"
@@ -12,21 +12,20 @@ const VideoCallContext = createContext()
 
 export const useVideoCallContext = () => {
   const context = useContext(VideoCallContext)
-
-  if (!context) {
-    throw new Error("useVideoCallContext must be used within VideoCallContent")
-  }
-
+  if (!context)
+    throw new Error("useVideoCallContext must be used within VideoCallProvider")
   return context
 }
 
-// Internal component that has access to MeetingContext (provided by MeetingProvider upstream)
+/**
+ * Renders inside MeetingProvider. Owns all call-level state and actions,
+ * then provides them via context.
+ */
 export const VideoCallContent = ({
   children,
   user,
   session,
   sessionError,
-  sdkReady,
   sdkToken,
 }) => {
   const { id } = useParams()
@@ -38,43 +37,17 @@ export const VideoCallContent = ({
   const [showChat, setShowChat] = useState(false)
   const [showParticipants, setShowParticipants] = useState(false)
 
-  const currentUserId = user?.accountId
-
-  // Gate join() until provider is mounted, meetingId exists, token exists, and sdkReady=true
-  const [providerMounted, setProviderMounted] = useState(false)
   const [leaveSession] = useLeaveVideoSessionMutation()
 
-  useEffect(() => {
-    setProviderMounted(true)
-  }, [])
+  // SDK — participant list & connected state
+  const { participants, localParticipant } = useMeeting()
 
-  const shouldJoinMeeting =
-    sdkReady && !!session?.videoSdkMeetingId && !!sdkToken && providerMounted
+  // Local mic/cam state + lifecycle (join/leave) + toggle actions
+  const { micOn, cameraOn, toggleAudio, toggleVideo, leaveMeeting } =
+    useVideoCall(sdkToken)
 
-
-  const {
-    participants,
-    micOn,
-    cameraOn,
-    toggleAudio,
-    toggleVideo,
-    leaveMeeting,
-    isConnected,
-  } = useVideoCall(shouldJoinMeeting, {
-    meetingId: session?.videoSdkMeetingId,
-    token: sdkToken,
-    providerMounted,
-  })
-
-  // -- Chat Logic (moved from useVideoCall) --
-  const { publish, messages } = usePubSub("CHAT", {
-    onMessageReceived: (message) => {
-      // console.log("New Message", message)
-    },
-    onOldMessagesReceived: (messages) => {
-      // console.log("Old Messages", messages)
-    },
-  })
+  // Chat via VideoSDK PubSub
+  const { publish, messages } = usePubSub("CHAT", {})
 
   const handleToggleMic = async () => {
     try {
@@ -92,29 +65,53 @@ export const VideoCallContent = ({
     }
   }
 
-  const handleSendMessage = (text) => {
-    publish(text, { persist: true })
-  }
+  const handleSendMessage = (text) => publish(text, { persist: true })
 
   const handleLeaveSession = async () => {
-    // 1. Notify backend
     if (id) {
       try {
         await leaveSession(id).unwrap()
       } catch (error) {
-        console.error("Failed to leave session api:", error)
+        console.error("Failed to leave session:", error)
       }
     }
-    // 2. Leave VideoSDK meeting
     leaveMeeting()
-
     navigate(getCommunityPath(language))
   }
 
   const handleCopyLink = () => {
-    const url = window.location.href
-    navigator.clipboard.writeText(url)
+    navigator.clipboard.writeText(window.location.href)
     toast.success("Link copied to clipboard!")
+  }
+
+  // Build a stable participant id list for VideoGrid.
+  // Deduplication: if the same accountId joins on two tabs only show them once.
+  const seenAccountIds = new Set()
+  const participantIds = []
+
+  if (localParticipant) {
+    const aid = localParticipant.metaData?.accountId
+    if (aid) seenAccountIds.add(String(aid))
+    participantIds.push(localParticipant.id)
+  }
+
+  ;[...participants.values()].forEach((p) => {
+    if (p.id === localParticipant?.id) return
+    const aid = p.metaData?.accountId
+    const key = aid ? String(aid) : `__sdk__${p.id}`
+    if (seenAccountIds.has(key)) return
+    seenAccountIds.add(key)
+    participantIds.push(p.id)
+  })
+
+  const isConnected = !!localParticipant
+
+  if (!isConnected) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-neutral-950 text-white">
+        <p>{t.rooms.videoCall.provider.connecting}</p>
+      </div>
+    )
   }
 
   const value = {
@@ -128,29 +125,17 @@ export const VideoCallContent = ({
     showParticipants,
     setShowParticipants,
     user,
-    currentUserId,
+    currentUserId: user?.accountId,
     session,
     sessionError,
-
-    // Normalized Data
-    activeParticipants: participants,
+    participantIds,
     messages,
     isConnected,
-
-    // Actions
     handleToggleMic,
     handleToggleCam,
     handleSendMessage,
     handleLeaveSession,
     handleCopyLink,
-  }
-
-  if (!isConnected) {
-    return (
-      <div className="flex items-center justify-center h-screen bg-neutral-950 text-white">
-        <p>{t.rooms.videoCall.provider.connecting}</p>
-      </div>
-    )
   }
 
   return (

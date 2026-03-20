@@ -8,7 +8,6 @@ import TextInput from "@/shared/components/ui/TextInput"
 const ChatBox = ({
   messages,
   currentUser,
-  allParticipants,
   onSendMessage,
   isConnected,
   className = "",
@@ -61,23 +60,12 @@ const ChatBox = ({
               )
             }
 
-            const sender = allParticipants.find(
-              (p) =>
-                String(p.accountId) === String(msg.senderId) ||
-                String(p.id) === String(msg.senderId),
-            )
-
             const isMe =
               String(msg.senderId) === String(currentUser?.accountId) ||
-              String(msg.senderId) === String(currentUser?.id) ||
-              (sender &&
-                String(sender.accountId) === String(currentUser?.accountId))
+              String(msg.senderId) === String(currentUser?.id)
             const senderName = isMe
               ? t.rooms.chatBox.you
-              : sender?.username ||
-                sender?.name ||
-                msg.senderName ||
-                `User ${msg.senderId}`
+              : msg.senderName || `User ${msg.senderId}`
 
             return (
               <div

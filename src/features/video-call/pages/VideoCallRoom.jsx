@@ -17,7 +17,6 @@ import { VideoCallProvider } from "@/shared/context/video/VideoCallProvider"
 
 const VideoCallRoomContent = () => {
   const {
-    id,
     location,
     micOn,
     cameraOn,
@@ -26,38 +25,32 @@ const VideoCallRoomContent = () => {
     showParticipants,
     setShowParticipants,
     user,
-    isLoadingUser,
     currentUserId,
     session,
-    activeParticipants,
+    participantIds,
     messages,
     isConnected,
     handleToggleMic,
     handleToggleCam,
     handleSendMessage,
     handleLeaveSession,
-    handleCopyLink,
   } = useVideoCallContext()
 
-  const { elapsedSeconds, formattedElapsed, formattedMax } =
-    useSessionTimer(session)
+  const { formattedElapsed, formattedMax } = useSessionTimer(session)
 
   const isSidePanelOpen = showChat || showParticipants
   const sidePanelTitle = showParticipants ? "Participants" : "Chat"
 
-  // Unread Messages Logic
+  // Unread message count
   const [unreadMessages, setUnreadMessages] = React.useState(0)
   const prevMessagesLength = React.useRef(messages.length)
 
   React.useEffect(() => {
     if (messages.length > prevMessagesLength.current) {
       if (!showChat) {
-        // Count new messages not from me
         let newUnread = 0
         for (let i = prevMessagesLength.current; i < messages.length; i++) {
-          if (String(messages[i].senderId) !== String(currentUserId)) {
-            newUnread++
-          }
+          if (String(messages[i].senderId) !== String(currentUserId)) newUnread++
         }
         setUnreadMessages((prev) => prev + newUnread)
       }
@@ -66,15 +59,10 @@ const VideoCallRoomContent = () => {
   }, [messages, showChat, currentUserId])
 
   React.useEffect(() => {
-    if (showChat) {
-      setUnreadMessages(0)
-    }
+    if (showChat) setUnreadMessages(0)
   }, [showChat])
 
-  // Let the API handle 401. If we have no user and not loading, it means we failed to auth.
-  if (!isLoadingUser && !user) {
-    return <Navigate to="/" state={{ from: location }} replace />
-  }
+  if (!user) return <Navigate to="/" state={{ from: location }} replace />
 
   return (
     <div className="flex h-full w-full flex-col bg-primary2 text-textColor font-sans">
@@ -88,16 +76,11 @@ const VideoCallRoomContent = () => {
             <div className="text-sm font-semibold text-gray-900">
               {session?.name || session?.roomName || "General"}
             </div>
-            <div className="text-xs text-gray-500">
-              {formatDate(new Date())}
-            </div>
+            <div className="text-xs text-gray-500">{formatDate(new Date())}</div>
           </div>
         </div>
-        <div>
-          <div className="text-xs font-medium text-gray-500">
-            {formattedElapsed}
-            {formattedMax ? ` / ${formattedMax}` : ""}
-          </div>
+        <div className="text-xs font-medium text-gray-500">
+          {formattedElapsed}{formattedMax ? ` / ${formattedMax}` : ""}
         </div>
       </div>
 
@@ -106,24 +89,24 @@ const VideoCallRoomContent = () => {
         {/* Video Area */}
         <div className="relative flex flex-1 flex-col min-h-0 overflow-hidden bg-gradient-to-br from-primary2 via-white to-primary2">
           <div className="absolute inset-0 bg-[url('/bg-pattern.svg')] opacity-[0.03] pointer-events-none" />
-          <VideoGrid participants={activeParticipants} />
+          <VideoGrid participantIds={participantIds} />
         </div>
 
-        {/* Desktop Side Panel (Chat or Participants) */}
+        {/* Desktop Side Panel */}
         {isSidePanelOpen && (
           <div className="hidden w-80 flex-col border-l border-[#C6C6C6] bg-white md:flex">
             {showParticipants && (
               <ParticipantList
-                participants={activeParticipants}
+                participantIds={participantIds}
                 currentUserId={currentUserId}
+                localMicOn={micOn}
+                localCameraOn={cameraOn}
               />
             )}
-
             {showChat && !showParticipants && (
               <ChatBox
                 messages={messages}
                 currentUser={user}
-                allParticipants={activeParticipants}
                 onSendMessage={handleSendMessage}
                 isConnected={isConnected}
                 className="h-full w-full"
@@ -137,10 +120,7 @@ const VideoCallRoomContent = () => {
           <div className="md:hidden">
             <div
               className="fixed inset-0 z-30 flex bg-black/40"
-              onClick={() => {
-                setShowChat(false)
-                setShowParticipants(false)
-              }}
+              onClick={() => { setShowChat(false); setShowParticipants(false) }}
             >
               <div
                 className="ml-auto flex h-full w-full max-w-sm flex-col bg-white shadow-xl"
@@ -149,32 +129,27 @@ const VideoCallRoomContent = () => {
                 <button
                   type="button"
                   className="flex w-full items-center gap-2 border-b border-[#C6C6C6] px-4 py-3 text-left hover:bg-gray-50"
-                  onClick={() => {
-                    setShowChat(false)
-                    setShowParticipants(false)
-                  }}
+                  onClick={() => { setShowChat(false); setShowParticipants(false) }}
                 >
                   <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-primary2/10 text-primary1">
                     <ChevronRight className="h-4 w-4 rotate-180" />
                   </span>
-                  <div className="text-[0.9rem] font-semibold text-gray-900">
-                    {sidePanelTitle}
-                  </div>
+                  <div className="text-[0.9rem] font-semibold text-gray-900">{sidePanelTitle}</div>
                 </button>
 
                 <div className="flex-1 overflow-y-auto">
                   {showParticipants && (
                     <ParticipantList
-                      participants={activeParticipants}
+                      participantIds={participantIds}
                       currentUserId={currentUserId}
+                      localMicOn={micOn}
+                      localCameraOn={cameraOn}
                     />
                   )}
-
                   {showChat && !showParticipants && (
                     <ChatBox
                       messages={messages}
                       currentUser={user}
-                      allParticipants={activeParticipants}
                       onSendMessage={handleSendMessage}
                       isConnected={isConnected}
                       className="h-full w-full"
@@ -203,12 +178,10 @@ const VideoCallRoomContent = () => {
   )
 }
 
-const VideoCallRoom = () => {
-  return (
-    <VideoCallProvider>
-      <VideoCallRoomContent />
-    </VideoCallProvider>
-  )
-}
+const VideoCallRoom = () => (
+  <VideoCallProvider>
+    <VideoCallRoomContent />
+  </VideoCallProvider>
+)
 
 export default VideoCallRoom
