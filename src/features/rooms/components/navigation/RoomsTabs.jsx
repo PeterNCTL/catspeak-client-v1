@@ -20,8 +20,8 @@ const RoomsTabs = ({ tab, setTab }) => {
     <div className="flex gap-8 overflow-x-auto border-b border-gray-200 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
       {tabs.map((tItem) => {
         const isSelected = tab === tItem.value
-        // const isDisabled = tItem.value !== "communicate"
-        const isDisabled = false
+        const isDisabled = tItem.value !== "communicate"
+        // const isDisabled = false
         const Icon = tItem.icon
         return (
           <button
@@ -29,7 +29,7 @@ const RoomsTabs = ({ tab, setTab }) => {
             onClick={() => !isDisabled && setTab(tItem.value)}
             disabled={isDisabled}
             className={`
-              relative flex items-center gap-2 py-4 px-1 text-sm font-medium transition-all duration-200 whitespace-nowrap
+              relative flex items-center gap-2 py-3 px-1 text-sm font-medium transition-all duration-200 whitespace-nowrap
               ${
                 isSelected
                   ? "text-[#990011]"

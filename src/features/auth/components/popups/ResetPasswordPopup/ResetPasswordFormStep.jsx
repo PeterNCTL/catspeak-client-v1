@@ -3,7 +3,7 @@ import { Lock, Eye, EyeOff } from "lucide-react"
 import { useLanguage } from "@/shared/context/LanguageContext.jsx"
 import AuthButton from "../../ui/AuthButton"
 import TextInput from "@/shared/components/ui/TextInput"
-import { useResetPasswordMutation } from "../../../api/authApi"
+import { useResetPasswordMutation } from "@/store/api/authApi"
 
 const ResetPasswordFormStep = ({ email, token, onSuccess }) => {
   const { t } = useLanguage()

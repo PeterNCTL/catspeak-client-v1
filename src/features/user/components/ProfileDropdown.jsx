@@ -1,15 +1,16 @@
 import React, { useState, useRef, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
-import { Settings, LogOut, Loader2, User } from "lucide-react"
+import { Settings, LogOut, Loader2, User, ArrowLeft } from "lucide-react"
 import { AnimatePresence } from "framer-motion"
-import { useGetProfileQuery, useAuth } from "@/features/auth"
+import { useGetProfileQuery, useAuth, useLogoutMutation } from "@/features/auth"
 import { useLanguage } from "@/shared/context/LanguageContext"
 import FluentAnimation from "@/shared/animations/FluentAnimation"
 
 const ProfileDropdown = () => {
   const { t } = useLanguage()
   const navigate = useNavigate()
-  const { logout, user: authUser } = useAuth()
+  const { user: authUser } = useAuth()
+  const [logoutApi] = useLogoutMutation()
   const { data: userData, isLoading } = useGetProfileQuery()
   const [isOpen, setIsOpen] = useState(false)
   const menuRef = useRef(null)
@@ -25,7 +26,7 @@ const ProfileDropdown = () => {
   }
 
   const handleLogout = () => {
-    logout()
+    logoutApi()
     handleCloseMenu()
     navigate("/")
   }
@@ -59,13 +60,13 @@ const ProfileDropdown = () => {
   return (
     <div className="relative" ref={menuRef}>
       {isLoading ? (
-        <div className="flex h-12 w-12 items-center justify-center">
+        <div className="flex h-10 w-10 items-center justify-center">
           <Loader2 className="h-6 w-6 animate-spin text-[#7A7574]" />
         </div>
       ) : (
         <button
           onClick={handleToggleMenu}
-          className={`flex h-12 w-12 items-center justify-center overflow-hidden rounded-full transition-colors hover:bg-[#E5E5E5] focus:outline-none ${isOpen ? "bg-[#E5E5E5]" : ""}`}
+          className={`flex h-10 w-10 items-center justify-center overflow-hidden rounded-full transition-colors hover:bg-[#E5E5E5] focus:outline-none ${isOpen ? "bg-[#E5E5E5]" : ""}`}
           aria-expanded={isOpen}
           aria-haspopup="true"
         >
@@ -90,9 +91,20 @@ const ProfileDropdown = () => {
             direction="down"
             distance={12}
             exit={true}
-            className="absolute right-0 mt-2 w-64 origin-top-right z-50"
+            className="fixed inset-0 z-[1200] md:absolute md:inset-auto md:right-0 md:mt-2 md:w-64 md:origin-top-right md:z-50"
           >
-            <div className="rounded-xl bg-white shadow-lg focus:outline-none overflow-hidden">
+            <div className="flex h-[100dvh] flex-col bg-white overflow-hidden md:h-auto md:rounded-xl md:shadow-lg focus:outline-none">
+              {/* Mobile Header */}
+              <div className="flex md:hidden items-center gap-3 border-b border-[#F0F0F0] p-4 text-gray-800">
+                <button
+                  onClick={handleCloseMenu}
+                  className="flex h-10 w-10 items-center justify-center rounded-full hover:bg-gray-100"
+                >
+                  <ArrowLeft className="h-5 w-5 text-gray-700" />
+                </button>
+                <span className="text-lg font-semibold">{t.header.profile || "Profile"}</span>
+              </div>
+
               <div className="flex items-center gap-3 p-4">
                 {user?.avatarImageUrl ? (
                   <img

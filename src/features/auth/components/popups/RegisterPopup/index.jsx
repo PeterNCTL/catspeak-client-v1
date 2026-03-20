@@ -12,7 +12,7 @@ import {
 } from "@mui/material"
 import { useLanguage } from "@/shared/context/LanguageContext.jsx"
 import AuthButton from "../../ui/AuthButton"
-import { useRegisterMutation } from "../../../api/authApi"
+import { useRegisterMutation } from "@/store/api/authApi"
 import { useNavigate } from "react-router-dom"
 import RegisterFormFields from "./RegisterFormFields"
 import { colors } from "@/shared/utils/colors"

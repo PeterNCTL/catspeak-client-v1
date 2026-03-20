@@ -3,7 +3,7 @@ import { ArrowLeft, Hash } from "lucide-react"
 import { useLanguage } from "@/shared/context/LanguageContext.jsx"
 import AuthButton from "../../ui/AuthButton"
 import TextInput from "@/shared/components/ui/TextInput"
-import { useVerifyResetOtpMutation } from "../../../api/authApi"
+import { useVerifyResetOtpMutation } from "@/store/api/authApi"
 
 const VerifyOtpStep = ({ email, onSuccess, onBack }) => {
   const { t } = useLanguage()

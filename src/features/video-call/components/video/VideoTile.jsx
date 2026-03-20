@@ -1,7 +1,43 @@
 import { MicOff, VideoOff } from "lucide-react"
 import useAudioLevel from "../../hooks/useAudioLevel"
-import { useEffect, useRef, useMemo } from "react"
+import { useEffect, useRef, useMemo, useCallback } from "react"
 import { useParticipant } from "@videosdk.live/react-sdk"
+
+// ─── Global: resume all blocked <video> elements on first user gesture ───
+const pendingVideoElements = new Set()
+let gestureListenerAttached = false
+
+const attachGestureListener = () => {
+  if (gestureListenerAttached) return
+  gestureListenerAttached = true
+
+  const resumeAll = () => {
+    pendingVideoElements.forEach(async (el) => {
+      if (el.paused && el.srcObject) {
+        try {
+          await el.play()
+          console.log("[VideoTile] ▶️ gesture-resumed playback for a blocked element")
+          pendingVideoElements.delete(el)
+        } catch {
+          // still blocked — leave in set for next gesture
+        }
+      } else {
+        pendingVideoElements.delete(el)
+      }
+    })
+
+    if (pendingVideoElements.size === 0) {
+      document.removeEventListener("click", resumeAll, true)
+      document.removeEventListener("touchstart", resumeAll, true)
+      document.removeEventListener("keydown", resumeAll, true)
+      gestureListenerAttached = false
+    }
+  }
+
+  document.addEventListener("click", resumeAll, true)
+  document.addEventListener("touchstart", resumeAll, true)
+  document.addEventListener("keydown", resumeAll, true)
+}
 
 const VideoTile = ({ participantId }) => {
   const { displayName, webcamStream, micStream, webcamOn, micOn, isLocal } =
@@ -9,6 +45,8 @@ const VideoTile = ({ participantId }) => {
 
   const videoTrack = webcamStream?.track ?? null
   const audioTrack = micStream?.track ?? null
+
+  const tag = `[VideoTile:${participantId?.slice(0, 6)}${isLocal ? ":local" : ""}]`
 
   // Build a stable MediaStream only when the underlying tracks change.
   const sdkStream = useMemo(() => {
@@ -25,10 +63,118 @@ const VideoTile = ({ participantId }) => {
   const hasVideoTrack = sdkStream && sdkStream.getVideoTracks().length > 0
   const isVideoVisible = webcamOn && hasVideoTrack
 
+  // ─── Diagnostic: log stream/track state on meaningful changes ───
   useEffect(() => {
-    if (!videoRef.current) return
-    videoRef.current.srcObject = sdkStream ?? null
-  }, [sdkStream])
+    const audioState = audioTrack
+      ? `readyState=${audioTrack.readyState} enabled=${audioTrack.enabled} muted=${audioTrack.muted}`
+      : "null"
+    const videoState = videoTrack
+      ? `readyState=${videoTrack.readyState} enabled=${videoTrack.enabled}`
+      : "null"
+
+    console.log(
+      `${tag} stream update — micOn=${micOn} webcamOn=${webcamOn} ` +
+      `audioTrack=[${audioState}] videoTrack=[${videoState}] ` +
+      `sdkStream=${sdkStream ? `${sdkStream.getTracks().length} tracks` : "null"}`
+    )
+  }, [sdkStream, micOn, webcamOn]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // ─── Diagnostic: monitor audio track lifecycle events ───
+  useEffect(() => {
+    if (!audioTrack || isLocal) return
+
+    const onEnded = () =>
+      console.warn(`${tag} ⚠️ audio track ENDED (readyState=${audioTrack.readyState})`)
+    const onMute = () =>
+      console.warn(`${tag} ⚠️ audio track MUTED`)
+    const onUnmute = () =>
+      console.log(`${tag} ✅ audio track UNMUTED`)
+
+    audioTrack.addEventListener("ended", onEnded)
+    audioTrack.addEventListener("mute", onMute)
+    audioTrack.addEventListener("unmute", onUnmute)
+
+    return () => {
+      audioTrack.removeEventListener("ended", onEnded)
+      audioTrack.removeEventListener("mute", onMute)
+      audioTrack.removeEventListener("unmute", onUnmute)
+    }
+  }, [audioTrack, isLocal]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // ─── Assign srcObject + attempt play with autoplay-block recovery ───
+  const attemptPlay = useCallback(
+    async (el) => {
+      if (!el || el.paused === false) return
+      try {
+        await el.play()
+        console.log(`${tag} ▶️ play() succeeded`)
+        pendingVideoElements.delete(el)
+      } catch (err) {
+        if (err.name === "NotAllowedError") {
+          console.warn(
+            `${tag} ⚠️ play() blocked by autoplay policy — ` +
+            `will resume on next user gesture`
+          )
+          // Register this element to be resumed on next user gesture
+          pendingVideoElements.add(el)
+          attachGestureListener()
+        } else {
+          console.error(`${tag} ❌ play() error: ${err.name} — ${err.message}`)
+        }
+      }
+    },
+    [tag]
+  )
+
+  useEffect(() => {
+    const el = videoRef.current
+    if (!el) return
+
+    el.srcObject = sdkStream ?? null
+    console.log(
+      `${tag} srcObject set — ` +
+      `audioTracks=${sdkStream?.getAudioTracks().length ?? 0} ` +
+      `videoTracks=${sdkStream?.getVideoTracks().length ?? 0}`
+    )
+
+    if (sdkStream && !isLocal) {
+      attemptPlay(el)
+    }
+  }, [sdkStream, isLocal, attemptPlay, tag])
+
+  // ─── Diagnostic: detect if <video> stops playing unexpectedly ───
+  useEffect(() => {
+    const el = videoRef.current
+    if (!el || isLocal) return
+
+    const onPause = () => {
+      if (el.srcObject) {
+        console.warn(`${tag} ⏸️ <video> paused unexpectedly while srcObject is set`)
+        attemptPlay(el)
+      }
+    }
+    const onStalled = () =>
+      console.warn(`${tag} ⏳ <video> stalled`)
+    const onPlaying = () =>
+      console.log(`${tag} ▶️ <video> is playing`)
+
+    el.addEventListener("pause", onPause)
+    el.addEventListener("stalled", onStalled)
+    el.addEventListener("playing", onPlaying)
+
+    return () => {
+      el.removeEventListener("pause", onPause)
+      el.removeEventListener("stalled", onStalled)
+      el.removeEventListener("playing", onPlaying)
+    }
+  }, [isLocal, attemptPlay, tag])
+
+  // ─── Cleanup: remove from pending set on unmount ───
+  useEffect(() => {
+    return () => {
+      if (videoRef.current) pendingVideoElements.delete(videoRef.current)
+    }
+  }, [])
 
   return (
     <div
@@ -38,17 +184,21 @@ const VideoTile = ({ participantId }) => {
           : "border-[#C6C6C6] shadow-sm"
       }`}
     >
-      {/* Always render if stream exists — keeps audio playing even when video is off */}
-      {sdkStream && (
-        <video
-          autoPlay
-          playsInline
-          muted={isLocal}
-          ref={videoRef}
-          className={`h-full w-full object-cover ${isVideoVisible ? "block" : "hidden"}`}
-          onError={() => {}}
-        />
-      )}
+      {/*
+        Always render the <video> element so the browser associates it with the
+        original user-gesture context (joining the call). Conditionally rendering
+        it caused autoplay to be blocked when remote streams arrived later.
+      */}
+      <video
+        autoPlay
+        playsInline
+        muted={isLocal}
+        ref={videoRef}
+        className={`h-full w-full object-cover ${
+          sdkStream && isVideoVisible ? "block" : "hidden"
+        }`}
+        onError={() => {}}
+      />
 
       {/* Avatar fallback when no video */}
       {(!sdkStream || !isVideoVisible) && (

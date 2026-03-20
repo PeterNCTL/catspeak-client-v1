@@ -99,7 +99,13 @@ export const VideoCallContent = ({
     if (p.id === localParticipant?.id) return
     const aid = p.metaData?.accountId
     const key = aid ? String(aid) : `__sdk__${p.id}`
-    if (seenAccountIds.has(key)) return
+    if (seenAccountIds.has(key)) {
+      console.warn(
+        `[VideoCallContext] 🔄 Dedup: dropping participant ${p.id} ` +
+        `(accountId=${aid}, displayName=${p.displayName}) — already seen`
+      )
+      return
+    }
     seenAccountIds.add(key)
     participantIds.push(p.id)
   })

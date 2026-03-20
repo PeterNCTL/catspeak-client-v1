@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react"
 
 let sharedAudioContext = null
 
-const getAudioContext = () => {
+const getAudioContext = async () => {
   if (!sharedAudioContext) {
     sharedAudioContext = new (
       window.AudioContext || window.webkitAudioContext
@@ -10,7 +10,12 @@ const getAudioContext = () => {
   }
 
   if (sharedAudioContext.state === "suspended") {
-    sharedAudioContext.resume()
+    try {
+      await sharedAudioContext.resume()
+    } catch {
+      // resume() will fail if no user gesture has occurred yet — that's fine,
+      // audio level metering just won't work until the user interacts.
+    }
   }
 
   return sharedAudioContext
@@ -39,44 +44,53 @@ const useAudioLevel = (audioTrack) => {
     if (sourceRef.current) sourceRef.current.disconnect()
     if (analyserRef.current) analyserRef.current.disconnect()
 
-    try {
-      const audioContext = getAudioContext()
+    let cancelled = false
 
-      const analyser = audioContext.createAnalyser()
-      analyser.fftSize = 256
-      analyser.smoothingTimeConstant = 0.8
+    const setup = async () => {
+      try {
+        const audioContext = await getAudioContext()
 
-      const stream = new MediaStream([audioTrack])
-      const source = audioContext.createMediaStreamSource(stream)
+        if (cancelled || audioContext.state === "suspended") return
 
-      source.connect(analyser)
+        const analyser = audioContext.createAnalyser()
+        analyser.fftSize = 256
+        analyser.smoothingTimeConstant = 0.8
 
-      analyserRef.current = analyser
-      sourceRef.current = source
+        const stream = new MediaStream([audioTrack])
+        const source = audioContext.createMediaStreamSource(stream)
 
-      const dataArray = new Uint8Array(analyser.fftSize)
+        source.connect(analyser)
 
-      const update = () => {
-        analyser.getByteTimeDomainData(dataArray)
+        analyserRef.current = analyser
+        sourceRef.current = source
 
-        let sum = 0
-        for (let i = 0; i < dataArray.length; i++) {
-          const normalized = (dataArray[i] - 128) / 128
-          sum += normalized * normalized
+        const dataArray = new Uint8Array(analyser.fftSize)
+
+        const update = () => {
+          analyser.getByteTimeDomainData(dataArray)
+
+          let sum = 0
+          for (let i = 0; i < dataArray.length; i++) {
+            const normalized = (dataArray[i] - 128) / 128
+            sum += normalized * normalized
+          }
+
+          const rms = Math.sqrt(sum / dataArray.length)
+          setLevel(rms * 100)
+
+          rafRef.current = requestAnimationFrame(update)
         }
 
-        const rms = Math.sqrt(sum / dataArray.length)
-        setLevel(rms * 100)
-
-        rafRef.current = requestAnimationFrame(update)
+        update()
+      } catch (err) {
+        console.error("AudioLevel error:", err)
       }
-
-      update()
-    } catch (err) {
-      console.error("AudioLevel error:", err)
     }
 
+    setup()
+
     return () => {
+      cancelled = true
       if (rafRef.current) cancelAnimationFrame(rafRef.current)
       if (sourceRef.current) sourceRef.current.disconnect()
       if (analyserRef.current) analyserRef.current.disconnect()

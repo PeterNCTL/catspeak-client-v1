@@ -225,7 +225,7 @@ const MessageWidget = () => {
           }
           dispatch(toggleWidget())
         }}
-        className={`flex h-12 w-12 items-center justify-center rounded-full transition-colors hover:bg-[#E5E5E5] ${isOpen ? "" : ""}`}
+        className={`flex h-10 w-10 items-center justify-center rounded-full transition-colors hover:bg-[#E5E5E5] ${isOpen ? "" : ""}`}
         aria-label="Tin nhắn"
       >
         <MessageCircle />

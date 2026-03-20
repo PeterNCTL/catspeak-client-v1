@@ -49,4 +49,4 @@ export {
   useRegisterAdminMutation,
   useRefreshTokenMutation,
   useRevokeMutation,
-} from "./api/authApi"
+} from "@/store/api/authApi"

@@ -34,7 +34,7 @@ const NotificationWidget = () => {
     <div className="relative flex items-center" ref={dropdownRef}>
       <button
         onClick={toggleDropdown}
-        className={`flex h-12 w-12 items-center justify-center rounded-full transition-colors hover:bg-[#E5E5E5] ${
+        className={`flex h-10 w-10 items-center justify-center rounded-full transition-colors hover:bg-[#E5E5E5] ${
           isOpen ? "" : ""
         }`}
         aria-label="Notifications"
@@ -44,8 +44,8 @@ const NotificationWidget = () => {
 
       <AnimatePresence>
         {isOpen && (
-          <div className="absolute right-0 top-full z-50 mt-2 w-80">
-            <FluentAnimation direction="down" distance={10} exit={true}>
+          <div className="fixed inset-0 z-50 md:absolute md:inset-auto md:right-0 md:top-full md:mt-2 md:w-80">
+            <FluentAnimation direction="down" distance={10} exit={true} className="h-full md:h-auto">
               <NotificationDropdown onClose={() => setIsOpen(false)} />
             </FluentAnimation>
           </div>

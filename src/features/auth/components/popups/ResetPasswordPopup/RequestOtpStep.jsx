@@ -2,7 +2,7 @@ import { useState } from "react"
 import { useLanguage } from "@/shared/context/LanguageContext.jsx"
 import AuthButton from "../../ui/AuthButton"
 import TextInput from "@/shared/components/ui/TextInput"
-import { useForgotPasswordMutation } from "../../../api/authApi"
+import { useForgotPasswordMutation } from "@/store/api/authApi"
 
 const RequestOtpStep = ({ onSuccess }) => {
   const { t } = useLanguage()

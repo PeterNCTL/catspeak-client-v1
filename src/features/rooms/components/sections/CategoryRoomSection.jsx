@@ -36,7 +36,7 @@ const CategoryRoomSection = ({
     >
       <div className="flex items-center gap-2 transition-transform duration-300 group-hover:translate-x-4">
         <h6
-          className="mb-0 text-xl font-bold"
+          className="text-xl font-bold"
           style={{ color: colors.headingColor }}
         >
           {title}

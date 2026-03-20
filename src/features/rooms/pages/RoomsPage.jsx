@@ -7,9 +7,9 @@ import {
   WelcomeSection,
   SessionActionButtons,
   CommunicateTab,
-  TeachingTab,
-  GroupTab,
-  ClassTab,
+  // TeachingTab,
+  // GroupTab,
+  // ClassTab,
   CreateRoomModal,
   RoomsTabs,
   RoomsMobileDrawer,
@@ -142,18 +142,18 @@ const RoomsPage = () => {
             {/* Content area */}
             <div className="flex flex-col min-w-0">
               <div className="w-full">
-                <div className="w-full">
+                <div className="mb-4">
                   <RoomsTabs tab={tab} setTab={setTab} />
                 </div>
 
                 {/* Mobile Filter Button - Moved below tabs */}
-                <div className="mt-4 lg:hidden">
+                <div className="lg:hidden mb-6">
                   <button
                     onClick={() => setMobileFiltersOpen(true)}
-                    className={`flex items-center justify-center gap-2 rounded-lg h-9 px-4 text-sm font-medium shadow-sm transition-all duration-200 ${
+                    className={`flex items-center justify-center gap-2 rounded-lg h-10 px-4 text-sm font-medium transition-all duration-200 ${
                       mobileFiltersOpen
                         ? "bg-[#990011] text-white border-[#990011]"
-                        : "bg-[#F2F2F2] text-gray-700 hover:bg-gray-50"
+                        : "bg-[#F2F2F2] hover:bg-[#E6E6E6]"
                     }`}
                   >
                     <Filter size={20} />
@@ -175,7 +175,7 @@ const RoomsPage = () => {
                 </RoomsMobileDrawer>
 
                 {/* Tab Panels */}
-                <div className="mt-4 sm:mt-6 overflow-hidden">
+                <div className="overflow-hidden">
                   <AnimatePresence mode="wait">
                     <FadeAnimation key={tab} className="w-full">
                       {tab === "communicate" && (
@@ -190,9 +190,9 @@ const RoomsPage = () => {
                           topics={topicsArg}
                         />
                       )}
-                      {tab === "teaching" && <TeachingTab />}
+                      {/* {tab === "teaching" && <TeachingTab />}
                       {tab === "group" && <GroupTab />}
-                      {tab === "class" && <ClassTab />}
+                      {tab === "class" && <ClassTab />} */}
                     </FadeAnimation>
                   </AnimatePresence>
                 </div>

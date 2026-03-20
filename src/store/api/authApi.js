@@ -80,13 +80,15 @@ export const authApi = baseApi.injectEndpoints({
       }),
 
       async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+        // Clear local auth state immediately so localStorage is always cleaned up,
+        // even if the API call fails. This ensures other tabs see the logout on refresh.
+        dispatch(logout())
         try {
           await queryFulfilled
-          dispatch(logout())
-          dispatch(baseApi.util.resetApiState())
         } catch (err) {
-          console.error(err)
+          console.error("Logout API call failed:", err)
         }
+        dispatch(baseApi.util.resetApiState())
       },
     }),
     getProfile: builder.query({
