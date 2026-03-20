@@ -17,6 +17,7 @@ export default {
     doYouLikeToGoOut: "你喜欢出去玩吗？",
     hskExamPrep: "HSK备考室",
     doYouHavePets: "你有养宠物吗？",
+    schoolLife: "学校生活",
   },
   heroCarousel: {
     comingSoonTitle: "即将推出",

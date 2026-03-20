@@ -20,5 +20,9 @@ export const getTranslatedRoomName = (name, t) => {
     return t.rooms.specialNames.doYouHavePets || name;
   }
 
+  if (name === "学校生活") {
+    return t.rooms.specialNames.schoolLife || name;
+  }
+
   return name;
 };

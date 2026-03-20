@@ -18,6 +18,7 @@ export default {
     doYouLikeToGoOut: "Do you like to go out?",
     hskExamPrep: "HSK Exam Prep Room",
     doYouHavePets: "Do you have pets?",
+    schoolLife: "School life",
   },
   heroCarousel: {
     comingSoonTitle: "Coming Soon",

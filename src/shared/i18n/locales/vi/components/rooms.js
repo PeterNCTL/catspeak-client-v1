@@ -19,6 +19,7 @@ export default {
     doYouLikeToGoOut: "Bạn thích đi chơi không?",
     hskExamPrep: "Phòng luyện thi HSK",
     doYouHavePets: "Bạn có nuôi thú cưng không?",
+    schoolLife: "Cuộc sống ở trường",
   },
   heroCarousel: {
     comingSoonTitle: "Sắp ra mắt",
