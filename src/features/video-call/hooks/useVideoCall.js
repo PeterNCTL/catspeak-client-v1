@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react"
+import { useRef, useEffect, useState } from "react"
 import { useMeeting, useParticipant } from "@videosdk.live/react-sdk"
 
 /**
@@ -7,8 +7,18 @@ import { useMeeting, useParticipant } from "@videosdk.live/react-sdk"
  * from useMeeting() / useParticipant() in the components that need them.
  */
 export const useVideoCall = (sdkToken) => {
+  const [isJoined, setIsJoined] = useState(false)
+
   const { join, leave, toggleMic, toggleWebcam, localParticipant } = useMeeting(
     {
+      onMeetingJoined: () => {
+        console.log("[useVideoCall] ✅ Has joined the meeting")
+        setIsJoined(true)
+      },
+      onMeetingLeft: () => {
+        console.log("[useVideoCall] ❌ Has left the meeting")
+        setIsJoined(false)
+      },
       onError: (error) => {
         console.error("[useVideoCall] VideoSDK Error:", error)
       },
@@ -17,19 +27,27 @@ export const useVideoCall = (sdkToken) => {
 
   // Join once on mount; leave on unmount.
   const hasJoinedRef = useRef(false)
+
   useEffect(() => {
-    console.log("[useVideoCall] sdkToken:", sdkToken)
+    // console.log("[useVideoCall] sdkToken:", sdkToken)
     if (!sdkToken) return
     if (hasJoinedRef.current) return
 
     const timeout = setTimeout(() => {
+      console.log("[useVideoCall] ⏳ Joining meeting...")
       hasJoinedRef.current = true
       join()
     }, 500)
 
     return () => {
       clearTimeout(timeout)
-      leave()
+
+      // ✅ Only leave if we actually joined
+      if (hasJoinedRef.current) {
+        console.log("[useVideoCall] 🚪 Leaving meeting...")
+        leave()
+        hasJoinedRef.current = false
+      }
     }
   }, [sdkToken]) // join/leave are stable SDK references
 
@@ -68,5 +86,6 @@ export const useVideoCall = (sdkToken) => {
     toggleAudio,
     toggleVideo,
     leaveMeeting: leave,
+    isJoined,
   }
 }

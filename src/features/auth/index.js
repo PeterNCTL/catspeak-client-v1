@@ -8,7 +8,6 @@ export { default as FormSelectField } from "./components/forms/FormSelectField"
 export { default as FormTextField } from "./components/forms/FormTextField"
 
 // Popups
-export { default as ForgotPasswordPopup } from "./components/popups/ForgotPasswordPopup"
 export { default as LoginPopup } from "./components/popups/LoginPopup"
 export { default as PolicyModal } from "./components/popups/PolicyModal"
 export { default as RegisterPopup } from "./components/popups/RegisterPopup"

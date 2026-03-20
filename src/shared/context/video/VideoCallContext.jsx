@@ -43,7 +43,7 @@ export const VideoCallContent = ({
   const { participants, localParticipant } = useMeeting()
 
   // Local mic/cam state + lifecycle (join/leave) + toggle actions
-  const { micOn, cameraOn, toggleAudio, toggleVideo, leaveMeeting } =
+  const { micOn, cameraOn, toggleAudio, toggleVideo, leaveMeeting, isJoined } =
     useVideoCall(sdkToken)
 
   // Chat via VideoSDK PubSub
@@ -104,7 +104,7 @@ export const VideoCallContent = ({
     participantIds.push(p.id)
   })
 
-  const isConnected = !!localParticipant
+  const isConnected = isJoined
 
   if (!isConnected) {
     return (

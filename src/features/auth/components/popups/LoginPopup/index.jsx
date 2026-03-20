@@ -1,38 +1,18 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { FiX } from "react-icons/fi"
-import {
-  Box,
-  Stack,
-  Typography,
-  TextField,
-  Checkbox,
-  FormControlLabel,
-  Alert,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  useTheme,
-  useMediaQuery,
-  IconButton,
-  InputAdornment,
-} from "@mui/material"
-import Visibility from "@mui/icons-material/Visibility"
-import VisibilityOff from "@mui/icons-material/VisibilityOff"
+import { Eye, EyeOff, X } from "lucide-react"
 import { useLanguage } from "@/shared/context/LanguageContext.jsx"
 import AuthButton from "../../ui/AuthButton"
 import { useLoginMutation } from "../../../api/authApi"
-import { colors } from "@/shared/utils/colors"
 import { useAuthModal } from "@/shared/context/AuthModalContext"
+import Modal from "@/shared/components/ui/Modal"
+import TextInput from "@/shared/components/ui/TextInput"
+import Checkbox from "@/shared/components/ui/Checkbox"
 
 const LoginPopup = ({ open, onClose, onSwitchMode }) => {
   const { t } = useLanguage()
   const authText = t.auth
-  const theme = useTheme()
-  const fullScreen = useMediaQuery(theme.breakpoints.down("sm"))
   const navigate = useNavigate()
-
-  // May be null if the modal wasn't opened from AuthGuard redirect
   const { redirectAfterLogin } = useAuthModal()
 
   const [apiError, setApiError] = useState(null)
@@ -46,235 +26,158 @@ const LoginPopup = ({ open, onClose, onSwitchMode }) => {
   const [login, { isLoading }] = useLoginMutation()
 
   const validateEmail = (value) => {
-    if (!value) {
-      return authText.validationEmailRequired
-    }
+    if (!value) return authText.validationEmailRequired
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(value)) {
-      return authText.validationEmailInvalid
-    }
+    if (!emailRegex.test(value)) return authText.validationEmailInvalid
     return ""
   }
 
-  const validatePassword = (value) => {
-    if (!value) {
-      return authText.validationPasswordRequired
-    }
-    return ""
-  }
+  const validatePassword = (value) =>
+    !value ? authText.validationPasswordRequired : ""
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setApiError(null)
 
-    // Validate fields
     const emailErr = validateEmail(email)
     const passwordErr = validatePassword(password)
-
     setEmailError(emailErr)
     setPasswordError(passwordErr)
 
-    if (emailErr || passwordErr) {
-      return
-    }
+    if (emailErr || passwordErr) return
 
     try {
-      const result = await login({
-        email,
-        password,
-      }).unwrap()
+      await login({ email, password }).unwrap()
       onClose()
-      // If the user was redirected here from a protected page (e.g. shared /room/:id link),
-      // take them back there after a successful login.
-      if (redirectAfterLogin) {
-        navigate(redirectAfterLogin, { replace: true })
-      }
+      if (redirectAfterLogin) navigate(redirectAfterLogin, { replace: true })
     } catch (err) {
-      console.error("Login failed:", err)
+      const isInvalidCredentials =
+        err?.status === 401 ||
+        err?.data?.message === "Invalid email or password" ||
+        err?.message === "Invalid email or password"
+
       setApiError(
-        err?.data?.message || err.message || "Login failed. Please try again.",
+        isInvalidCredentials
+          ? authText.invalidCredentials
+          : err?.data?.message ||
+              err.message ||
+              t.common?.errorGeneric ||
+              "Login failed",
       )
     }
   }
 
-  const inputColorSx = {
-    "& .MuiOutlinedInput-root": {
-      borderRadius: "50px",
-      "& fieldset": {
-        borderColor: colors.border,
-      },
-      "&:hover fieldset": {
-        borderColor: colors.red[700],
-      },
-      "&.Mui-focused fieldset": {
-        borderColor: colors.red[700],
-      },
-    },
-    "& .MuiInputLabel-root.Mui-focused": {
-      color: colors.red[700],
-    },
-  }
-
   return (
-    <Dialog
-      open={open}
-      onClose={(event, reason) => {
-        if (reason !== "backdropClick" && onClose) {
-          onClose()
-        }
-      }}
-      fullScreen={fullScreen}
-      fullWidth
-      maxWidth="sm"
-      PaperProps={{
-        sx: {
-          borderRadius: "24px",
-          padding: 2,
-        },
-      }}
-    >
-      <Box component="div">
-        <button
-          type="button"
-          aria-label="Close"
-          className="absolute right-6 top-6 text-2xl text-gray-500 transition hover:text-gray-700"
-          onClick={onClose}
-        >
-          <FiX />
-        </button>
-
-        <DialogTitle
-          sx={{
-            textAlign: "center",
-            color: "#8f0d15",
-            fontSize: "1.875rem",
-            fontWeight: 900,
-            fontFamily: "'Inter', sans-serif",
-          }}
-        >
+    <Modal open={open} onClose={onClose}>
+      <form onSubmit={handleSubmit}>
+        <h2 className="text-center text-3xl font-black text-[#8f0d15] font-['Inter'] mb-6">
           {authText.loginTitle}
-        </DialogTitle>
+        </h2>
 
-        <DialogContent sx={{ pb: 1 }}>
-          <Box component="form" onSubmit={handleSubmit}>
-            <Stack spacing={2} sx={{ mt: 1 }}>
-              <Stack spacing={4}>
-                {/* Email Input */}
-                <Box>
-                  <Typography
-                    display="block"
-                    gutterBottom
-                    sx={{ fontWeight: 700, fontSize: "0.875rem" }}
-                  >
-                    {authText.emailLabel}
-                  </Typography>
-                  <TextField
-                    fullWidth
-                    type="email"
-                    placeholder={authText.emailPlaceholder}
-                    value={email}
-                    onChange={(e) => {
-                      setEmail(e.target.value)
-                      setEmailError("")
-                    }}
-                    error={!!emailError}
-                    helperText={emailError}
-                    sx={inputColorSx}
-                  />
-                </Box>
+        <div className="space-y-4 mb-2">
+          {/* Email */}
+          <div>
+            <label className="block text-sm mb-1">{authText.emailLabel}</label>
+            <TextInput
+              type="email"
+              variant="square"
+              autoComplete="email"
+              placeholder={authText.emailPlaceholder}
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value)
+                setEmailError("")
+              }}
+              className={
+                emailError
+                  ? "!border-red-600 focus:!border-red-600 focus:!ring-red-600"
+                  : ""
+              }
+            />
+            {emailError && (
+              <p className="mt-1 text-xs text-red-600">{emailError}</p>
+            )}
+          </div>
 
-                {/* Password Input */}
-                <Box>
-                  <Typography
-                    display="block"
-                    gutterBottom
-                    sx={{ fontWeight: 700, fontSize: "0.875rem" }}
-                  >
-                    {authText.passwordLabel}
-                  </Typography>
-                  <TextField
-                    fullWidth
-                    type={showPassword ? "text" : "password"}
-                    placeholder={authText.passwordPlaceholder}
-                    value={password}
-                    onChange={(e) => {
-                      setPassword(e.target.value)
-                      setPasswordError("")
-                    }}
-                    error={!!passwordError}
-                    helperText={passwordError}
-                    sx={inputColorSx}
-                    InputProps={{
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <IconButton
-                            aria-label="toggle password visibility"
-                            onClick={() => setShowPassword(!showPassword)}
-                            onMouseDown={(e) => e.preventDefault()}
-                            edge="end"
-                          >
-                            {showPassword ? <VisibilityOff /> : <Visibility />}
-                          </IconButton>
-                        </InputAdornment>
-                      ),
-                    }}
-                  />
-                </Box>
-              </Stack>
+          {/* Password */}
+          <div>
+            <label className="block text-sm mb-1">
+              {authText.passwordLabel}
+            </label>
+            <div className="relative">
+              <TextInput
+                type={showPassword ? "text" : "password"}
+                variant="square"
+                autoComplete="current-password"
+                placeholder={authText.passwordPlaceholder}
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value)
+                  setPasswordError("")
+                }}
+                className={`pr-12 ${passwordError ? "!border-red-600 focus:!border-red-600 focus:!ring-red-600" : ""}`}
+              />
+              <button
+                type="button"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+            </div>
+            {passwordError && (
+              <p className="mt-1 text-xs text-red-600">{passwordError}</p>
+            )}
+          </div>
+        </div>
 
-              {/* Remember Me & Forgot Password */}
-              <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-gray-600">
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={remember}
-                      onChange={(e) => setRemember(e.target.checked)}
-                      sx={{
-                        color: colors.red[700],
-                        "&.Mui-checked": {
-                          color: colors.red[700],
-                        },
-                      }}
-                    />
-                  }
-                  label={authText.rememberMe}
-                />
-                <button
-                  type="button"
-                  className="font-semibold text-[#8f0d15] hover:underline"
-                  onClick={() => onSwitchMode("forgot")}
-                >
-                  {authText.forgotLink}
-                </button>
-              </div>
+        {/* Remember & Forgot */}
+        <div className="flex items-center justify-between text-sm mb-6">
+          <label className="inline-flex items-center">
+            <Checkbox
+              checked={remember}
+              onChange={(e) => setRemember(e.target.checked)}
+            />
+            <span className="ml-2">{authText.rememberMe}</span>
+          </label>
+          <button
+            type="button"
+            className="font-semibold text-[#990011] hover:underline"
+            onClick={() => onSwitchMode("forgot")}
+          >
+            {authText.forgotLink}
+          </button>
+        </div>
 
-              {/* Error Alert */}
-              {apiError && (
-                <Alert severity="error" sx={{ borderRadius: "12px" }}>
-                  {apiError}
-                </Alert>
-              )}
-
-              {/* Submit Button */}
-              <AuthButton type="submit" className="mt-2" disabled={isLoading}>
-                {isLoading ? "..." : authText.loginButton.toUpperCase()}
-              </AuthButton>
-            </Stack>
-          </Box>
-
-          <p className="mt-7 text-center text-sm text-gray-700">
-            {authText.dontHaveAccount}{" "}
-            <button
-              type="button"
-              className="font-semibold text-[#8f0d15] hover:underline"
-              onClick={() => onSwitchMode("register")}
-            >
-              {authText.registerLink}
-            </button>
+        {/* API Error */}
+        {apiError && (
+          <p className="mb-2 rounded-lg bg-red-100 h-10 flex items-center px-3 text-sm text-red-700">
+            {apiError}
           </p>
-        </DialogContent>
-      </Box>
-    </Dialog>
+        )}
+
+        {/* Submit */}
+        <AuthButton
+          type="submit"
+          className="w-full rounded-lg mb-6"
+          disabled={isLoading}
+        >
+          {isLoading ? "..." : authText.loginButton.toUpperCase()}
+        </AuthButton>
+
+        {/* Register link */}
+        <p className="text-center text-sm text-[#7A7574]">
+          {authText.dontHaveAccount}{" "}
+          <button
+            type="button"
+            className="font-semibold text-[#990011] hover:underline"
+            onClick={() => onSwitchMode("register")}
+          >
+            {authText.registerLink}
+          </button>
+        </p>
+      </form>
+    </Modal>
   )
 }
 

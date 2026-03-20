@@ -1,10 +1,12 @@
 import { useState } from "react"
-import { Box, Typography, Stack, TextField, Alert } from "@mui/material"
+import { useLanguage } from "@/shared/context/LanguageContext.jsx"
 import AuthButton from "../../ui/AuthButton"
+import TextInput from "@/shared/components/ui/TextInput"
 import { useForgotPasswordMutation } from "../../../api/authApi"
-import { colors } from "@/shared/utils/colors"
 
 const RequestOtpStep = ({ onSuccess }) => {
+  const { t } = useLanguage()
+  const authText = t.auth || {}
   const [email, setEmail] = useState("")
   const [error, setError] = useState("")
 
@@ -16,97 +18,63 @@ const RequestOtpStep = ({ onSuccess }) => {
     setError("")
 
     if (!email) {
-      setError("Please input your email!")
+      setError(authText.validationEmailRequired || "Please input your email!")
       return
     }
 
     try {
       const emailValue = email.trim()
       await forgotPassword({ email: emailValue }).unwrap()
-      // Message handled by parent or just proceed
       onSuccess(emailValue)
     } catch (err) {
       console.error("Failed to send OTP:", err)
-      setError(err?.data?.message || "Failed to send OTP.")
+      const errorMsg = err?.data?.message
+      if (errorMsg === "Email not found") {
+        setError(authText.emailNotFound || "Email not found")
+      } else {
+        setError(errorMsg || authText.sendOtpFailed || "Failed to send OTP.")
+      }
     }
-  }
-
-  const inputColorSx = {
-    "& .MuiOutlinedInput-root": {
-      borderRadius: "50px",
-      "& fieldset": {
-        borderColor: colors.border,
-      },
-      "&:hover fieldset": {
-        borderColor: colors.red[700],
-      },
-      "&.Mui-focused fieldset": {
-        borderColor: colors.red[700],
-      },
-    },
-    "& .MuiInputLabel-root.Mui-focused": {
-      color: colors.red[700],
-    },
   }
 
   return (
     <div>
-      <Typography
-        variant="h4"
-        align="center"
-        sx={{
-          fontWeight: 900,
-          color: "#8f0d15",
-          mb: 1,
-          fontFamily: "'Inter', sans-serif",
-          fontSize: "1.875rem",
-        }}
-      >
-        Forgot Password?
-      </Typography>
-      <Typography
-        variant="body2"
-        align="center"
-        color="text.secondary"
-        sx={{ mb: 4 }}
-      >
-        Enter your email address to receive a verification code.
-      </Typography>
+      <h2 className="mb-1 text-center text-3xl font-black text-[#8f0d15] font-['Inter']">
+        {authText.forgotStep1Title || "Forgot Password?"}
+      </h2>
+      <p className="mb-6 text-center text-sm text-[#7A7574]">
+        {authText.forgotStep1Subtitle || "Enter your email address to receive a verification code."}
+      </p>
 
-      <Box component="form" onSubmit={handleSubmit}>
-        <Stack spacing={3}>
-          <Box>
-            <Typography
-              display="block"
-              gutterBottom
-              sx={{ fontWeight: 700, fontSize: "0.875rem" }}
-            >
-              Email
-            </Typography>
-            <TextField
-              fullWidth
-              placeholder="Enter your email"
-              value={email}
-              onChange={(e) => {
-                setEmail(e.target.value)
-                setError("")
-              }}
-              error={!!error}
-              sx={inputColorSx}
-            />
-          </Box>
+      <form onSubmit={handleSubmit}>
+        <div className="mb-6">
+          <label className="mb-2 block text-sm">{authText.emailLabel || "Email"}</label>
+          <TextInput
+            type="email"
+            variant="square"
+            placeholder={authText.emailOnlyPlaceholder || "Enter your email"}
+            value={email}
+            onChange={(e) => {
+              setEmail(e.target.value)
+              setError("")
+            }}
+            className={
+              error
+                ? "!border-red-600 focus:!border-red-600 focus:!ring-red-600"
+                : ""
+            }
+          />
+          {error && <p className="mt-1 text-xs text-red-600">{error}</p>}
+        </div>
 
-          {error && (
-            <Alert severity="error" sx={{ borderRadius: "12px" }}>
-              {error}
-            </Alert>
-          )}
-
-          <AuthButton type="submit" disabled={isSendingOtp}>
-            {isSendingOtp ? "SENDING..." : "SEND OTP"}
-          </AuthButton>
-        </Stack>
-      </Box>
+        <AuthButton
+          type="submit"
+          disabled={isSendingOtp}
+          className="w-full rounded-lg"
+        >
+          {isSendingOtp ? (authText.sending || "SENDING...") : (authText.sendOtpButton?.toUpperCase() || "SEND OTP")}
+        </AuthButton>
+      </form>
     </div>
   )
 }

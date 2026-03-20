@@ -67,7 +67,6 @@ const RoomDetailPage = () => {
   }
 
   // -- Render --
-
   if (isLoadingRoom || isLoadingSessions) {
     return (
       <div className="flex h-screen items-center justify-center bg-white text-gray-500">

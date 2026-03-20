@@ -58,10 +58,10 @@ export const VideoCallProvider = ({ children }) => {
     const initMeeting = async () => {
       try {
         hasInitRef.current = true
-        console.log(
-          "[VideoCall] Fetching VideoSDK token for meeting:",
-          session.videoSdkMeetingId,
-        )
+        // console.log(
+        //   "[VideoCall] Fetching VideoSDK token for meeting:",
+        //   session.videoSdkMeetingId,
+        // )
 
         const res = await getVideoSdkToken({
           meetingId: session.videoSdkMeetingId,
@@ -69,14 +69,14 @@ export const VideoCallProvider = ({ children }) => {
         }).unwrap()
 
         const token = res?.token
-        console.log("[VideoCall] Token fetched from backend:", res)
+        // console.log("[VideoCall] Token fetched from backend:", res)
 
         if (typeof token !== "string" || token.trim().split(".").length !== 3) {
           throw new Error("Invalid VideoSDK token received from backend")
         }
 
         setSdkToken(token)
-        console.log("[VideoCall] sdkToken set in state ✅")
+        // console.log("[VideoCall] sdkToken set in state ✅")
       } catch (err) {
         console.error("[VideoCall] Meeting init failed:", err)
         hasInitRef.current = false // allow retry on next render

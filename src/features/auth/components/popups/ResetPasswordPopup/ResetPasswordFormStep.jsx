@@ -1,111 +1,159 @@
-import React from "react"
-import { LockOutlined } from "@ant-design/icons"
+import { useState } from "react"
+import { Lock, Eye, EyeOff } from "lucide-react"
 import { useLanguage } from "@/shared/context/LanguageContext.jsx"
-import { Form, Input, Button, message } from "antd"
+import AuthButton from "../../ui/AuthButton"
+import TextInput from "@/shared/components/ui/TextInput"
 import { useResetPasswordMutation } from "../../../api/authApi"
 
 const ResetPasswordFormStep = ({ email, token, onSuccess }) => {
   const { t } = useLanguage()
   const authText = t.auth || {}
-  const [resetPassword, { isLoading: isResetting }] = useResetPasswordMutation()
-  const [form] = Form.useForm()
 
-  const handleResetPassword = async (values) => {
+  const [newPassword, setNewPassword] = useState("")
+  const [confirmPassword, setConfirmPassword] = useState("")
+  const [newPasswordError, setNewPasswordError] = useState("")
+  const [confirmPasswordError, setConfirmPasswordError] = useState("")
+  const [apiError, setApiError] = useState("")
+  const [showNewPassword, setShowNewPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+
+  const [resetPassword, { isLoading: isResetting }] = useResetPasswordMutation()
+
+  const validateNewPassword = (value) => {
+    if (!value) return authText.validationNewPasswordRequired || "Please input your new password!"
+    if (value.length < 6) return authText.validationPasswordMin || "Password must be at least 6 characters!"
+    return ""
+  }
+
+  const validateConfirmPassword = (newPass, confirmPass) => {
+    if (!confirmPass) return authText.validationConfirmPasswordRequired || "Please confirm your password!"
+    if (newPass !== confirmPass) return authText.validationPasswordMatch || "The two passwords do not match!"
+    return ""
+  }
+
+  const handleResetPassword = async (e) => {
+    e.preventDefault()
+    setApiError("")
+
+    const newPassErr = validateNewPassword(newPassword)
+    const confirmPassErr = validateConfirmPassword(newPassword, confirmPassword)
+    
+    setNewPasswordError(newPassErr)
+    setConfirmPasswordError(confirmPassErr)
+
+    if (newPassErr || confirmPassErr) return
+
     try {
       await resetPassword({
         email,
-        token: token, // This is now the valid OTP
-        newPassword: values.newPassword,
+        token: token,
+        newPassword: newPassword,
       }).unwrap()
 
-      message.success("Password has been reset successfully!")
       onSuccess()
     } catch (err) {
       console.error("Reset password failed:", err)
-      message.error(err?.data?.message || "Failed to reset password.")
+      setApiError(
+        err?.data?.message ||
+          authText.resetPasswordFailed ||
+          "Failed to reset password.",
+      )
     }
   }
 
   return (
-    <div className="animate-fadeIn">
-      <h2 className="text-center text-3xl font-black text-[#8f0d15]">
-        Reset Password
+    <div>
+      <h2 className="mb-1 text-center text-3xl font-black text-[#8f0d15] font-['Inter']">
+        {authText.forgotStep3Title || "Reset Password"}
       </h2>
-      <p className="mt-3 text-center text-sm text-gray-600">
-        Create a new password for your account.
+      <p className="mb-6 text-center text-sm text-[#7A7574]">
+        {authText.forgotStep3Subtitle ||
+          "Create a new password for your account."}
       </p>
 
-      <Form
-        form={form}
-        name="reset-password-final"
-        layout="vertical"
-        onFinish={handleResetPassword}
-        className="mt-6"
-      >
-        <Form.Item
-          name="newPassword"
-          label={
-            <span className="text-sm font-semibold text-gray-700">
+      <form onSubmit={handleResetPassword}>
+        <div className="space-y-4 mb-6">
+          <div>
+            <label className="mb-2 block text-sm">
               {authText.newPasswordLabel || "New Password"}
-            </span>
-          }
-          rules={[
-            { required: true, message: "Please input your new password!" },
-            { min: 6, message: "Password must be at least 6 characters!" },
-          ]}
-        >
-          <Input.Password
-            prefix={<LockOutlined className="text-gray-400" />}
-            placeholder={
-              authText.newPasswordPlaceholder || "Enter new password"
-            }
-            className="rounded-full px-4 py-3"
-          />
-        </Form.Item>
-
-        <Form.Item
-          name="confirmPassword"
-          label={
-            <span className="text-sm font-semibold text-gray-700">
-              {authText.confirmPasswordLabel || "Confirm Password"}
-            </span>
-          }
-          dependencies={["newPassword"]}
-          rules={[
-            { required: true, message: "Please confirm your password!" },
-            ({ getFieldValue }) => ({
-              validator(_, value) {
-                if (!value || getFieldValue("newPassword") === value) {
-                  return Promise.resolve()
+            </label>
+            <div className="relative">
+              <Lock className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
+              <TextInput
+                variant="square"
+                type={showNewPassword ? "text" : "password"}
+                autoComplete="new-password"
+                placeholder={
+                  authText.newPasswordPlaceholder || "Enter new password"
                 }
-                return Promise.reject(
-                  new Error("The two passwords do not match!"),
-                )
-              },
-            }),
-          ]}
-        >
-          <Input.Password
-            prefix={<LockOutlined className="text-gray-400" />}
-            placeholder={
-              authText.confirmPasswordPlaceholder || "Confirm new password"
-            }
-            className="rounded-full px-4 py-3"
-          />
-        </Form.Item>
+                value={newPassword}
+                onChange={(e) => {
+                  setNewPassword(e.target.value)
+                  setNewPasswordError("")
+                }}
+                className={`pl-10 pr-12 ${newPasswordError ? "!border-red-600 focus:!border-red-600 focus:!ring-red-600" : ""}`}
+              />
+              <button
+                type="button"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                onClick={() => setShowNewPassword(!showNewPassword)}
+              >
+                {showNewPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+            </div>
+            {newPasswordError && (
+              <p className="mt-1 text-xs text-red-600">{newPasswordError}</p>
+            )}
+          </div>
 
-        <Form.Item className="mb-0">
-          <Button
-            type="primary"
-            htmlType="submit"
-            block
-            loading={isResetting}
-            className="h-12 text-base font-bold uppercase tracking-wider rounded-full shadow-lg border-none bg-gradient-to-r from-[#f08d1d] to-[#f4ab1b] hover:shadow-xl"
-          >
-            {authText.resetPasswordButton || "Reset Password"}
-          </Button>
-        </Form.Item>
-      </Form>
+          <div>
+            <label className="mb-2 block text-sm">
+              {authText.confirmPasswordLabel || "Confirm Password"}
+            </label>
+            <div className="relative">
+              <Lock className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
+              <TextInput
+                variant="square"
+                type={showConfirmPassword ? "text" : "password"}
+                autoComplete="new-password"
+                placeholder={
+                  authText.confirmPasswordPlaceholder || "Confirm new password"
+                }
+                value={confirmPassword}
+                onChange={(e) => {
+                  setConfirmPassword(e.target.value)
+                  setConfirmPasswordError("")
+                }}
+                className={`pl-10 pr-12 ${confirmPasswordError ? "!border-red-600 focus:!border-red-600 focus:!ring-red-600" : ""}`}
+              />
+              <button
+                type="button"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              >
+                {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+            </div>
+            {confirmPasswordError && (
+              <p className="mt-1 text-xs text-red-600">{confirmPasswordError}</p>
+            )}
+          </div>
+        </div>
+
+        {apiError && (
+          <p className="mb-2 rounded-lg bg-red-100 h-10 flex items-center px-3 text-sm text-red-700">
+            {apiError}
+          </p>
+        )}
+
+        <AuthButton
+          type="submit"
+          disabled={isResetting}
+          className="w-full rounded-lg"
+        >
+          {authText.resetPasswordButton || "Reset Password"}
+        </AuthButton>
+      </form>
     </div>
   )
 }

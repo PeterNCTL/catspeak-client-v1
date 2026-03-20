@@ -1,5 +1,14 @@
 /* Custom styles cho CathSpeak Client */
 /* Sử dụng Tailwind CSS cho styling chính */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  margin: 0;
+}
 
 /* Ant Design overrides nếu cần */
 .ant-layout {

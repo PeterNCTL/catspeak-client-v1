@@ -1,8 +1,7 @@
-import React, { useState } from "react"
-import { FiX } from "react-icons/fi"
-import { CheckCircleOutlined } from "@ant-design/icons"
-import { Button } from "antd"
-import AuthPopupAnim from "../../ui/AuthPopupAnim"
+import { useState } from "react"
+import { CheckCircle2 } from "lucide-react"
+import Modal from "@/shared/components/ui/Modal"
+import AuthButton from "../../ui/AuthButton"
 import RequestOtpStep from "./RequestOtpStep"
 import VerifyOtpStep from "./VerifyOtpStep"
 import ResetPasswordFormStep from "./ResetPasswordFormStep"
@@ -14,7 +13,7 @@ const STEPS = {
   SUCCESS: 3,
 }
 
-const ResetPasswordPopup = ({ onClose, onSwitchMode }) => {
+const ResetPasswordPopup = ({ open, onClose, onSwitchMode }) => {
   const [currentStep, setCurrentStep] = useState(STEPS.REQUEST_OTP)
   const [email, setEmail] = useState("")
   const [token, setToken] = useState("")
@@ -46,41 +45,28 @@ const ResetPasswordPopup = ({ onClose, onSwitchMode }) => {
   // --- Render Steps ---
 
   const renderSuccess = () => (
-    <AuthPopupAnim className="relative rounded-[32px] bg-white px-8 pb-10 pt-12 text-gray-800 shadow-[0_25px_60px_rgba(0,0,0,0.12)] max-w-xl w-full text-center">
+    <div className="text-center py-4">
       <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-green-50">
-        <CheckCircleOutlined className="text-4xl text-green-500" />
+        <CheckCircle2 className="h-10 w-10 text-green-500" />
       </div>
       <h2 className="mb-2 text-2xl font-bold text-gray-900">
         Password Changed!
       </h2>
-      <p className="mb-8 text-gray-600">
+      <p className="mb-8 text-sm text-gray-600">
         Your password has been successfully updated.
       </p>
-      <Button
-        type="primary"
-        block
+      <AuthButton
         onClick={() => onSwitchMode("login")}
-        className="h-12 rounded-full text-base font-bold uppercase tracking-wider shadow-lg"
+        className="w-full rounded-lg"
       >
-        Login Now
-      </Button>
-    </AuthPopupAnim>
+        LOGIN NOW
+      </AuthButton>
+    </div>
   )
 
-  if (currentStep === STEPS.SUCCESS) {
-    return renderSuccess()
-  }
-
   return (
-    <AuthPopupAnim className="relative rounded-[32px] bg-white px-8 pb-10 pt-12 text-gray-800 shadow-[0_25px_60px_rgba(0,0,0,0.12)] max-w-xl w-full">
-      <button
-        type="button"
-        aria-label="Close"
-        className="absolute right-6 top-6 text-2xl text-gray-500 transition hover:text-gray-700"
-        onClick={onClose}
-      >
-        <FiX />
-      </button>
+    <Modal open={open} onClose={onClose} title="">
+      {currentStep === STEPS.SUCCESS && renderSuccess()}
 
       {currentStep === STEPS.REQUEST_OTP && (
         <RequestOtpStep onSuccess={handleEmailSubmitted} />
@@ -101,7 +87,7 @@ const ResetPasswordPopup = ({ onClose, onSwitchMode }) => {
           onSuccess={handlePasswordResetSuccess}
         />
       )}
-    </AuthPopupAnim>
+    </Modal>
   )
 }
 

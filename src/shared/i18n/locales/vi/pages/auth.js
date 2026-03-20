@@ -81,4 +81,18 @@ export default {
     "Bạn phải đồng ý với điều khoản và chính sách bảo mật",
   validationPolicyRequired:
     "Bạn phải đồng ý với chính sách thanh toán và bản quyền",
+  validationNewPasswordRequired: "Vui lòng nhập mật khẩu mới!",
+  validationConfirmPasswordRequired: "Vui lòng xác nhận mật khẩu!",
+  validationPasswordMatch: "Hai mật khẩu không khớp!",
+  resetPasswordFailed: "Đặt lại mật khẩu thất bại.",
+  sendOtpFailed: "Gửi OTP thất bại.",
+  emailNotFound: "Email không tồn tại",
+  emailOnlyPlaceholder: "Nhập email của bạn",
+  sending: "ĐANG GỬI...",
+  validationOtpRequired: "Vui lòng nhập mã OTP!",
+  validationOtpLength: "Mã OTP phải có 6 chữ số",
+  verifyOtpFailed: "Mã OTP không hợp lệ hoặc đã hết hạn.",
+  verifying: "ĐANG XÁC MINH...",
+  back: "Quay lại",
+  invalidCredentials: "Email hoặc mật khẩu không hợp lệ",
 }
