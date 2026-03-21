@@ -16,7 +16,7 @@ import { getCommunityPath } from "@/shared/utils/navigation"
 import { VideoCallContent } from "./VideoCallContext"
 
 export const VideoCallProvider = ({ children }) => {
-  const { id } = useParams()
+  const { id, lang } = useParams()
   const navigate = useNavigate()
   const location = useLocation()
   const { t, language } = useLanguage()
@@ -94,7 +94,7 @@ export const VideoCallProvider = ({ children }) => {
         <p className="text-xl font-bold">{t.rooms.roomFullModal.title}</p>
         <p className="text-gray-400">{t.rooms.roomFullModal.message}</p>
         <PillButton
-          onClick={() => navigate(getCommunityPath(language))}
+          onClick={() => navigate(getCommunityPath(lang || language))}
           className="mt-2 min-w-[150px]"
         >
           {t.rooms.waitingScreen.backToCommunity}
@@ -122,7 +122,7 @@ export const VideoCallProvider = ({ children }) => {
             {t.rooms.videoCall.provider.retry}
           </PillButton>
           <PillButton
-            onClick={() => navigate(getCommunityPath(language))}
+            onClick={() => navigate(getCommunityPath(lang || language))}
             variant="secondary"
           >
             {t.rooms.waitingScreen.backToCommunity}
@@ -142,7 +142,7 @@ export const VideoCallProvider = ({ children }) => {
           {t.rooms.waitingScreen.roomNotFoundSubtext}
         </p>
         <PillButton
-          onClick={() => navigate(getCommunityPath(language))}
+          onClick={() => navigate(getCommunityPath(lang || language))}
           variant="primary"
         >
           {t.rooms.waitingScreen.backToCommunity}

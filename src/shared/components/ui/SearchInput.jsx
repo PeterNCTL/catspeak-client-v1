@@ -11,7 +11,7 @@ const SearchInput = ({
 }) => {
   return (
     <div
-      className={`flex items-center w-full h-12 border border-[#C6C6C6] rounded-full focus-within:border-[#990011] transition-colors ${className}`}
+      className={`flex items-center w-full h-10 border border-[#C6C6C6] rounded-full focus-within:border-[#990011] transition-colors ${className}`}
     >
       <input
         type="text"
@@ -23,12 +23,12 @@ const SearchInput = ({
             onSearch()
           }
         }}
-        className={`flex-1 h-full pl-4 text-base bg-transparent focus:outline-none ${inputClassName}`}
+        className={`flex-1 h-full pl-4 text-sm bg-transparent focus:outline-none ${inputClassName}`}
       />
 
       <button
         onClick={onSearch}
-        className="h-full w-12 flex items-center justify-center rounded-full text-[#990011] transition-colors hover:bg-[#E5E5E5]"
+        className="h-full w-10 flex items-center justify-center rounded-full text-[#990011] transition-colors hover:bg-[#E5E5E5]"
       >
         <Search size={24} />
       </button>

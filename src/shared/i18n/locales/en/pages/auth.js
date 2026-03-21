@@ -93,4 +93,6 @@ export default {
   verifying: "VERIFYING...",
   back: "Back",
   invalidCredentials: "Invalid email or password",
+  registering: "SIGNING UP...",
+  registrationFailed: "Registration failed. Please try again.",
 }

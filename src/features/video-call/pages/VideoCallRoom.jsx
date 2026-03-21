@@ -14,8 +14,11 @@ import { formatDate } from "@/shared/utils/dateFormatter"
 
 import { useVideoCallContext } from "@/shared/context/video/VideoCallContext"
 import { VideoCallProvider } from "@/shared/context/video/VideoCallProvider"
+import { useLanguage } from "@/shared/context/LanguageContext"
+import { getTranslatedRoomName } from "@/features/rooms/utils/roomNameUtils"
 
 const VideoCallRoomContent = () => {
+  const { t } = useLanguage()
   const {
     location,
     micOn,
@@ -38,8 +41,15 @@ const VideoCallRoomContent = () => {
 
   const { formattedElapsed, formattedMax } = useSessionTimer(session)
 
+  const rawRoomName = session?.name || session?.roomName || "General"
+  const translatedName = React.useMemo(() => {
+    return getTranslatedRoomName(rawRoomName, t)
+  }, [rawRoomName, t?.rooms?.specialNames])
+
   const isSidePanelOpen = showChat || showParticipants
-  const sidePanelTitle = showParticipants ? "Participants" : "Chat"
+  const sidePanelTitle = showParticipants
+    ? t.rooms.videoCall.participantList.title
+    : t.rooms.chatBox.title
 
   // Unread message count
   const [unreadMessages, setUnreadMessages] = React.useState(0)
@@ -50,7 +60,8 @@ const VideoCallRoomContent = () => {
       if (!showChat) {
         let newUnread = 0
         for (let i = prevMessagesLength.current; i < messages.length; i++) {
-          if (String(messages[i].senderId) !== String(currentUserId)) newUnread++
+          if (String(messages[i].senderId) !== String(currentUserId))
+            newUnread++
         }
         setUnreadMessages((prev) => prev + newUnread)
       }
@@ -67,21 +78,26 @@ const VideoCallRoomContent = () => {
   return (
     <div className="flex h-full w-full flex-col bg-primary2 text-textColor font-sans">
       {/* Top Bar */}
-      <div className="flex items-center justify-between border-b border-[#C6C6C6] bg-white px-6 py-4 shadow-sm">
-        <div className="flex items-center gap-4">
-          <div className="flex w-40 shrink-0 items-center">
+      <div className="flex items-center justify-between border-b border-[#C6C6C6] bg-white px-3 py-2 shadow-sm md:px-6 md:py-4">
+        <div className="flex items-center gap-2 md:gap-4">
+          <div className="hidden w-40 shrink-0 items-center md:flex">
             <HeaderLogo />
           </div>
           <div>
-            <div className="text-sm font-semibold text-gray-900">
-              {session?.name || session?.roomName || "General"}
+            <div className="text-sm font-semibold text-gray-900 md:text-base">
+              {translatedName}
             </div>
-            <div className="text-xs text-gray-500">{formatDate(new Date())}</div>
+            <div className="hidden text-sm text-[#7A7574] md:block">
+              {formatDate(new Date())}
+            </div>
           </div>
         </div>
-        <div className="text-xs font-medium text-gray-500">
-          {formattedElapsed}{formattedMax ? ` / ${formattedMax}` : ""}
-        </div>
+        {formattedElapsed && formattedElapsed !== "00:00" && (
+          <div className="text-xs font-medium text-[#7A7574] md:text-sm">
+            {formattedElapsed}
+            {formattedMax ? ` / ${formattedMax}` : ""}
+          </div>
+        )}
       </div>
 
       {/* Main Content Area */}
@@ -120,7 +136,10 @@ const VideoCallRoomContent = () => {
           <div className="md:hidden">
             <div
               className="fixed inset-0 z-30 flex bg-black/40"
-              onClick={() => { setShowChat(false); setShowParticipants(false) }}
+              onClick={() => {
+                setShowChat(false)
+                setShowParticipants(false)
+              }}
             >
               <div
                 className="ml-auto flex h-full w-full max-w-sm flex-col bg-white shadow-xl"
@@ -128,13 +147,18 @@ const VideoCallRoomContent = () => {
               >
                 <button
                   type="button"
-                  className="flex w-full items-center gap-2 border-b border-[#C6C6C6] px-4 py-3 text-left hover:bg-gray-50"
-                  onClick={() => { setShowChat(false); setShowParticipants(false) }}
+                  className="text-black flex w-full items-center gap-2 border-b border-[#C6C6C6] px-4 py-3 text-left hover:bg-gray-50"
+                  onClick={() => {
+                    setShowChat(false)
+                    setShowParticipants(false)
+                  }}
                 >
-                  <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-primary2/10 text-primary1">
-                    <ChevronRight className="h-4 w-4 rotate-180" />
+                  <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-primary2/10">
+                    <ChevronRight className="rotate-180" />
                   </span>
-                  <div className="text-[0.9rem] font-semibold text-gray-900">{sidePanelTitle}</div>
+                  <div className="text-base font-semibold">
+                    {sidePanelTitle}
+                  </div>
                 </button>
 
                 <div className="flex-1 overflow-y-auto">
@@ -144,6 +168,7 @@ const VideoCallRoomContent = () => {
                       currentUserId={currentUserId}
                       localMicOn={micOn}
                       localCameraOn={cameraOn}
+                      hideTitle
                     />
                   )}
                   {showChat && !showParticipants && (
@@ -153,6 +178,7 @@ const VideoCallRoomContent = () => {
                       onSendMessage={handleSendMessage}
                       isConnected={isConnected}
                       className="h-full w-full"
+                      hideTitle
                     />
                   )}
                 </div>

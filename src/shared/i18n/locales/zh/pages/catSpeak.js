@@ -27,7 +27,7 @@ export default {
   },
   newsLoginPrompt: "请登录后查看社区的最新帖子。",
   sidebar: {
-    news: "猫的动态",
+    news: "Cat Speak 的动态",
     discover: "探索世界",
     video: "视频",
     mail: "信件",

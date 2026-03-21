@@ -28,7 +28,7 @@ export const VideoCallContent = ({
   sessionError,
   sdkToken,
 }) => {
-  const { id } = useParams()
+  const { id, lang } = useParams()
   const navigate = useNavigate()
   const location = useLocation()
   const { t, language } = useLanguage()
@@ -76,7 +76,7 @@ export const VideoCallContent = ({
       }
     }
     leaveMeeting()
-    navigate(getCommunityPath(language))
+    navigate(getCommunityPath(lang || language))
   }
 
   const handleCopyLink = () => {
@@ -102,7 +102,7 @@ export const VideoCallContent = ({
     if (seenAccountIds.has(key)) {
       console.warn(
         `[VideoCallContext] 🔄 Dedup: dropping participant ${p.id} ` +
-        `(accountId=${aid}, displayName=${p.displayName}) — already seen`
+          `(accountId=${aid}, displayName=${p.displayName}) — already seen`,
       )
       return
     }

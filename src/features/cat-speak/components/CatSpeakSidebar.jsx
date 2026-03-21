@@ -78,7 +78,7 @@ const CatSpeakSidebar = () => {
     return (
       <button
         onClick={onClick}
-        className={`flex w-full h-12 items-center gap-3 px-4 text-sm ${
+        className={`flex w-full h-10 items-center gap-3 px-4 text-sm ${
           isActive
             ? "bg-[#F2F2F2] text-[#990011] hover:bg-[#E6E6E6]"
             : "hover:bg-[#F2F2F2]"
@@ -121,12 +121,16 @@ const CatSpeakSidebar = () => {
   return (
     <>
       {/* Mobile Trigger Button (Visible only on smaller screens) */}
-      <div className="lg:hidden p-4 pb-0 shrink-0 w-full mb-2">
+      <div className=" lg:hidden px-5 shrink-0 w-full">
         <button
           onClick={() => setMobileOpen(true)}
-          className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:border-[#990011] hover:text-[#990011] transition-colors font-medium bg-white"
+          className={`flex w-fit items-center justify-center gap-2 rounded-lg h-10 px-4 text-sm font-medium transition-all duration-200 ${
+            mobileOpen
+              ? "bg-[#990011] text-white border-[#990011]"
+              : "bg-[#F2F2F2] text-gray-700 hover:bg-[#E6E6E6]"
+          }`}
         >
-          <Menu />
+          <Menu size={20} />
           <span>{t.catSpeak.sidebar.menu}</span>
         </button>
       </div>

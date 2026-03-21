@@ -2,7 +2,7 @@ import React from "react"
 import { useNavigate, useSearchParams } from "react-router-dom"
 import { ArrowLeft } from "lucide-react"
 import PillButton from "@/shared/components/ui/PillButton"
-import ParticipantList from "./ParticipantList"
+import ParticipantsPreview from "./ParticipantsPreview"
 import VideoPreview from "./VideoPreview"
 import { useLanguage } from "@/shared/context/LanguageContext"
 import { getTranslatedRoomName } from "../../utils/roomNameUtils"
@@ -38,20 +38,20 @@ const WaitingScreen = ({
               search: searchParams.toString(),
             })
           }
-          className="flex items-center gap-2 h-12 px-3 rounded-xl w-fit text-gray-500 hover:text-gray-900 hover:bg-[#E5E5E5] transition-colors font-medium"
+          className="flex items-center gap-2 h-10 px-3 rounded-lg w-fit hover:bg-[#E5E5E5] transition-colors font-medium"
         >
           <ArrowLeft />
           {t.rooms.waitingScreen.backToCommunity}
         </button>
       </div>
 
-      <div className="mb-4 text-center">
-        <h4 className="mb-1 font-semibold text-gray-900 text-2xl md:text-4xl">
+      <div className="mb-6 text-center">
+        <h4 className="mb-2 font-semibold text-2xl md:text-4xl">
           {getTranslatedRoomName(session?.roomName, t) ||
             t.rooms.waitingScreen.readyToJoin}
         </h4>
 
-        <ParticipantList
+        <ParticipantsPreview
           participants={participants}
           participantCount={participantCount}
         />
@@ -72,6 +72,7 @@ const WaitingScreen = ({
           disabled={isFull}
           aria-disabled={isFull}
           title={isFull ? t.rooms.waitingScreen.roomFull : undefined}
+          className="h-10"
         >
           {t.rooms.waitingScreen.joinNow}
         </PillButton>

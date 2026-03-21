@@ -192,6 +192,12 @@ export default {
       toggleMic: "Không thể bật/tắt micro",
       toggleCam: "Không thể bật/tắt camera",
     },
+    participantList: {
+      title: "Người tham gia",
+      you: "Bạn",
+      guest: "Khách",
+      youSuffix: "(Bạn)",
+    },
   },
   roomFullModal: {
     title: "Phòng đã đầy",

@@ -1,14 +1,14 @@
 import React from "react"
 import { Pagination } from "antd"
 import { useSearchParams } from "react-router-dom"
-import { FiArrowLeft } from "react-icons/fi"
 import RoomCard from "../RoomCard"
 import CategoryRoomSection from "../sections/CategoryRoomSection"
 import EmptyRoomState from "../EmptyRoomState"
-import colors from "@/shared/utils/colors"
 import { useLanguage } from "@/shared/context/LanguageContext"
 import { AnimatePresence } from "framer-motion"
 import { FadeAnimation } from "@/shared/animations"
+import Breadcrumb from "@/shared/components/ui/Breadcrumb"
+import { categoryFriendlyNames, getSections } from "../../config/communicateTabConfig"
 
 const CommunicateTab = ({
   rooms = [], // Only used in Filtered View
@@ -43,42 +43,7 @@ const CommunicateTab = ({
 
   const isFilteredView = selectedCategories && selectedCategories.length > 0
 
-  const categoryFriendlyNames = {
-    Knowledge: "Learn something new",
-    Culture: "Explore culture and creativity",
-    Lifestyle: "Enjoy everyday life",
-    Growth: "Build your future",
-    Other: "Anything & Everything",
-  }
-
-  // Supported categories: Other, Knowledge, Culture, Lifestyle, Growth
-  const sections = [
-    {
-      key: "Knowledge",
-      title:
-        t.rooms.filters.categories?.knowledge ||
-        categoryFriendlyNames.Knowledge,
-    },
-    {
-      key: "Culture",
-      title:
-        t.rooms.filters.categories?.culture || categoryFriendlyNames.Culture,
-    },
-    {
-      key: "Lifestyle",
-      title:
-        t.rooms.filters.categories?.lifestyle ||
-        categoryFriendlyNames.Lifestyle,
-    },
-    {
-      key: "Growth",
-      title: t.rooms.filters.categories?.growth || categoryFriendlyNames.Growth,
-    },
-    {
-      key: "Other",
-      title: t.rooms.filters.categories?.other || categoryFriendlyNames.Other,
-    },
-  ]
+  const sections = getSections(t)
 
   return (
     <div className="w-full relative overflow-hidden">
@@ -88,49 +53,49 @@ const CommunicateTab = ({
           className="w-full"
         >
           {isFilteredView ? (
-            <div className="w-full flex flex-col gap-4">
+            <div className="w-full flex flex-col gap-3">
               <div className="flex items-center justify-between gap-4">
-                <div className="flex items-center gap-2 text-xl font-bold">
-                  <button
-                    onClick={handleBackToOverview}
-                    className="text-[#7A7574] hover:text-black transition-colors"
-                  >
-                    {t.rooms.filters.breadcrumb}
-                  </button>
-                  <span className="text-[#7A7574]">&gt;</span>
-                  <span style={{ color: colors.headingColor }}>
-                    {selectedCategories
-                      .map((catKey) => {
-                        const lowerKey = catKey.toLowerCase()
-                        return (
-                          t.rooms.filters.categories?.[lowerKey] ||
-                          t.rooms.filters.categories?.others ||
-                          categoryFriendlyNames[catKey] ||
-                          catKey
-                        )
-                      })
-                      .join(", ")}
-                  </span>
-                </div>
-
-                {rooms.length > 0 && (
-                  <Pagination
-                    current={page}
-                    pageSize={1}
-                    total={totalPages}
-                    onChange={setPage}
-                    showSizeChanger={false}
-                  />
-                )}
+                <Breadcrumb
+                  items={[
+                    {
+                      label: t.rooms.filters.breadcrumb,
+                      onClick: handleBackToOverview,
+                    },
+                    {
+                      label: selectedCategories
+                        .map((catKey) => {
+                          const lowerKey = catKey.toLowerCase()
+                          return (
+                            t.rooms.filters.categories?.[lowerKey] ||
+                            t.rooms.filters.categories?.others ||
+                            categoryFriendlyNames[catKey] ||
+                            catKey
+                          )
+                        })
+                        .join(", "),
+                    },
+                  ]}
+                />
               </div>
 
               {rooms.length > 0 ? (
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                  {rooms.map((room) => (
-                    <div key={room.roomId} className="w-full">
-                      <RoomCard room={room} />
-                    </div>
-                  ))}
+                <div className="flex flex-col gap-6">
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                    {rooms.map((room) => (
+                      <div key={room.roomId} className="w-full">
+                        <RoomCard room={room} />
+                      </div>
+                    ))}
+                  </div>
+                  <div className="flex justify-center mt-2">
+                    <Pagination
+                      current={page}
+                      pageSize={1}
+                      total={totalPages}
+                      onChange={setPage}
+                      showSizeChanger={false}
+                    />
+                  </div>
                 </div>
               ) : (
                 <EmptyRoomState message={t.rooms.filters.noRoomsFound} />

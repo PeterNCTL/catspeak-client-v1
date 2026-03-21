@@ -32,7 +32,7 @@ const CategoryRoomSection = ({
   const renderHeader = () => (
     <button
       onClick={() => onSeeMore(categoryKey)}
-      className="group w-fit flex h-12 items-center gap-2 rounded-md hover:bg-[#E5E5E5] pr-6"
+      className="group w-fit flex h-10 items-center gap-2 rounded-md hover:bg-[#E5E5E5] pr-6"
     >
       <div className="flex items-center gap-2 transition-transform duration-300 group-hover:translate-x-4">
         <h6
@@ -42,14 +42,14 @@ const CategoryRoomSection = ({
           {title}
         </h6>
 
-        <ChevronRight size={24} color="#990011" />
+        <ChevronRight color="#990011" />
       </div>
     </button>
   )
 
   if (!isLoading && rooms.length === 0) {
     return (
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col gap-2">
         {renderHeader()}
         <EmptyRoomState message={t.rooms.filters.noRoomsFoundCategory} />
       </div>

@@ -38,36 +38,41 @@ const MyStoryModal = ({ open, story, onClose, onDelete }) => {
       onClose={handleClose}
       title={t.story?.myStory || "My Story"}
     >
-      <div className="space-y-4">
-        <div>
-          <div className="min-h-[60px] rounded-xl bg-gray-100 p-4 text-sm leading-relaxed text-gray-800">
-            {story.storyContent}
-          </div>
+      <div className="space-y-6">
+        <div className="min-h-[40px] w-full break-words rounded-lg bg-[#F2F2F2] px-4 py-3 text-sm leading-relaxed whitespace-pre-wrap">
+          {story.storyContent}
         </div>
 
-        <div className="space-y-3 text-sm text-gray-600">
+        <div className="space-y-4 text-sm">
           <div>
-            <p className="font-medium">
-              {t.story?.created || "Created"}:
-            </p>
+            <p className="text-[#7A7574]">{t.story?.created || "Created"}:</p>
             <p>{createdAt.format("MMM D, YYYY h:mm A")}</p>
           </div>
 
           <div>
-            <p className="font-medium">
-              {t.story?.expiresIn || "Expires in"}:{" "}
-              {hoursRemaining > 0 && `${hoursRemaining}h `}
-              {minutesRemaining}m
+            <p className="text-[#7A7574]">
+              {t.story?.expiresIn || "Expires in"}:
             </p>
-            <p>{expiresAt.format("MMM D, YYYY h:mm A")}</p>
+
+            <div className="flex items-center gap-2">
+              <p>
+                {hoursRemaining > 0 && `${hoursRemaining}h `}
+                {minutesRemaining}m
+              </p>
+              <p>{expiresAt.format("MMM D, YYYY h:mm A")}</p>
+            </div>
           </div>
         </div>
 
-        <div className="mt-6 flex justify-end gap-3">
-          <PillButton variant="secondary" onClick={handleClose}>
+        <div className="flex justify-end gap-3">
+          <PillButton
+            variant="secondary"
+            onClick={handleClose}
+            className="h-10"
+          >
             {t.messages?.close || "Close"}
           </PillButton>
-          <PillButton onClick={handleDelete}>
+          <PillButton onClick={handleDelete} className="h-10">
             {confirmDelete
               ? t.story?.confirmDelete || "Confirm Delete"
               : t.story?.deleteStory || "Delete Story"}

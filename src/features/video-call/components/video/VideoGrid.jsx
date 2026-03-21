@@ -10,13 +10,15 @@ const VideoGrid = ({ participantIds: propIds }) => {
   const { participants, localParticipant } = useMeeting()
 
   // Build ordered ID list: local first, then remotes.
-  const ids = propIds ?? (() => {
-    const list = localParticipant ? [localParticipant.id] : []
-    ;[...participants.values()].forEach((p) => {
-      if (p.id !== localParticipant?.id) list.push(p.id)
-    })
-    return list
-  })()
+  const ids =
+    propIds ??
+    (() => {
+      const list = localParticipant ? [localParticipant.id] : []
+      ;[...participants.values()].forEach((p) => {
+        if (p.id !== localParticipant?.id) list.push(p.id)
+      })
+      return list
+    })()
 
   const count = ids.length
 
@@ -27,23 +29,28 @@ const VideoGrid = ({ participantIds: propIds }) => {
     3-4 → 2-col grid
     5+  → 3-col grid
   */
-  const gridClass =
-    count === 1 ? "grid-cols-1" :
-    count === 2 ? "grid-cols-1 sm:grid-cols-2" :
-    count <= 4  ? "grid-cols-2" :
-                  "grid-cols-2 md:grid-cols-3"
+  const gridClass = "min-[426px]:grid-cols-[repeat(auto-fit,minmax(260px,1fr))]"
 
   const scrollbarClasses =
     "[&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#990011] [&::-webkit-scrollbar-track]:bg-gray-200 [&::-webkit-scrollbar]:w-1.5"
 
   return (
     <div
-      className={`grid h-full w-full gap-2 overflow-y-auto p-2 place-content-start justify-center sm:gap-3 sm:p-3 md:gap-4 md:p-4 ${gridClass} ${scrollbarClasses}`}
+      className={`
+    flex flex-col min-[426px]:grid h-full w-full
+    gap-2 sm:gap-3 md:gap-4
+    p-2 sm:p-3 md:p-4
+    overflow-y-auto
+    min-[426px]:place-content-center
+    min-[426px]:auto-rows-fr
+    ${gridClass}
+    ${scrollbarClasses}
+  `}
     >
       {ids.map((participantId) => (
         <div
           key={participantId}
-          className="relative w-full aspect-video max-w-full"
+          className="relative w-full max-w-full max-[425px]:min-h-[300px] max-[425px]:flex-1 max-[425px]:shrink-0"
         >
           <VideoTile participantId={participantId} />
         </div>

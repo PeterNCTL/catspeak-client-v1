@@ -1,26 +1,6 @@
-import { Box, Typography, FormControl, Select, MenuItem } from "@mui/material"
-import { colors } from "@/shared/utils/colors"
-
-const inputColorSx = {
-  "& .MuiOutlinedInput-root": {
-    borderRadius: "50px",
-    "& fieldset": {
-      borderColor: colors.border,
-    },
-    "&:hover fieldset": {
-      borderColor: colors.red[700],
-    },
-    "&.Mui-focused fieldset": {
-      borderColor: colors.red[700],
-    },
-  },
-  "& .MuiInputLabel-root.Mui-focused": {
-    color: colors.red[700],
-  },
-}
+import { ChevronDown } from "lucide-react"
 
 const FormSelectField = ({
-  label,
   placeholder,
   value,
   onChange,
@@ -29,68 +9,36 @@ const FormSelectField = ({
   options,
 }) => {
   return (
-    <Box sx={{ flex: 1 }}>
-      <Typography
-        display="block"
-        gutterBottom
-        sx={{ fontWeight: 700, fontSize: "0.875rem" }}
-      >
-        {label}
-      </Typography>
-      <FormControl fullWidth sx={inputColorSx}>
-        <Select
+    <div>
+      <div className="relative">
+        <select
           value={value}
           onChange={onChange}
-          displayEmpty
-          error={error}
-          inputProps={{ MenuProps: { disableScrollLock: true } }}
-          sx={{
-            "& .MuiSelect-select": {
-              textOverflow: "ellipsis",
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-            },
-          }}
-          renderValue={(selected) => {
-            if (!selected) {
-              return <span style={{ color: "#aaa" }}>{placeholder}</span>
-            }
-            const option = options.find((opt) => opt.value === selected)
-            return option ? option.label : selected
-          }}
+          className={`h-10 w-full appearance-none rounded-lg border bg-white px-3 pr-10 text-sm outline-none transition-colors
+            focus:border-cath-red-700 focus:ring-1 focus:ring-cath-red-700 hover:border-cath-red-700
+            ${!value ? "text-gray-400" : "text-gray-900"}
+            ${error ? "border-red-600 focus:border-red-600 focus:ring-red-600" : "border-[#C6C6C6]"}`}
         >
+          {placeholder && (
+            <option value="" disabled>
+              {placeholder}
+            </option>
+          )}
           {options.map((option) => (
-            <MenuItem
-              key={option.value}
-              value={option.value}
-              sx={{
-                "&.Mui-selected": {
-                  backgroundColor: "rgba(153, 0, 17, 0.1)",
-                  color: colors.red[700],
-                  "&:hover": {
-                    backgroundColor: "rgba(153, 0, 17, 0.2)",
-                  },
-                },
-                "&.Mui-selected.Mui-focusVisible": {
-                  backgroundColor: "rgba(153, 0, 17, 0.2)",
-                },
-                "&:hover": {
-                  backgroundColor: "rgba(153, 0, 17, 0.05)",
-                  color: colors.red[700],
-                },
-              }}
-            >
+            <option key={option.value} value={option.value}>
               {option.label}
-            </MenuItem>
+            </option>
           ))}
-        </Select>
-        {errorText && (
-          <Typography variant="caption" color="error" sx={{ ml: 2, mt: 0.5 }}>
-            {errorText}
-          </Typography>
-        )}
-      </FormControl>
-    </Box>
+        </select>
+        <ChevronDown
+          size={16}
+          className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+        />
+      </div>
+      {errorText && (
+        <p className="mt-1 text-xs text-red-600">{errorText}</p>
+      )}
+    </div>
   )
 }
 

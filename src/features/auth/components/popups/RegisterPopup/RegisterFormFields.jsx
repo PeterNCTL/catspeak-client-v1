@@ -1,12 +1,8 @@
 import { useState } from "react"
-import { Box, IconButton, InputAdornment } from "@mui/material"
-import Visibility from "@mui/icons-material/Visibility"
-import VisibilityOff from "@mui/icons-material/VisibilityOff"
-import FormTextField from "../../forms/FormTextField"
-import FormSelectField from "../../forms/FormSelectField"
+import { Eye, EyeOff } from "lucide-react"
+import TextInput from "@/shared/components/ui/TextInput"
 import FormDatePicker from "../../forms/FormDatePicker"
-import AgreementCheckbox from "../../forms/AgreementCheckbox"
-import PolicyModal from "../PolicyModal"
+import FormSelectField from "../../forms/FormSelectField"
 
 const RegisterFormFields = ({
   authText,
@@ -16,16 +12,6 @@ const RegisterFormFields = ({
   setErrors,
 }) => {
   const [showPassword, setShowPassword] = useState(false)
-  const [policyModal, setPolicyModal] = useState({ open: false, title: "" })
-
-  const handleOpenPolicy = (title) => (e) => {
-    e.preventDefault()
-    setPolicyModal({ open: true, title })
-  }
-
-  const handleClosePolicy = () => {
-    setPolicyModal({ open: false, title: "" })
-  }
 
   const languageOptions = [
     { value: "english", label: "English" },
@@ -49,53 +35,64 @@ const RegisterFormFields = ({
   }
 
   return (
-    <>
-      {/* Form Fields Group */}
-      <Box sx={{ display: "flex", flexDirection: "column", gap: 4 }}>
-        {/* Username */}
-        <FormTextField
-          label={authText.fullNameLabel}
+    <div className="flex flex-col gap-4 mb-6">
+      {/* Username */}
+      <div>
+        <label className="block text-sm mb-2">{authText.fullNameLabel}</label>
+        <TextInput
+          variant="square"
           placeholder={authText.fullNamePlaceholder}
           value={formData.username}
           onChange={handleChange("username")}
-          error={!!errors.username}
-          helperText={errors.username}
+          className={
+            errors.username
+              ? "!border-red-600 focus:!border-red-600 focus:!ring-red-600"
+              : ""
+          }
         />
+        {errors.username && (
+          <p className="mt-1 text-xs text-red-600">{errors.username}</p>
+        )}
+      </div>
 
-        {/* Email */}
-        <FormTextField
-          label={authText.emailLabel}
+      {/* Email */}
+      <div>
+        <label className="block text-sm mb-2">{authText.emailLabel}</label>
+        <TextInput
+          type="email"
+          variant="square"
           placeholder={authText.emailPlaceholder}
           value={formData.email}
           onChange={handleChange("email")}
-          error={!!errors.email}
-          helperText={errors.email}
-          type="email"
+          className={
+            errors.email
+              ? "!border-red-600 focus:!border-red-600 focus:!ring-red-600"
+              : ""
+          }
         />
+        {errors.email && (
+          <p className="mt-1 text-xs text-red-600">{errors.email}</p>
+        )}
+      </div>
 
-        {/* Date of Birth and Language - Side by Side */}
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: { xs: "column", sm: "row" },
-            gap: 2,
-          }}
-        >
-          {/* Date of Birth */}
-          <Box sx={{ flex: 1 }}>
-            <FormDatePicker
-              label={authText.dateOfBirthLabel}
-              placeholder={authText.dateOfBirthPlaceholder}
-              value={formData.dateOfBirth}
-              onChange={handleChange("dateOfBirth")}
-              error={!!errors.dateOfBirth}
-              helperText={errors.dateOfBirth}
-            />
-          </Box>
+      {/* Date of Birth & Language - Side by Side */}
+      <div className="flex flex-col sm:flex-row gap-4">
+        <div className="flex-1">
+          <label className="block text-sm mb-2">
+            {authText.dateOfBirthLabel}
+          </label>
+          <FormDatePicker
+            placeholder={authText.dateOfBirthPlaceholder}
+            value={formData.dateOfBirth}
+            onChange={handleChange("dateOfBirth")}
+            error={!!errors.dateOfBirth}
+            helperText={errors.dateOfBirth}
+          />
+        </div>
 
-          {/* Preferred Language */}
+        <div className="flex-1">
+          <label className="block text-sm mb-2">{authText.languageLabel}</label>
           <FormSelectField
-            label={authText.languageLabel}
             placeholder={authText.languagePlaceholder}
             value={formData.preferredLanguage}
             onChange={handleChange("preferredLanguage")}
@@ -103,46 +100,42 @@ const RegisterFormFields = ({
             errorText={errors.preferredLanguage}
             options={languageOptions}
           />
-        </Box>
+        </div>
+      </div>
 
-        {/* Password and Country - Side by Side */}
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: { xs: "column", sm: "row" },
-            gap: 2,
-          }}
-        >
-          {/* Password */}
-          <Box sx={{ flex: 1 }}>
-            <FormTextField
-              label={authText.passwordLabel}
+      {/* Password & Country - Side by Side */}
+      <div className="flex flex-col sm:flex-row gap-4">
+        <div className="flex-1">
+          <label className="block text-sm mb-2">{authText.passwordLabel}</label>
+          <div className="relative">
+            <TextInput
+              type={showPassword ? "text" : "password"}
+              variant="square"
               placeholder={authText.passwordPlaceholder}
               value={formData.password}
               onChange={handleChange("password")}
-              error={!!errors.password}
-              helperText={errors.password}
-              type={showPassword ? "text" : "password"}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      aria-label="toggle password visibility"
-                      onClick={() => setShowPassword(!showPassword)}
-                      onMouseDown={(e) => e.preventDefault()}
-                      edge="end"
-                    >
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
+              className={`pr-12 ${
+                errors.password
+                  ? "!border-red-600 focus:!border-red-600 focus:!ring-red-600"
+                  : ""
+              }`}
             />
-          </Box>
+            <button
+              type="button"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+            </button>
+          </div>
+          {errors.password && (
+            <p className="mt-1 text-xs text-red-600">{errors.password}</p>
+          )}
+        </div>
 
-          {/* Country */}
+        <div className="flex-1">
+          <label className="block text-sm mb-2">{authText.countryLabel}</label>
           <FormSelectField
-            label={authText.countryLabel}
             placeholder={authText.countryPlaceholder}
             value={formData.country}
             onChange={handleChange("country")}
@@ -150,67 +143,9 @@ const RegisterFormFields = ({
             errorText={errors.country}
             options={countryOptions}
           />
-        </Box>
-      </Box>
-
-      {/* Checkboxes Group */}
-      <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
-        {/* First Agreement Checkbox - Terms and Privacy */}
-        <AgreementCheckbox
-          checked={formData.termsAgreement}
-          onChange={handleChange("termsAgreement")}
-        >
-          {authText.agreePrefix}{" "}
-          <button
-            type="button"
-            className="font-semibold text-[#8f0d15] hover:underline"
-            onClick={handleOpenPolicy(authText.serviceTerms)}
-          >
-            {authText.serviceTerms}
-          </button>{" "}
-          {authText.and}{" "}
-          <button
-            type="button"
-            className="font-semibold text-[#8f0d15] hover:underline"
-            onClick={handleOpenPolicy(authText.privacyPolicy)}
-          >
-            {authText.privacyPolicy}
-          </button>{" "}
-          {authText.companySuffix}
-        </AgreementCheckbox>
-
-        {/* Second Agreement Checkbox - Payment and IP */}
-        <AgreementCheckbox
-          checked={formData.policyAgreement}
-          onChange={handleChange("policyAgreement")}
-        >
-          {authText.agreePrefix}{" "}
-          <button
-            type="button"
-            className="font-semibold text-[#8f0d15] hover:underline"
-            onClick={handleOpenPolicy(authText.paymentPolicy)}
-          >
-            {authText.paymentPolicy}
-          </button>{" "}
-          {authText.and}{" "}
-          <button
-            type="button"
-            className="font-semibold text-[#8f0d15] hover:underline"
-            onClick={handleOpenPolicy(authText.ipPolicy)}
-          >
-            {authText.ipPolicy}
-          </button>{" "}
-          {authText.companySuffix}
-        </AgreementCheckbox>
-      </Box>
-
-      {/* Policy Modal */}
-      <PolicyModal
-        open={policyModal.open}
-        onClose={handleClosePolicy}
-        title={policyModal.title}
-      />
-    </>
+        </div>
+      </div>
+    </div>
   )
 }
 

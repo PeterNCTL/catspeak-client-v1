@@ -214,6 +214,12 @@ export default {
       toggleMic: "Failed to toggle microphone",
       toggleCam: "Failed to toggle camera",
     },
+    participantList: {
+      title: "Participants",
+      you: "You",
+      guest: "Guest",
+      youSuffix: "(You)",
+    },
   },
   roomFullModal: {
     title: "Room is full",

@@ -12,7 +12,7 @@ export { default as WelcomeSection } from "./components/sections/WelcomeSection"
 export { default as AllowConnectSwitch } from "./components/AllowConnectSwitch"
 export {
   WaitingScreen,
-  ParticipantList,
+  ParticipantsPreview,
   VideoPreview,
   getTranslatedRoomName,
 } from "./components/waiting-room"

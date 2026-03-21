@@ -1,28 +1,17 @@
 import { useState } from "react"
-import { FiX } from "react-icons/fi"
-import {
-  Box,
-  Stack,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  useTheme,
-  useMediaQuery,
-  Alert,
-} from "@mui/material"
 import { useLanguage } from "@/shared/context/LanguageContext.jsx"
 import AuthButton from "../../ui/AuthButton"
 import { useRegisterMutation } from "@/store/api/authApi"
 import { useNavigate } from "react-router-dom"
 import RegisterFormFields from "./RegisterFormFields"
-import { colors } from "@/shared/utils/colors"
+import AgreementSection from "./AgreementSection"
+import Modal from "@/shared/components/ui/Modal"
+import { parseRegisterError } from "@/features/auth/utils/registerErrors"
 
 const RegisterPopup = ({ open, onClose, onSwitchMode }) => {
   const { t } = useLanguage()
   const authText = t.auth
   const navigate = useNavigate()
-  const theme = useTheme()
-  const fullScreen = useMediaQuery(theme.breakpoints.down("md"))
 
   const [register, { isLoading }] = useRegisterMutation()
   const [apiError, setApiError] = useState(null)
@@ -47,102 +36,90 @@ const RegisterPopup = ({ open, onClose, onSwitchMode }) => {
 
     try {
       await register(formData).unwrap()
-      // Show success message (you might want to use a snackbar here)
       console.log("Registration successful! Please check your email.")
       onClose()
       navigate("/")
     } catch (err) {
       console.error("Registration failed:", err)
-      setApiError(
-        err?.data?.message || "Registration failed. Please try again.",
-      )
+
+      const { fieldErrors, message } = parseRegisterError(err, authText)
+      if (fieldErrors) {
+        setErrors(fieldErrors)
+      } else {
+        setApiError(message)
+      }
     }
   }
 
   return (
-    <Dialog
-      open={open}
-      onClose={(event, reason) => {
-        if (reason !== "backdropClick" && onClose) {
-          onClose()
-        }
-      }}
-      fullScreen={fullScreen}
-      fullWidth
-      maxWidth="md"
-      PaperProps={{
-        sx: {
-          borderRadius: "24px",
-          padding: 2,
-        },
-      }}
-    >
-      <Box component="div">
-        <button
-          type="button"
-          aria-label="Close"
-          className="absolute right-6 top-6 text-2xl text-gray-500 transition hover:text-gray-700"
-          onClick={onClose}
-        >
-          <FiX />
-        </button>
-
-        <DialogTitle
-          sx={{
-            textAlign: "center",
-            color: "#8f0d15",
-            fontSize: "1.875rem",
-            fontWeight: 900,
-            fontFamily: "'Inter', sans-serif",
-          }}
-        >
+    <Modal open={open} onClose={onClose} className="sm:max-w-2xl">
+      <form onSubmit={handleSubmit}>
+        <h2 className="mb-6 text-center text-3xl font-black text-[#8f0d15] font-['Inter']">
           {authText.registerTitle}
-        </DialogTitle>
+        </h2>
 
-        <DialogContent sx={{ pb: 1 }}>
-          <Box component="form" onSubmit={handleSubmit}>
-            <Stack spacing={2} sx={{ mt: 1 }}>
-              <RegisterFormFields
-                authText={authText}
-                formData={formData}
-                setFormData={setFormData}
-                errors={errors}
-                setErrors={setErrors}
-              />
+        {/* Scrollable content */}
+        <div className="max-h-[80vh] overflow-y-auto -mx-5 px-5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#990011] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar]:w-1.5">
+          <RegisterFormFields
+            authText={authText}
+            formData={formData}
+            setFormData={setFormData}
+            errors={errors}
+            setErrors={setErrors}
+          />
 
-              {apiError && (
-                <Alert severity="error" sx={{ borderRadius: "12px" }}>
-                  {apiError}
-                </Alert>
-              )}
+          <div className="mb-6">
+            <AgreementSection
+              authText={authText}
+              formData={formData}
+              onChange={(field) => (e) => {
+                const value =
+                  e.target.type === "checkbox"
+                    ? e.target.checked
+                    : e.target.value
+                setFormData({ ...formData, [field]: value })
+              }}
+            />
+          </div>
 
-              <AuthButton type="submit" className="mt-2" disabled={isLoading}>
-                {isLoading
-                  ? "ĐANG ĐĂNG KÝ..."
-                  : authText.registerButton.toUpperCase()}
-              </AuthButton>
-            </Stack>
-          </Box>
+          {/* API Error */}
+          {apiError && (
+            <p className="mb-4 rounded-lg bg-red-100 h-10 flex items-center px-3 text-sm text-red-700">
+              {apiError}
+            </p>
+          )}
 
-          <div className="mt-6 text-center text-sm text-gray-600">
-            <div className="relative mb-4">
-              <span className="relative z-10 bg-white px-4 font-semibold text-gray-500">
-                {authText.or}
-              </span>
-              <span className="absolute left-0 top-1/2 h-px w-full -translate-y-1/2 bg-gray-200" />
-            </div>
+          {/* Submit */}
+          <AuthButton
+            type="submit"
+            className="w-full rounded-lg mb-6"
+            disabled={isLoading}
+          >
+            {isLoading
+              ? authText.registering
+              : authText.registerButton.toUpperCase()}
+          </AuthButton>
+
+          {/* Switch to login */}
+          <div className="relative mb-4 text-center">
+            <span className="absolute left-0 top-1/2 h-px w-full -translate-y-1/2 bg-gray-200" />
+            <span className="relative z-10 bg-white px-4 font-semibold text-gray-500 text-sm">
+              {authText.or}
+            </span>
+          </div>
+          <p className="text-center text-sm text-[#7A7574]">
             {authText.haveAccount}{" "}
             <button
               type="button"
-              className="font-semibold text-[#8f0d15] hover:underline"
+              className="font-semibold text-[#990011] hover:underline"
               onClick={() => onSwitchMode("login")}
             >
               {authText.loginLink}
             </button>
-          </div>
-        </DialogContent>
-      </Box>
-    </Dialog>
+          </p>
+        </div>
+      </form>
+    </Modal>
   )
 }
 

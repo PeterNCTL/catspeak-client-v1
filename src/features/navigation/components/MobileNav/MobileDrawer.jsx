@@ -4,6 +4,7 @@ import { AnimatePresence } from "framer-motion"
 import { FluentAnimation } from "@/shared/animations"
 import LanguageSwitcher from "@/shared/components/common/LanguageSwitcher"
 import MobileNavLinks from "./MobileNavLinks"
+import { X } from "lucide-react"
 
 const MobileDrawer = ({ open, onClose }) => {
   useEffect(() => {
@@ -40,12 +41,18 @@ const MobileDrawer = ({ open, onClose }) => {
             direction="right"
             distance="100%"
             exit={true}
-            className="fixed inset-y-0 left-0 z-[101] w-[320px] h-full pointer-events-auto"
+            className="fixed inset-y-0 left-0 z-[101] w-full min-[426px]:w-[320px] h-full pointer-events-auto"
           >
             <aside className="w-full h-full bg-white overflow-y-auto">
               <div className="flex flex-col p-5">
-                {/* Mobile Language Switcher */}
-                <div className="flex justify-end mb-5">
+                {/* Header: Close Button & Language Switcher */}
+                <div className="flex justify-between items-center mb-5">
+                  <button
+                    onClick={onClose}
+                    className="p-2 -ml-2 text-gray-700 hover:bg-gray-100 rounded-full transition-colors"
+                  >
+                    <X />
+                  </button>
                   <LanguageSwitcher />
                 </div>
 

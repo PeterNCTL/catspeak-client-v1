@@ -26,7 +26,7 @@ const HeaderBar = ({ onGetStarted }) => {
             onClick={handleDrawerToggle}
             className="lg:hidden p-2 -ml-2 text-gray-700 hover:bg-black/5 rounded-full transition-colors"
           >
-            <Menu size={24} />
+            <Menu />
           </button>
           {/* Logo with fixed width to prevent shrinking */}
           <div className="shrink-0 w-[160px] flex items-center">

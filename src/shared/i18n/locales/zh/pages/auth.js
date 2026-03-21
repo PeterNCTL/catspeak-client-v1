@@ -91,4 +91,6 @@ export default {
   verifying: "验证中...",
   back: "返回",
   invalidCredentials: "邮箱或密码无效",
+  registering: "注册中...",
+  registrationFailed: "注册失败，请重试。",
 }

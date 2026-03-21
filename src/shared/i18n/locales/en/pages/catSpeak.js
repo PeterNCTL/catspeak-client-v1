@@ -31,7 +31,7 @@ export default {
   newsLoginPrompt:
     "Please log in to see the latest posts from the community.",
   sidebar: {
-    news: "Cat's News",
+    news: "Cat Speak News",
     discover: "Discover World",
     video: "Video",
     mail: "Mail",

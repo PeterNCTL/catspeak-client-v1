@@ -1,101 +1,150 @@
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, useCallback } from "react"
 
+// ─── Shared AudioContext singleton ───────────────────────────────────────────
 let sharedAudioContext = null
 
-const getAudioContext = async () => {
-  if (!sharedAudioContext) {
+const getAudioContext = () => {
+  if (!sharedAudioContext || sharedAudioContext.state === "closed") {
     sharedAudioContext = new (
       window.AudioContext || window.webkitAudioContext
     )()
   }
-
-  if (sharedAudioContext.state === "suspended") {
-    try {
-      await sharedAudioContext.resume()
-    } catch {
-      // resume() will fail if no user gesture has occurred yet — that's fine,
-      // audio level metering just won't work until the user interacts.
-    }
-  }
-
   return sharedAudioContext
 }
 
+// ─── Hook ────────────────────────────────────────────────────────────────────
 const useAudioLevel = (audioTrack) => {
   const [level, setLevel] = useState(0)
 
   const analyserRef = useRef(null)
   const sourceRef = useRef(null)
   const rafRef = useRef(null)
-  const trackIdRef = useRef(null)
+  const lastLevelRef = useRef(0)
+
+  // Stable reference to the setup routine so the statechange listener can
+  // call it without going through a stale closure.
+  const audioTrackRef = useRef(audioTrack)
+  audioTrackRef.current = audioTrack
+
+  const cleanup = useCallback(() => {
+    if (rafRef.current) {
+      cancelAnimationFrame(rafRef.current)
+      rafRef.current = null
+    }
+    if (sourceRef.current) {
+      try { sourceRef.current.disconnect() } catch { /* already disconnected */ }
+      sourceRef.current = null
+    }
+    if (analyserRef.current) {
+      try { analyserRef.current.disconnect() } catch { /* already disconnected */ }
+      analyserRef.current = null
+    }
+  }, [])
 
   useEffect(() => {
     if (!audioTrack) {
+      cleanup()
       setLevel(0)
       return
     }
 
-    // Only re-init if track changed
-    if (trackIdRef.current === audioTrack.id) return
-    trackIdRef.current = audioTrack.id
+    // ── Wire up the AnalyserNode ──────────────────────────────────────────
+    const wireAnalyser = () => {
+      const track = audioTrackRef.current
+      if (!track) return
 
-    // Cleanup previous
-    if (rafRef.current) cancelAnimationFrame(rafRef.current)
-    if (sourceRef.current) sourceRef.current.disconnect()
-    if (analyserRef.current) analyserRef.current.disconnect()
+      const audioContext = getAudioContext()
 
-    let cancelled = false
+      // If still suspended we can't wire yet — the statechange listener
+      // below will call us back once the user interacts.
+      if (audioContext.state !== "running") return
 
-    const setup = async () => {
+      // Already wired for this track
+      if (analyserRef.current && sourceRef.current) return
+
+      // Clean up any stale nodes before creating new ones
+      cleanup()
+
       try {
-        const audioContext = await getAudioContext()
-
-        if (cancelled || audioContext.state === "suspended") return
-
         const analyser = audioContext.createAnalyser()
         analyser.fftSize = 256
         analyser.smoothingTimeConstant = 0.8
 
-        const stream = new MediaStream([audioTrack])
+        const stream = new MediaStream([track])
         const source = audioContext.createMediaStreamSource(stream)
-
         source.connect(analyser)
 
         analyserRef.current = analyser
         sourceRef.current = source
 
         const dataArray = new Uint8Array(analyser.fftSize)
+        let lastUpdate = 0
 
-        const update = () => {
-          analyser.getByteTimeDomainData(dataArray)
+        const update = (timestamp) => {
+          if (!analyserRef.current) return
 
-          let sum = 0
-          for (let i = 0; i < dataArray.length; i++) {
-            const normalized = (dataArray[i] - 128) / 128
-            sum += normalized * normalized
+          // Throttle state updates to ~15 fps — plenty for a visual indicator
+          // but avoids 60 renders/sec per participant.
+          if (timestamp - lastUpdate > 66) {
+            analyser.getByteTimeDomainData(dataArray)
+
+            let sum = 0
+            for (let i = 0; i < dataArray.length; i++) {
+              const normalized = (dataArray[i] - 128) / 128
+              sum += normalized * normalized
+            }
+
+            const rms = Math.sqrt(sum / dataArray.length)
+            const newLevel = rms * 100
+
+            // Only trigger a React re-render when the level crosses the
+            // speaking threshold (hysteresis: on at 5, off at 3) or changes
+            // meaningfully while speaking.
+            const wasSpeaking = lastLevelRef.current > 5
+            const isSpeaking = newLevel > (wasSpeaking ? 3 : 5)
+
+            if (isSpeaking !== wasSpeaking || (isSpeaking && Math.abs(newLevel - lastLevelRef.current) > 3)) {
+              lastLevelRef.current = newLevel
+              setLevel(newLevel)
+            }
+
+            lastUpdate = timestamp
           }
-
-          const rms = Math.sqrt(sum / dataArray.length)
-          setLevel(rms * 100)
 
           rafRef.current = requestAnimationFrame(update)
         }
 
-        update()
+        rafRef.current = requestAnimationFrame(update)
       } catch (err) {
         console.error("AudioLevel error:", err)
       }
     }
 
-    setup()
+    // ── Kick off + listen for AudioContext resuming after user gesture ─────
+    const audioContext = getAudioContext()
+
+    // Try to resume (will only succeed after a user gesture)
+    if (audioContext.state === "suspended") {
+      audioContext.resume().catch(() => {})
+    }
+
+    wireAnalyser()
+
+    // This is the key fix: if AudioContext was suspended at mount time,
+    // the statechange event will fire once the browser allows it to run
+    // (after a click / tap / keypress) and we retry wiring automatically.
+    const onStateChange = () => {
+      if (audioContext.state === "running") {
+        wireAnalyser()
+      }
+    }
+    audioContext.addEventListener("statechange", onStateChange)
 
     return () => {
-      cancelled = true
-      if (rafRef.current) cancelAnimationFrame(rafRef.current)
-      if (sourceRef.current) sourceRef.current.disconnect()
-      if (analyserRef.current) analyserRef.current.disconnect()
+      audioContext.removeEventListener("statechange", onStateChange)
+      cleanup()
     }
-  }, [audioTrack])
+  }, [audioTrack, cleanup])
 
   return level
 }

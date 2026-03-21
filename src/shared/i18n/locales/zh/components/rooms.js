@@ -183,6 +183,12 @@ export default {
       toggleMic: "无法切换麦克风",
       toggleCam: "无法切换摄像头",
     },
+    participantList: {
+      title: "参与者",
+      you: "你",
+      guest: "访客",
+      youSuffix: "（你）",
+    },
   },
   roomFullModal: {
     title: "房间已满",

@@ -95,4 +95,6 @@ export default {
   verifying: "ĐANG XÁC MINH...",
   back: "Quay lại",
   invalidCredentials: "Email hoặc mật khẩu không hợp lệ",
+  registering: "ĐANG ĐĂNG KÝ...",
+  registrationFailed: "Đăng ký thất bại. Vui lòng thử lại.",
 }

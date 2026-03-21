@@ -11,6 +11,28 @@ const Modal = ({
   title,
   showCloseButton = true,
 }) => {
+  // Prevent body scrolling and layout shift when modal is open
+  useEffect(() => {
+    if (open) {
+      // Calculate scrollbar width
+      const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth
+      
+      const originalStyle = window.getComputedStyle(document.body).overflow
+      const originalPaddingRight = window.getComputedStyle(document.body).paddingRight
+
+      // Set padding to prevent content from jumping
+      if (scrollbarWidth > 0) {
+        document.body.style.paddingRight = `calc(${originalPaddingRight} + ${scrollbarWidth}px)`
+      }
+      document.body.style.overflow = "hidden"
+      
+      return () => {
+        document.body.style.overflow = originalStyle
+        document.body.style.paddingRight = originalPaddingRight
+      }
+    }
+  }, [open])
+
   // Modal visibility is handled by the "open" prop and AnimatePresence
 
   // Use createPortal to render the modal at the document body level

@@ -11,6 +11,7 @@ const ChatBox = ({
   onSendMessage,
   isConnected,
   className = "",
+  hideTitle,
 }) => {
   const [message, setMessage] = useState("")
   const scrollRef = useRef(null)
@@ -36,11 +37,13 @@ const ChatBox = ({
 
   return (
     <div className={`flex h-full flex-col bg-white ${className}`}>
-      <div className="border-b border-[#C6C6C6] px-4 py-3">
-        <h3 className="text-sm font-bold text-headingColor m-0">
-          {t.rooms.chatBox.title}
-        </h3>
-      </div>
+      {!hideTitle && (
+        <div className="border-b border-[#C6C6C6] px-4 py-3">
+          <h3 className="text-black text-sm font-bold m-0">
+            {t.rooms.chatBox.title}
+          </h3>
+        </div>
+      )}
 
       <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-[#C6C6C6] scrollbar-track-transparent">
         {messages.length === 0 ? (
@@ -119,14 +122,14 @@ const ChatBox = ({
         <button
           onClick={handleSend}
           disabled={!isConnected || !message.trim()}
-          className="flex items-center justify-center w-12 h-12 rounded-full shrink-0 transition-colors disabled:bg-black/10 disabled:text-black/25 disabled:cursor-not-allowed hover:opacity-90"
+          className="flex items-center justify-center w-10 h-10 rounded-full shrink-0 transition-colors disabled:bg-black/10 disabled:text-black/25 disabled:cursor-not-allowed hover:opacity-90"
           style={
             isConnected && message.trim()
               ? { backgroundColor: colors.red[700], color: "white" }
               : {}
           }
         >
-          <Send className="w-5 h-5 ml-[-2px] mt-[1px]" />
+          <Send className="ml-[-2px] mt-[1px]" />
         </button>
       </div>
     </div>

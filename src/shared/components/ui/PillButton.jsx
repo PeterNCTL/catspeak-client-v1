@@ -17,8 +17,8 @@ const PillButton = ({
   const isSecondary = variant === "secondary"
   const isActuallyDisabled = disabled || loading
 
-  const baseStyles =
-    "h-12 px-4 rounded-full font-medium text-sm flex items-center justify-center gap-2 transition whitespace-nowrap"
+  const heightClass = className && className.match(/\bh-\S+/) ? "" : "h-12"
+  const baseStyles = `${heightClass} px-4 rounded-full font-medium text-sm flex items-center justify-center gap-2 transition whitespace-nowrap`
 
   // Default variant styles
   const variantStyles = isSecondary

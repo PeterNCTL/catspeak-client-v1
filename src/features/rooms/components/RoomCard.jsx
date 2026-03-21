@@ -100,13 +100,10 @@ const RoomCard = ({ room }) => {
           </div>
 
           <div
-            className="absolute right-2 top-2 z-20 transition-all duration-300"
+            className="absolute right-2 top-2 z-20 flex h-10 w-10 flex-col items-center justify-center transition-all duration-300"
             onClick={handleBookmarkClick}
           >
-            <Bookmark
-              className="drop-shadow-md transition-all duration-200 text-white hover:text-gray-200"
-              size={32}
-            />
+            <Bookmark className="drop-shadow-md transition-all duration-200 text-white hover:text-gray-200" />
           </div>
         </div>
 
@@ -116,7 +113,7 @@ const RoomCard = ({ room }) => {
           <h3 className="text-base font-bold line-clamp-1">{translatedName}</h3>
           {/* Room Link/Code */}
           <div className="mb-2 flex items-center gap-2">
-            <Link className="h-5 w-5 text-yellow-500" />
+            <Link size={14} className="text-yellow-500" />
             <span className="text-sm font-medium text-yellow-500">
               {roomCode}
             </span>

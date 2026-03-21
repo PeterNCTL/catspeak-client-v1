@@ -81,6 +81,7 @@ const WorkshopCarousel = ({ slides: propSlides = [] }) => {
                       onClick={() => setModalType(slide.modal || "development")}
                       bgColor="#f5c518"
                       textColor="#990011"
+                      className="h-10"
                     >
                       {slide.cta}
                     </PillButton>

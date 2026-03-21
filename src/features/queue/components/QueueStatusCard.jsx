@@ -1,189 +1,68 @@
 import React from "react"
-import {
-  Typography,
-  Paper,
-  Button,
-  Box,
-  CircularProgress,
-  Stack,
-  alpha,
-  Divider,
-} from "@mui/material"
+import { Loader2 } from "lucide-react"
 import { useLanguage } from "@/shared/context/LanguageContext"
+import PillButton from "@/shared/components/ui/PillButton"
 
 const QueueStatusCard = ({ statusText, isConnected, position, onCancel }) => {
   const { t } = useLanguage()
 
   return (
-    <Paper
-      elevation={4}
-      sx={{
-        maxWidth: 400,
-        width: "100%",
-        borderRadius: 5,
-        overflow: "hidden",
-        position: "relative",
-        border: "1px solid",
-        borderColor: "divider",
-      }}
-    >
+    <div className="max-w-[400px] w-full rounded-xl overflow-hidden relative border border-[#C6C6C6] shadow-md bg-white">
       {/* Header / Loading State */}
-      <Box
-        sx={{
-          bgcolor: alpha("#990011", 0.04), // Subtle tint matching brand
-          p: 4,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: 2,
-        }}
-      >
-        <Box sx={{ position: "relative", display: "inline-flex" }}>
-          <CircularProgress
-            size={72}
-            thickness={4}
-            sx={{
-              color: "#990011",
-              opacity: 0.8,
-            }}
+      <div className="bg-[#990011]/[0.04] p-8 flex flex-col items-center gap-4">
+        <div className="relative inline-flex items-center justify-center">
+          <Loader2
+            className="w-[72px] h-[72px] text-[#990011] opacity-80 animate-spin"
+            strokeWidth={2}
           />
-          <Box
-            sx={{
-              top: 0,
-              left: 0,
-              bottom: 0,
-              right: 0,
-              position: "absolute",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <Typography variant="h4" component="div">
-              😺
-            </Typography>
-          </Box>
-        </Box>
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="text-[2rem] leading-none">😺</div>
+          </div>
+        </div>
 
-        <Box sx={{ textAlign: "center" }}>
-          <Typography variant="h6" fontWeight="bold" gutterBottom>
-            {statusText}
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            {t.rooms.queue.findingMatch}
-          </Typography>
-        </Box>
-      </Box>
+        <div className="text-center mt-2">
+          <h6 className="text-xl font-bold mb-2 text-gray-900">{statusText}</h6>
+          <p className="text-sm text-gray-500">{t.rooms.queue.findingMatch}</p>
+        </div>
+      </div>
 
-      <Divider />
+      <div className="h-px w-full bg-[#C6C6C6]" />
 
-      <Box sx={{ p: 3 }}>
+      <div className="p-6">
         {/* Info Grid */}
-        <Box
-          sx={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gap: 2,
-            mb: 3,
-          }}
-        >
-          <Box
-            sx={{
-              p: 2,
-              borderRadius: 2,
-              bgcolor: "grey.50",
-              border: "1px solid",
-              borderColor: "divider",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-            }}
-          >
-            <Typography
-              variant="caption"
-              color="text.secondary"
-              fontWeight="600"
-              gutterBottom
-            >
+        <div className="grid grid-cols-2 gap-3 mb-6">
+          <div className="p-4 rounded-lg bg-gray-50 border border-[#C6C6C6] flex flex-col items-center">
+            <span className="text-xs font-semibold text-gray-500 mb-2">
               {t.rooms.queue.status}
-            </Typography>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-              <Box
-                sx={{
-                  width: 8,
-                  height: 8,
-                  borderRadius: "50%",
-                  bgcolor: isConnected ? "success.main" : "warning.main",
-                  boxShadow: 1,
-                  animation: !isConnected ? "pulse 2s infinite" : "none",
-                  "@keyframes pulse": {
-                    "0%": { opacity: 1 },
-                    "50%": { opacity: 0.5 },
-                    "100%": { opacity: 1 },
-                  },
-                }}
+            </span>
+            <div className="flex items-center gap-2">
+              <div
+                className={`w-2 h-2 rounded-full shadow-sm ${isConnected ? "bg-green-500" : "bg-orange-500 animate-pulse"}`}
               />
-              <Typography variant="body2" fontWeight="medium">
+              <span className="text-sm font-medium text-gray-900">
                 {isConnected
                   ? t.rooms.queue.connected
                   : t.rooms.queue.connecting}
-              </Typography>
-            </Box>
-          </Box>
+              </span>
+            </div>
+          </div>
 
-          <Box
-            sx={{
-              p: 2,
-              borderRadius: 2,
-              bgcolor: "grey.50",
-              border: "1px solid",
-              borderColor: "divider",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-            }}
-          >
-            <Typography
-              variant="caption"
-              color="text.secondary"
-              fontWeight="600"
-              gutterBottom
-            >
+          <div className="p-4 rounded-lg bg-gray-50 border border-[#C6C6C6] flex flex-col items-center">
+            <span className="text-xs font-semibold text-gray-500 mb-2">
               {t.rooms.queue.position}
-            </Typography>
-            <Typography
-              variant="h6"
-              fontWeight="bold"
-              color="#990011"
-              sx={{ lineHeight: 1 }}
-            >
+            </span>
+            <div className="text-[1.25rem] font-bold text-[#990011] leading-none">
               {position > 0 ? `#${position}` : "--"}
-            </Typography>
-          </Box>
-        </Box>
+            </div>
+          </div>
+        </div>
 
         {/* Action Button */}
-        <Button
-          onClick={onCancel}
-          variant="contained"
-          fullWidth
-          size="large"
-          sx={{
-            backgroundColor: "#990011",
-            "&:hover": {
-              backgroundColor: "#7a000d",
-            },
-            borderRadius: 2,
-            py: 1.5,
-            fontWeight: "bold",
-            fontSize: "1rem",
-            boxShadow: 2,
-          }}
-        >
+        <PillButton onClick={onCancel} className="w-full shadow-sm">
           {t.rooms.queue.cancelSearch}
-        </Button>
-      </Box>
-    </Paper>
+        </PillButton>
+      </div>
+    </div>
   )
 }
 

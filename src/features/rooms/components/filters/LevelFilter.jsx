@@ -21,7 +21,11 @@ const LevelFilter = () => {
 
   return (
     <>
-      <Collapsible title={t.rooms.filters.levelsHeading}>
+      <Collapsible 
+        title={t.rooms.filters.levelsHeading}
+        maxHeight="200px"
+        scrollable
+      >
         <div className="flex flex-col">
           {currentLevels.map((levelObj) => {
             const isChecked = isSelected(levelObj.value)
@@ -29,7 +33,7 @@ const LevelFilter = () => {
             return (
               <label
                 key={levelObj.value}
-                className={`h-11 flex items-center gap-3 cursor-pointer rounded-md px-4 transition-colors ${isChecked ? "bg-[#F2F2F2] hover:bg-[#E5E5E5]" : "hover:bg-[#F2F2F2]"}`}
+                className={`h-10 flex items-center gap-3 cursor-pointer rounded-md px-4 transition-colors ${isChecked ? "bg-[#F2F2F2] hover:bg-[#E5E5E5]" : "hover:bg-[#F2F2F2]"}`}
               >
                 <input
                   type="checkbox"
@@ -39,13 +43,12 @@ const LevelFilter = () => {
                   }
                   className="w-4 h-4 text-[#990011] bg-white accent-[#990011] cursor-pointer"
                 />
-                <span className="text-base">{levelObj.label}</span>
+                <span className="text-sm">{levelObj.label}</span>
               </label>
             )
           })}
         </div>
       </Collapsible>
-      <hr className="my-5 border-[#C6C6C6]" />
     </>
   )
 }

@@ -140,7 +140,7 @@ const CreateRoomModal = ({ open, onCancel }) => {
       title={t.rooms.createRoom.title}
       className="max-w-sm sm:max-w-md max-[425px]:max-w-none max-[425px]:h-full max-[425px]:rounded-none max-[425px]:flex max-[425px]:flex-col"
     >
-      <div className="flex flex-col gap-5 max-h-[60vh] overflow-y-auto px-1 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#990011] [&::-webkit-scrollbar-track]:bg-gray-200 [&::-webkit-scrollbar]:w-1.5 max-[425px]:max-h-none max-[425px]:flex-1">
+      <div className="flex flex-col gap-5 max-h-[60vh] overflow-y-auto -mx-5 px-5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#990011] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar]:w-1.5 max-[425px]:max-h-none max-[425px]:flex-1">
         {/* Room Name */}
         <TextInput
           id="name"
@@ -169,11 +169,12 @@ const CreateRoomModal = ({ open, onCancel }) => {
       </div>
 
       <div className="mt-8 flex justify-center gap-2">
-        <PillButton onClick={handleCancel} variant="secondary">
+        <PillButton onClick={handleCancel} variant="secondary" className="h-10">
           {t.rooms.createRoom.cancel}
         </PillButton>
         <PillButton
           onClick={handleJoin}
+          className="h-10"
           loading={isJoining}
           loadingText={t.rooms.createRoom.joining}
           disabled={!selectedLanguage || isLoading}
@@ -182,6 +183,7 @@ const CreateRoomModal = ({ open, onCancel }) => {
         </PillButton>
         <PillButton
           onClick={handleCreate}
+          className="h-10"
           loading={isCreating}
           loadingText={t.rooms.createRoom.creating}
           disabled={!selectedLanguage || isLoading}

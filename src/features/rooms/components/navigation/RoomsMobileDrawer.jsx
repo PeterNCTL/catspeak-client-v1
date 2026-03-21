@@ -2,14 +2,19 @@ import React, { useEffect } from "react"
 import { X } from "lucide-react"
 
 const RoomsMobileDrawer = ({ isOpen, onClose, title, children }) => {
-  // Prevent body scroll when drawer is open
   useEffect(() => {
     if (isOpen) {
+      const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth
+      if (scrollbarWidth > 0) {
+        document.body.style.paddingRight = `${scrollbarWidth}px`
+      }
       document.body.style.overflow = "hidden"
     } else {
+      document.body.style.paddingRight = ""
       document.body.style.overflow = "unset"
     }
     return () => {
+      document.body.style.paddingRight = ""
       document.body.style.overflow = "unset"
     }
   }, [isOpen])
@@ -25,7 +30,7 @@ const RoomsMobileDrawer = ({ isOpen, onClose, title, children }) => {
       )}
       {/* Drawer Panel */}
       <div
-        className={`fixed top-0 right-0 z-[1301] h-full w-[320px] bg-white shadow-xl transition-transform duration-300 ease-in-out ${
+        className={`fixed top-0 right-0 z-[1301] h-full w-full sm:w-[320px] bg-white shadow-xl transition-transform duration-300 ease-in-out ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >

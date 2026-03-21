@@ -1,12 +1,12 @@
 import React from "react"
 import { useLanguage } from "@/shared/context/LanguageContext"
 
-const ParticipantList = ({ participants = [], participantCount }) => {
+const ParticipantsPreview = ({ participants = [], participantCount }) => {
   const { t } = useLanguage()
   const count = participantCount ?? participants.length
 
   if (count === 0) {
-    return <p className="text-gray-500">{t.rooms.waitingScreen.noOneHere}</p>
+    return <p className="text-[#7A7574]">{t.rooms.waitingScreen.noOneHere}</p>
   }
 
   // Cap at 5 for AvatarGroup display equivalent
@@ -43,4 +43,4 @@ const ParticipantList = ({ participants = [], participantCount }) => {
   )
 }
 
-export default ParticipantList
+export default ParticipantsPreview

@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { Settings, LogOut, Loader2, User, ArrowLeft } from "lucide-react"
+import Avatar from "@/shared/components/ui/Avatar"
 import { AnimatePresence } from "framer-motion"
 import { useGetProfileQuery, useAuth, useLogoutMutation } from "@/features/auth"
 import { useLanguage } from "@/shared/context/LanguageContext"
@@ -52,10 +53,10 @@ const ProfileDropdown = () => {
   }
 
   const menuItemClass =
-    "flex w-full items-center gap-3 px-4 h-12 text-base hover:bg-[#E5E5E5] transition-colors"
+    "flex w-full items-center gap-3 px-4 h-10 text-base hover:bg-[#E5E5E5] transition-colors"
 
   const menuItemDisabledClass =
-    "flex w-full items-center gap-3 px-4 h-12 text-base text-[#7A7574] cursor-not-allowed"
+    "flex w-full items-center gap-3 px-4 h-10 text-base text-[#7A7574] cursor-not-allowed"
 
   return (
     <div className="relative" ref={menuRef}>
@@ -70,17 +71,12 @@ const ProfileDropdown = () => {
           aria-expanded={isOpen}
           aria-haspopup="true"
         >
-          {user?.avatarImageUrl ? (
-            <img
-              src={user.avatarImageUrl}
-              alt={user.username || "User"}
-              className="h-full w-full object-cover"
-            />
-          ) : (
-            <div className="flex h-full w-full items-center justify-center bg-gray-100 text-[18px] font-medium text-gray-600">
-              {getInitials(user?.fullName || user?.username)}
-            </div>
-          )}
+          <Avatar
+            size={40}
+            src={user?.avatarImageUrl}
+            alt={user?.username || "User"}
+            name={user?.fullName || user?.username}
+          />
         </button>
       )}
 
@@ -102,21 +98,18 @@ const ProfileDropdown = () => {
                 >
                   <ArrowLeft className="h-5 w-5 text-gray-700" />
                 </button>
-                <span className="text-lg font-semibold">{t.header.profile || "Profile"}</span>
+                <span className="text-lg font-semibold">
+                  {t.header.profile || "Profile"}
+                </span>
               </div>
 
               <div className="flex items-center gap-3 p-4">
-                {user?.avatarImageUrl ? (
-                  <img
-                    src={user.avatarImageUrl}
-                    alt={user.username || "User"}
-                    className="h-10 w-10 rounded-full object-cover border border-gray-200"
-                  />
-                ) : (
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 text-sm font-medium text-gray-600 border border-gray-200">
-                    {getInitials(user?.fullName || user?.username)}
-                  </div>
-                )}
+                <Avatar
+                  size={40}
+                  src={user?.avatarImageUrl}
+                  alt={user?.username || "User"}
+                  name={user?.fullName || user?.username}
+                />
 
                 <div className="min-w-0">
                   <p className="m-0 truncate text-base font-medium">
@@ -130,12 +123,10 @@ const ProfileDropdown = () => {
 
               <div className="border-t border-[#F0F0F0]" />
 
-              <div className="flex flex-col">
+              <div className="flex flex-col gap-1">
                 <button disabled className={menuItemDisabledClass}>
                   <User />
-                  <span className="text-sm">
-                    {t.header.profile}
-                  </span>
+                  <span className="text-sm">{t.header.profile}</span>
                 </button>
 
                 <button disabled className={menuItemDisabledClass}>

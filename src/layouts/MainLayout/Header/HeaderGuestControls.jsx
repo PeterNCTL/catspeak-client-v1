@@ -13,7 +13,9 @@ const HeaderGuestControls = ({ onGetStarted }) => {
 
   return (
     <>
-      <PillButton onClick={handleLogin}>{t.auth.loginButton}</PillButton>
+      <PillButton onClick={handleLogin} className="h-10">
+        {t.auth.loginButton}
+      </PillButton>
     </>
   )
 }

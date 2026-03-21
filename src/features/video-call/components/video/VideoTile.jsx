@@ -1,4 +1,5 @@
 import { MicOff, VideoOff } from "lucide-react"
+import Avatar from "@/shared/components/ui/Avatar"
 import useAudioLevel from "../../hooks/useAudioLevel"
 import { useEffect, useRef, useMemo, useCallback } from "react"
 import { useParticipant } from "@videosdk.live/react-sdk"
@@ -16,7 +17,9 @@ const attachGestureListener = () => {
       if (el.paused && el.srcObject) {
         try {
           await el.play()
-          console.log("[VideoTile] ▶️ gesture-resumed playback for a blocked element")
+          console.log(
+            "[VideoTile] ▶️ gesture-resumed playback for a blocked element",
+          )
           pendingVideoElements.delete(el)
         } catch {
           // still blocked — leave in set for next gesture
@@ -74,8 +77,8 @@ const VideoTile = ({ participantId }) => {
 
     console.log(
       `${tag} stream update — micOn=${micOn} webcamOn=${webcamOn} ` +
-      `audioTrack=[${audioState}] videoTrack=[${videoState}] ` +
-      `sdkStream=${sdkStream ? `${sdkStream.getTracks().length} tracks` : "null"}`
+        `audioTrack=[${audioState}] videoTrack=[${videoState}] ` +
+        `sdkStream=${sdkStream ? `${sdkStream.getTracks().length} tracks` : "null"}`,
     )
   }, [sdkStream, micOn, webcamOn]) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -84,11 +87,11 @@ const VideoTile = ({ participantId }) => {
     if (!audioTrack || isLocal) return
 
     const onEnded = () =>
-      console.warn(`${tag} ⚠️ audio track ENDED (readyState=${audioTrack.readyState})`)
-    const onMute = () =>
-      console.warn(`${tag} ⚠️ audio track MUTED`)
-    const onUnmute = () =>
-      console.log(`${tag} ✅ audio track UNMUTED`)
+      console.warn(
+        `${tag} ⚠️ audio track ENDED (readyState=${audioTrack.readyState})`,
+      )
+    const onMute = () => console.warn(`${tag} ⚠️ audio track MUTED`)
+    const onUnmute = () => console.log(`${tag} ✅ audio track UNMUTED`)
 
     audioTrack.addEventListener("ended", onEnded)
     audioTrack.addEventListener("mute", onMute)
@@ -113,7 +116,7 @@ const VideoTile = ({ participantId }) => {
         if (err.name === "NotAllowedError") {
           console.warn(
             `${tag} ⚠️ play() blocked by autoplay policy — ` +
-            `will resume on next user gesture`
+              `will resume on next user gesture`,
           )
           // Register this element to be resumed on next user gesture
           pendingVideoElements.add(el)
@@ -123,7 +126,7 @@ const VideoTile = ({ participantId }) => {
         }
       }
     },
-    [tag]
+    [tag],
   )
 
   useEffect(() => {
@@ -133,8 +136,8 @@ const VideoTile = ({ participantId }) => {
     el.srcObject = sdkStream ?? null
     console.log(
       `${tag} srcObject set — ` +
-      `audioTracks=${sdkStream?.getAudioTracks().length ?? 0} ` +
-      `videoTracks=${sdkStream?.getVideoTracks().length ?? 0}`
+        `audioTracks=${sdkStream?.getAudioTracks().length ?? 0} ` +
+        `videoTracks=${sdkStream?.getVideoTracks().length ?? 0}`,
     )
 
     if (sdkStream && !isLocal) {
@@ -149,14 +152,14 @@ const VideoTile = ({ participantId }) => {
 
     const onPause = () => {
       if (el.srcObject) {
-        console.warn(`${tag} ⏸️ <video> paused unexpectedly while srcObject is set`)
+        console.warn(
+          `${tag} ⏸️ <video> paused unexpectedly while srcObject is set`,
+        )
         attemptPlay(el)
       }
     }
-    const onStalled = () =>
-      console.warn(`${tag} ⏳ <video> stalled`)
-    const onPlaying = () =>
-      console.log(`${tag} ▶️ <video> is playing`)
+    const onStalled = () => console.warn(`${tag} ⏳ <video> stalled`)
+    const onPlaying = () => console.log(`${tag} ▶️ <video> is playing`)
 
     el.addEventListener("pause", onPause)
     el.addEventListener("stalled", onStalled)
@@ -203,21 +206,18 @@ const VideoTile = ({ participantId }) => {
       {/* Avatar fallback when no video */}
       {(!sdkStream || !isVideoVisible) && (
         <div className="flex h-full w-full items-center justify-center">
-          <div
-            className={`flex h-16 w-16 sm:h-20 sm:w-20 md:h-24 md:w-24 items-center justify-center rounded-full bg-gray-200 text-2xl font-bold text-gray-600 border-4 border-solid ${
-              isSpeaking
-                ? "border-green-600 shadow-[0_0_15px_rgba(46,125,50,0.4)]"
-                : "border-[#C6C6C6]"
-            }`}
-          >
-            {(displayName || "?").charAt(0).toUpperCase()}
-          </div>
+          <Avatar
+            size={64}
+            name={displayName || "?"}
+            speaking={isSpeaking}
+            className="sm:!w-20 sm:!h-20 md:!w-24 md:!h-24"
+          />
         </div>
       )}
 
       {/* Name + speaking indicator */}
-      <div className="absolute bottom-3 left-3 flex max-w-[70%] items-center gap-2">
-        <div className="flex items-center gap-2 overflow-hidden text-ellipsis whitespace-nowrap text-xs font-medium text-gray-900 sm:text-[0.8rem] md:text-sm">
+      <div className="absolute bottom-5 left-5 flex max-w-[70%] items-center gap-2">
+        <div className="flex items-center gap-2 overflow-hidden text-ellipsis whitespace-nowrap text-sm font-medium text-black">
           {displayName} {isLocal && "(You)"}
         </div>
         {isSpeaking && (
@@ -230,9 +230,9 @@ const VideoTile = ({ participantId }) => {
       </div>
 
       {/* Mic / cam off icons */}
-      <div className="absolute bottom-3 right-3 flex items-center gap-2">
-        {!micOn && <MicOff className="h-[18px] w-[18px] text-red-500" />}
-        {!webcamOn && <VideoOff className="h-[18px] w-[18px] text-red-500" />}
+      <div className="absolute bottom-5 right-5 flex items-center gap-4">
+        {!micOn && <MicOff className="text-[#7A7574]" />}
+        {!webcamOn && <VideoOff className="text-[#7A7574]" />}
       </div>
     </div>
   )

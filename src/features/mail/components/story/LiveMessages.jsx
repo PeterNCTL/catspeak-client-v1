@@ -3,6 +3,7 @@ import { Send, Check, X } from "lucide-react"
 import PassConfirmationModal from "./PassConfirmationModal"
 import MyStoryModal from "./MyStoryModal"
 import { useLanguage } from "@/shared/context/LanguageContext"
+import TextInput from "@/shared/components/ui/TextInput"
 
 const LiveMessages = ({
   stories = [],
@@ -42,35 +43,34 @@ const LiveMessages = ({
     return (
       <div className="relative my-6 w-full max-w-full overflow-hidden rounded-3xl bg-white/60 px-2 py-8 text-center">
         {/* Input area same as before */}
-        <div className="flex items-center justify-between px-2 pb-3">
-          <div className="flex items-center gap-2">
-            <input
+        <div className="flex flex-col md:flex-row items-center justify-between gap-3 px-2 pb-3 md:gap-0">
+          <div className="flex w-full items-start gap-2 md:w-auto">
+            <TextInput
               value={inputValue}
               onChange={(e) => onChangeInput?.(e.target.value)}
               maxLength={200}
               placeholder={t.catSpeak.mail.placeholderEmpty}
-              className="h-9 w-72 rounded-full border border-[#c38300]/70 px-4 text-sm outline-none focus:border-[#990011]"
+              containerClassName="flex-1 md:w-72 md:flex-none"
+              className="!border-[#c38300]/70 focus:!border-[#990011] focus:!ring-[#990011] hover:!border-[#990011]"
+              showCount
             />
             <button
               type="button"
               onClick={() => onSend?.(inputValue)}
-              className="text-[#990011] transition hover:scale-105"
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[#990011] transition hover:scale-105 hover:bg-[#990011]/10"
               aria-label="Send message"
             >
-              <Send size={20} />
+              <Send />
             </button>
-            <span className="text-xs text-gray-500">
-              {inputValue.length} / 200
-            </span>
           </div>
-          <div className="text-xs text-gray-600">
+          <div className="shrink-0 text-xs text-[#7A7574]">
             <span className="font-semibold">{userLetters}</span>{" "}
             {t.catSpeak.mail.yours} |{" "}
             <span className="font-semibold">{totalLetters}</span>{" "}
             {t.catSpeak.mail.total}
           </div>
         </div>
-        <div className="mt-4 text-gray-400 italic">
+        <div className="mt-4 text-[#7A7574] italic">
           {t.catSpeak.mail.noStories}
         </div>
       </div>
@@ -91,35 +91,37 @@ const LiveMessages = ({
   }
 
   return (
-    <div className="relative my-6 w-full max-w-full overflow-hidden rounded-3xl bg-white/60 px-2 py-3">
-      <div className="flex items-center justify-between px-2 pb-3">
-        <div className=" flex items-center gap-2">
-          <input
+    <div className="relative w-full max-w-full">
+      <div className="mb-2 flex flex-col md:flex-row items-center justify-between gap-3 px-1 pt-1 -mx-1 -mt-1">
+        <div className="flex w-full items-start gap-2">
+          <TextInput
             value={inputValue}
             onChange={(e) => onChangeInput?.(e.target.value)}
             maxLength={200}
             placeholder={t.catSpeak.mail.placeholder}
-            className="h-9 w-72 rounded-full border border-[#c38300]/70 px-4 text-sm outline-none focus:border-[#990011]"
+            containerClassName="flex-1 md:w-72 md:flex-none"
+            className="!border-[#c38300]/70"
+            showCount
           />
+
           <button
             type="button"
             onClick={() => onSend?.(inputValue)}
-            className="text-[#990011] transition hover:scale-105"
+            className="flex h-10 w-10 items-center justify-center rounded-full text-[#990011] hover:bg-[#E5E5E5]"
             aria-label="Send message"
           >
-            <Send size={20} />
+            <Send />
           </button>
-          <span className="text-xs text-gray-500">
-            {inputValue.length} / 200
-          </span>
         </div>
-        <div className="text-xs text-gray-600">
+
+        <div className="text-sm whitespace-nowrap">
           <span className="font-semibold">{userLetters}</span>{" "}
           {t.catSpeak.mail.yours} |{" "}
           <span className="font-semibold">{totalLetters}</span>{" "}
           {t.catSpeak.mail.total}
         </div>
       </div>
+
       <style>
         {`
         @keyframes live-marquee {
@@ -135,6 +137,7 @@ const LiveMessages = ({
         }
         `}
       </style>
+
       {rows.map((rowIdx) => (
         <div
           key={rowIdx}

@@ -46,9 +46,9 @@ const LanguageSwitcher = ({ className = "" }) => {
       {/* Trigger */}
       <div
         onClick={handleToggle}
-        className="hover:bg-[#E5E5E5] rounded-full h-12 flex items-center px-4 cursor-pointer"
+        className="hover:bg-[#E5E5E5] rounded-full h-10 flex items-center px-4 cursor-pointer"
       >
-        <div className="flex items-center gap-3 text-base font-bold text-[#FFB400] justify-between w-full">
+        <div className="flex items-center gap-3 text-sm font-bold text-[#FFB400] justify-between w-full">
           <span className="truncate">{getDisplayLabel()}</span>
 
           <ChevronDown
@@ -66,7 +66,7 @@ const LanguageSwitcher = ({ className = "" }) => {
             <FluentAnimation
               direction="down"
               exit
-              className="rounded-xl shadow-lg bg-white overflow-hidden"
+              className="rounded-lg shadow-lg bg-white overflow-hidden"
             >
               <div className="flex flex-col whitespace-nowrap">
                 {LANGUAGES.map(({ key, label, disabled }) => {
@@ -77,7 +77,7 @@ const LanguageSwitcher = ({ className = "" }) => {
                       key={key}
                       disabled={disabled}
                       onClick={() => !disabled && handleLanguageSelect(key)}
-                      className={`w-full text-left px-4 h-12 text-sm transition-colors
+                      className={`w-full text-left px-4 h-10 text-sm transition-colors
                         ${
                           disabled
                             ? "text-[#7A7574] cursor-default"

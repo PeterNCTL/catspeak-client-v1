@@ -18,10 +18,7 @@ const MobileCommunityDropdown = ({ navKey, onClose }) => {
   const [communityOpen, setCommunityOpen] = useState(false)
 
   // ---- Supported codes (scalable) ----
-  const supportedCodes = useMemo(
-    () => LANGUAGE_CONFIG.map((c) => c.code),
-    []
-  )
+  const supportedCodes = useMemo(() => LANGUAGE_CONFIG.map((c) => c.code), [])
 
   // ---- Determine current community ----
   const currentCommunity = useMemo(() => {
@@ -30,16 +27,12 @@ const MobileCommunityDropdown = ({ navKey, onClose }) => {
       return lang
     }
 
-    return (
-      localStorage.getItem("communityLanguage") || DEFAULT_COMMUNITY
-    )
+    return localStorage.getItem("communityLanguage") || DEFAULT_COMMUNITY
   }, [lang, supportedCodes])
 
   // ---- Display label ----
   const displayLabel = useMemo(() => {
-    const config = LANGUAGE_CONFIG.find(
-      (c) => c.code === currentCommunity
-    )
+    const config = LANGUAGE_CONFIG.find((c) => c.code === currentCommunity)
 
     return (
       t.header?.countries?.[config?.labelKey] ||
@@ -71,7 +64,7 @@ const MobileCommunityDropdown = ({ navKey, onClose }) => {
     if (isInsideEcosystem) {
       const newPath = location.pathname.replace(
         `/${currentCommunity}`,
-        `/${newCode}`
+        `/${newCode}`,
       )
       navigate(newPath)
     } else {
@@ -87,13 +80,13 @@ const MobileCommunityDropdown = ({ navKey, onClose }) => {
         {/* Navigate button */}
         <button
           onClick={handleNavigateClick}
-          className={`flex-grow h-12 px-3 flex items-center text-left rounded-[5px] transition-colors ${
+          className={`flex-grow h-10 text-sm px-3 flex items-center text-left rounded-[5px] transition-colors ${
             isActive || communityOpen
               ? "bg-[#F2F2F2] text-[#990011] hover:bg-[#E6E6E6]"
               : "hover:bg-[#F2F2F2]"
           }`}
         >
-          <span className="font-semibold">{displayLabel}</span>
+          <span>{displayLabel}</span>
         </button>
 
         {/* Expand button */}
@@ -102,26 +95,18 @@ const MobileCommunityDropdown = ({ navKey, onClose }) => {
             e.stopPropagation()
             setCommunityOpen((prev) => !prev)
           }}
-          className={`w-12 h-12 flex items-center justify-center rounded-[5px] transition-colors ${
-            isActive || communityOpen
-              ? "bg-[#F2F2F2] text-[#990011] hover:bg-[#E6E6E6]"
-              : "hover:bg-[#F2F2F2]"
+          className={`w-10 h-10 flex items-center justify-center rounded-[5px] transition-colors hover:bg-[#F2F2F2] ${
+            isActive || communityOpen ? "text-[#990011]" : ""
           }`}
         >
-          {communityOpen ? (
-            <ChevronUp size={20} />
-          ) : (
-            <ChevronDown size={20} />
-          )}
+          {communityOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
         </button>
       </div>
 
       {/* Collapse Container */}
       <div
         className={`overflow-hidden transition-all duration-300 ease-in-out ${
-          communityOpen
-            ? "max-h-[500px] opacity-100"
-            : "max-h-0 opacity-0"
+          communityOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
         }`}
       >
         <div className="flex flex-col gap-1 mt-1">
@@ -130,14 +115,11 @@ const MobileCommunityDropdown = ({ navKey, onClose }) => {
               key={config.code}
               {...config}
               label={
-                t.header?.countries?.[config.labelKey] ||
-                config.fallbackLabel
+                t.header?.countries?.[config.labelKey] || config.fallbackLabel
               }
               soonLabel={t.header?.soon || "Soon"}
               isActive={currentCommunity === config.code}
-              onSelect={() =>
-                handleCommunitySelect(config.code)
-              }
+              onSelect={() => handleCommunitySelect(config.code)}
             />
           ))}
         </div>

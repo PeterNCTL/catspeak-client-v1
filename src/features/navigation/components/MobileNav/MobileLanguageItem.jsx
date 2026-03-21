@@ -13,7 +13,7 @@ const MobileLanguageItem = ({
     <button
       disabled={disabled}
       onClick={disabled ? undefined : () => onSelect(code)}
-      className={`flex items-center w-full px-3 h-12 rounded-[5px] text-left transition-colors font-semibold ${
+      className={`flex items-center w-full px-3 h-10 text-sm rounded-[5px] text-left transition-colors ${
         disabled
           ? "cursor-default hover:bg-[#F2F2F2]"
           : isActive

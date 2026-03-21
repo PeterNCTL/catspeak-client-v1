@@ -83,9 +83,11 @@ export const useJoinVideoSession = ({ roomId, isAuthenticated = true }) => {
       const search = searchParams.toString()
       const searchStr = search ? `?${search}` : ""
 
+      const communityLang = localStorage.getItem("communityLanguage") || "en"
+
       navigate(
         {
-          pathname: `/meet/${sessionId}`,
+          pathname: `/${communityLang}/meet/${sessionId}`,
           search: searchStr,
         },
         {

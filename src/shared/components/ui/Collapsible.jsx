@@ -7,6 +7,8 @@ const Collapsible = ({
   defaultOpen = true,
   children,
   className = "",
+  maxHeight = "none",
+  scrollable = false,
 }) => {
   const [isOpen, setIsOpen] = useState(defaultOpen)
 
@@ -17,10 +19,10 @@ const Collapsible = ({
       <button
         type="button"
         onClick={toggleOpen}
-        className="flex items-center justify-between w-full text-left bg-transparent border-none cursor-pointer h-12 rounded-md px-4 transition-colors hover:bg-[#F2F2F2]"
+        className="flex items-center justify-between w-full text-left bg-transparent border-none cursor-pointer h-10 rounded-md px-4 transition-colors hover:bg-[#F2F2F2]"
         aria-expanded={isOpen}
       >
-        <span className="font-bold text-base">{title}</span>
+        <span className="font-bold text-sm">{title}</span>
         <motion.div
           animate={{ rotate: isOpen ? 180 : 0 }}
           transition={{ duration: 0.2 }}
@@ -38,7 +40,16 @@ const Collapsible = ({
             transition={{ duration: 0.2, ease: "easeInOut" }}
             className="overflow-hidden"
           >
-            {children}
+            <div
+              className={
+                scrollable
+                  ? "overflow-y-auto pr-1 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#990011] [&::-webkit-scrollbar-track]:bg-gray-200 [&::-webkit-scrollbar]:w-1.5"
+                  : ""
+              }
+              style={maxHeight !== "none" ? { maxHeight } : undefined}
+            >
+              {children}
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

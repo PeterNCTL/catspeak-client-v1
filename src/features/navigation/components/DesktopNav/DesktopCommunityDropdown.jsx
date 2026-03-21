@@ -90,7 +90,7 @@ const DesktopCommunityDropdown = ({ navKey }) => {
   return (
     <div className="relative" ref={dropdownRef}>
       <div
-        className={`flex items-center justify-center text-sm tracking-wide font-semibold uppercase transition-colors duration-200 ${
+        className={`flex items-center justify-center text-sm tracking-wide font-semibold transition-colors duration-200 ${
           isOpen || isActive ? "text-white" : "text-white/70 hover:text-white"
         }`}
       >

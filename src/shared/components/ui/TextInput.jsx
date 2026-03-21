@@ -12,6 +12,7 @@ const TextInput = ({
   variant = "round",
   className = "",
   containerClassName = "",
+  showCount = false,
   ...props
 }) => {
   const variantClasses =
@@ -20,7 +21,7 @@ const TextInput = ({
   const finalClassName = `h-10 w-full border border-[#C6C6C6] text-sm outline-none transition-colors focus:border-cath-red-700 focus:ring-1 focus:ring-cath-red-700 hover:border-cath-red-700 placeholder-[var(--placeholder-color)] ${variantClasses} ${className}`
 
   return (
-    <div className={`flex flex-col gap-1.5 ${containerClassName}`}>
+    <div className={`flex flex-col gap-1 ${containerClassName}`}>
       {label && (
         <label htmlFor={id} className="text-sm">
           {label}
@@ -40,6 +41,11 @@ const TextInput = ({
         onChange={onChange}
         {...props}
       />
+      {showCount && props.maxLength && (
+        <span className="self-start px-2 text-xs text-[#7A7574]">
+          {String(value || "").length} / {props.maxLength}
+        </span>
+      )}
     </div>
   )
 }

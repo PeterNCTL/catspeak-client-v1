@@ -21,7 +21,7 @@ const SessionActionButtons = ({
         onCancel={() => setIsDevelopmentModalOpen(false)}
       />
       {/* Line removed as requested */}
-      <div className="relative flex flex-wrap gap-2 sm:gap-3">
+      <div className="relative flex flex-col min-[426px]:flex-row min-[426px]:flex-wrap gap-2 sm:gap-3">
         {badges.map((b) => {
           const Icon = b.icon
           const isOneOnOne = b.id === "connect_1_1"
@@ -51,14 +51,14 @@ const SessionActionButtons = ({
           return (
             <motion.div
               key={b.id}
-              className={`text-xs sm:text-sm font-semibold flex items-center transform transition-colors duration-200 ease-out`}
+              className={`text-xs sm:text-sm font-semibold flex items-center transform transition-colors duration-200 ease-out w-full min-[426px]:w-auto`}
               onClick={isActionable ? handleClick : undefined}
             >
               <PillButton
                 disabled={!isActionable || isLoadingThis}
                 loading={isActionable && isLoadingThis}
                 startIcon={<Icon />}
-                className="whitespace-nowrap min-w-[120px]"
+                className="whitespace-nowrap w-full min-[426px]:w-auto min-[426px]:min-w-[120px] justify-center"
               >
                 {label}
               </PillButton>

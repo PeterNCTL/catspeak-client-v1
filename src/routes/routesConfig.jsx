@@ -124,18 +124,23 @@ const routesConfig = [
     ],
   },
 
-  // Non-language routes
+  // Language-prefixed video call route
   {
-    path: "/meet",
-    element: <VideoCallLayout />,
+    path: "/:lang/meet",
+    element: <LanguageLayout />,
     children: [
       {
-        path: ":id",
-        element: (
-          <AuthGuard>
-            <VideoCallRoom />
-          </AuthGuard>
-        ),
+        element: <VideoCallLayout />,
+        children: [
+          {
+            path: ":id",
+            element: (
+              <AuthGuard>
+                <VideoCallRoom />
+              </AuthGuard>
+            ),
+          },
+        ],
       },
     ],
   },
