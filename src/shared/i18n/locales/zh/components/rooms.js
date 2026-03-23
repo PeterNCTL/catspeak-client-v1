@@ -129,6 +129,9 @@ export default {
     yourAI: "你的 AI",
   },
   queue: {
+    title: "寻找匹配",
+    findMatch: "开始匹配",
+    cancel: "取消",
     connectingToQueue: "正在连接队列...",
     matchFound: "找到匹配！",
     waitingForPairing: "等待配对...",

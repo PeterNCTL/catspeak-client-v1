@@ -4,7 +4,7 @@ import { colors } from "@/shared/utils/colors"
 const LevelSelector = ({ selectedLevel, onSelect, levels, t }) => {
   return (
     <div className="text-left flex flex-col">
-      <label className="text-sm mb-2">{t.rooms.createRoom.requiredLevel}</label>
+      <label className="text-sm mb-1">{t.rooms.createRoom.requiredLevel}</label>
       <div className="flex flex-wrap justify-start gap-2">
         {levels?.map((level) => {
           const isSelected = selectedLevel === level.value

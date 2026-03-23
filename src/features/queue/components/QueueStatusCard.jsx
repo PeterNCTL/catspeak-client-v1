@@ -9,7 +9,7 @@ const QueueStatusCard = ({ statusText, isConnected, position, onCancel }) => {
   return (
     <div className="max-w-[400px] w-full rounded-xl overflow-hidden relative border border-[#C6C6C6] shadow-md bg-white">
       {/* Header / Loading State */}
-      <div className="bg-[#990011]/[0.04] p-8 flex flex-col items-center gap-4">
+      <div className="bg-[#990011]/[0.04] p-6 flex flex-col items-center gap-4">
         <div className="relative inline-flex items-center justify-center">
           <Loader2
             className="w-[72px] h-[72px] text-[#990011] opacity-80 animate-spin"
@@ -20,9 +20,9 @@ const QueueStatusCard = ({ statusText, isConnected, position, onCancel }) => {
           </div>
         </div>
 
-        <div className="text-center mt-2">
-          <h6 className="text-xl font-bold mb-2 text-gray-900">{statusText}</h6>
-          <p className="text-sm text-gray-500">{t.rooms.queue.findingMatch}</p>
+        <div className="text-center">
+          <h6 className="text-xl font-bold mb-2 text-black">{statusText}</h6>
+          <p className="text-sm text-[#7A7574]">{t.rooms.queue.findingMatch}</p>
         </div>
       </div>
 
@@ -58,7 +58,7 @@ const QueueStatusCard = ({ statusText, isConnected, position, onCancel }) => {
         </div>
 
         {/* Action Button */}
-        <PillButton onClick={onCancel} className="w-full shadow-sm">
+        <PillButton onClick={onCancel} className="h-10 w-full">
           {t.rooms.queue.cancelSearch}
         </PillButton>
       </div>

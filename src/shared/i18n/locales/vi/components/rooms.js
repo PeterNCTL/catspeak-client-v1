@@ -131,6 +131,9 @@ export default {
     yourAI: "AI của bạn",
   },
   queue: {
+    title: "Tìm đối tác",
+    findMatch: "Tìm ngay",
+    cancel: "Hủy",
     connectingToQueue: "Đang kết nối vào hàng chờ...",
     matchFound: "Đã tìm thấy match!",
     waitingForPairing: "Đang chờ ghép đôi...",

@@ -12,4 +12,23 @@ export default {
     love: "爱",
     haha: "哈哈",
   },
+  newsCard: {
+    reaction: "个互动",
+    reactions: "个互动",
+    timeAgo: {
+      justNow: "刚刚",
+      minuteAgo: "{{count}}分钟前",
+      minutesAgo: "{{count}}分钟前",
+      hourAgo: "{{count}}小时前",
+      hoursAgo: "{{count}}小时前",
+      dayAgo: "{{count}}天前",
+      daysAgo: "{{count}}天前",
+      weekAgo: "{{count}}周前",
+      weeksAgo: "{{count}}周前",
+      monthAgo: "{{count}}个月前",
+      monthsAgo: "{{count}}个月前",
+      yearAgo: "{{count}}年前",
+      yearsAgo: "{{count}}年前",
+    },
+  },
 }

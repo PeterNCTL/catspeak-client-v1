@@ -14,9 +14,9 @@ export const storiesApi = baseApi.injectEndpoints({
 
     // Get all active stories (excluding user's own stories and declined stories)
     getStories: builder.query({
-      query: (language) => ({
+      query: (languageCommunity) => ({
         url: "/stories",
-        params: language ? { language } : undefined,
+        params: languageCommunity ? { languageCommunity } : undefined,
       }),
       providesTags: ["Stories"],
     }),

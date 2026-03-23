@@ -156,6 +156,9 @@ export default {
     yourAI: "Your AI",
   },
   queue: {
+    title: "Find a Match",
+    findMatch: "Find Match",
+    cancel: "Cancel",
     connectingToQueue: "Connecting to queue...",
     matchFound: "Match found!",
     waitingForPairing: "Waiting for pairing...",

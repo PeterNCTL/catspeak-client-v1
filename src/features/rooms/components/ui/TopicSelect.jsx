@@ -16,7 +16,7 @@ const TopicSelect = ({ value, onChange, options, t }) => {
 
   return (
     <div className="text-left flex flex-col">
-      <div className="flex items-center gap-2 mb-2">
+      <div className="flex items-center gap-2 mb-1">
         <label className="text-sm">{t.rooms.createRoom.topicsLabel}</label>
         <p
           className={`m-0 mt-1 text-xs transition-opacity `}

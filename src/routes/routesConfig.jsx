@@ -18,7 +18,7 @@ import NewsDetailPage from "@/features/news/pages/NewsDetailPage"
 import DiscoverPage from "@/features/discover/DiscoverPage"
 import VideoPage from "@/features/video/VideoPage"
 import MailPage from "@/features/mail/pages/MailPage"
-import SharedEventPage from "@/features/mail/pages/SharedEventPage"
+import SharedEventPage from "@/features/calendar/pages/SharedEventPage"
 
 // Shared Pages
 import { ComingSoonPage } from "@/shared/pages"

@@ -1,9 +1,10 @@
 import React, { useState, useMemo, useEffect } from "react"
 import { useNavigate, useParams } from "react-router-dom"
-import { Bookmark } from "lucide-react"
-import placeholderImg from "@/shared/assets/images/news/placeholder.jpg"
 import InDevelopmentModal from "@/shared/components/common/InDevelopmentModal"
+import Avatar from "@/shared/components/ui/Avatar"
 import { COLORS } from "@/shared/constants/constants"
+import { useLanguage } from "@/shared/context/LanguageContext"
+import { getTranslatedTimeAgo } from "@/features/news/utils/newsUtils"
 
 const IMAGE_BASE_URL = "https://api.catspeak.com.vn"
 
@@ -11,17 +12,16 @@ const NewsCard = ({ news }) => {
   const navigate = useNavigate()
   const { lang } = useParams()
   const currentLang = lang || "en"
+  const { t } = useLanguage()
 
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [currentMediaIndex, setCurrentMediaIndex] = useState(0)
+  const [imageError, setImageError] = useState(false)
+
+  const newsCard = t.news?.newsCard
 
   const handleCardClick = () => {
     navigate(`/${currentLang}/cat-speak/news/${news.postId}`)
-  }
-
-  const handleBookmarkClick = (e) => {
-    e.stopPropagation()
-    setIsModalOpen(true)
   }
 
   const hasMedia = news.media && news.media.length > 0
@@ -30,45 +30,41 @@ const NewsCard = ({ news }) => {
     if (hasMedia && news.media.length > 1) {
       const interval = setInterval(() => {
         setCurrentMediaIndex((prev) => (prev + 1) % news.media.length)
-      }, 10000) // 10 seconds per image
+      }, 10000)
       return () => clearInterval(interval)
     }
   }, [hasMedia, news.media?.length])
 
-  const randomBackgroundColor = useMemo(() => {
-    if (hasMedia) return null
-    // Use postId as seed for stable random if possible, or just index
+  const fallbackColor = useMemo(() => {
     const seed = news.postId || Math.floor(Math.random() * COLORS.length)
     const index =
       typeof seed === "number"
         ? seed % COLORS.length
         : seed.length % COLORS.length
     return COLORS[index].value
-  }, [hasMedia, news.postId])
+  }, [news.postId])
 
-  const getPreviewText = (html) => {
-    if (!html) return ""
-
-    const div = document.createElement("div")
-    div.innerHTML = html
-    return div.textContent?.replace(/\s+/g, " ").trim() || ""
-  }
+  const avatarSrc = news.avatarUrl
+    ? `${IMAGE_BASE_URL}${news.avatarUrl}`
+    : undefined
 
   return (
     <div
       onClick={handleCardClick}
-      className="group relative h-full overflow-hidden border cursor-pointer rounded-xl transition-all duration-300 border-[#C6C6C6] hover:border-[#990011] hover:shadow-md bg-white flex flex-col"
+      className="group relative overflow-hidden border cursor-pointer rounded-xl transition-all duration-300 border-[#C6C6C6] hover:border-[#990011] hover:shadow-md bg-white flex flex-col"
     >
-      {/* Media/Upper Section */}
-      <div className="relative w-full aspect-video overflow-hidden">
-        {hasMedia ? (
+      {/* Thumbnail – 16:9 */}
+      <div
+        className="relative w-full overflow-hidden"
+        style={{ aspectRatio: "16 / 9" }}
+      >
+        {hasMedia && !imageError ? (
           <div
             className="flex h-full transition-transform duration-700 ease-out"
             style={{ transform: `translateX(-${currentMediaIndex * 100}%)` }}
           >
             {news.media.map((item) => {
               const imageUrl = `${IMAGE_BASE_URL}${item.mediaUrl}`
-
               return (
                 <div
                   key={item.postMediaId}
@@ -78,6 +74,7 @@ const NewsCard = ({ news }) => {
                     src={imageUrl}
                     alt={news.title}
                     className="w-full h-full object-cover"
+                    onError={() => setImageError(true)}
                   />
                 </div>
               )
@@ -86,7 +83,7 @@ const NewsCard = ({ news }) => {
         ) : (
           <div
             className="w-full h-full flex items-center justify-center"
-            style={{ backgroundColor: randomBackgroundColor }}
+            style={{ backgroundColor: fallbackColor }}
           >
             <span className="text-white/20 font-bold text-4xl select-none">
               Cat Speak
@@ -97,60 +94,54 @@ const NewsCard = ({ news }) => {
         {hasMedia && (
           <div className="absolute inset-0 bg-black/20 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
         )}
-
-        {/* Bookmark Icon */}
-        <div
-          className="absolute right-3 top-3 z-20 transition-all duration-300"
-          onClick={handleBookmarkClick}
-        >
-          <Bookmark
-            size={24}
-            className={`drop-shadow-md transition-all duration-200 transform ${
-              hasMedia
-                ? "text-white hover:text-gray-200"
-                : "text-white/80 hover:text-white"
-            }`}
-          />
-        </div>
       </div>
 
-      {/* Content Section */}
-      <div className="p-4 flex flex-col flex-1 gap-2">
-        <h5 className="m-0 line-clamp-2 text-base font-bold text-[#990011] group-hover:text-[#990011] transition-colors duration-300 min-h-[3rem]">
-          {news.title}
-        </h5>
+      {/* Info section – avatar left, metadata stacked right */}
+      <div className="flex items-start gap-3 p-3">
+        {/* Avatar 36×36 */}
+        <div className="flex-shrink-0 mt-0.5">
+          <Avatar
+            size={36}
+            src={avatarSrc}
+            alt={news.authorName || "Author"}
+            name={news.authorName}
+            fallback={news.authorName?.charAt(0) || "C"}
+          />
+        </div>
 
-        <p className="line-clamp-2 text-sm leading-relaxed text-gray-600 mt-1">
-          {getPreviewText(news.content)}
-        </p>
+        {/* Right – stacked: title, subtitle, meta (no gap) */}
+        <div className="min-w-0 flex flex-col" style={{ gap: 0 }}>
+          {/* Title */}
+          <h5
+            className="m-0 line-clamp-2 font-semibold leading-snug"
+            style={{ fontSize: "1rem", color: "#990011" }}
+          >
+            {news.title}
+          </h5>
 
-        {/* Footer: Author (Left) & Date (Right) */}
-        <div className="flex items-center justify-between mt-auto pt-3 border-t border-gray-100 text-sm text-[#7A7574]">
-          <div className="flex items-center gap-2 truncate flex-1 mr-2">
-            {news.avatarUrl ? (
-              <img
-                src={`${IMAGE_BASE_URL}${news.avatarUrl}`}
-                alt={news.authorName}
-                className="w-5 h-5 rounded-full object-cover border border-gray-100"
-              />
-            ) : (
-              <div className="w-5 h-5 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center border border-gray-200">
-                <span className="text-[9px] font-bold text-[#7A7574] uppercase">
-                  {news.authorName?.charAt(0) || "C"}
-                </span>
-              </div>
+          {/* Author name */}
+          <span
+            className="truncate leading-snug"
+            style={{ fontSize: "0.875rem", color: "#7A7574" }}
+          >
+            {news.authorName || "Cat Speak Admin"}
+          </span>
+
+          {/* Reactions · Time ago */}
+          <span
+            className="leading-snug"
+            style={{ fontSize: "0.875rem", color: "#7A7574" }}
+          >
+            {news.totalReactions != null && (
+              <>
+                {news.totalReactions}{" "}
+                {news.totalReactions === 1
+                  ? newsCard?.reaction
+                  : newsCard?.reactions}
+                {" · "}
+              </>
             )}
-            <span className="truncate max-w-[120px]">
-              {news.authorName || "Cat Speak Admin"}
-            </span>
-          </div>
-
-          <span className="whitespace-nowrap">
-            {new Date(news.createDate).toLocaleDateString(undefined, {
-              year: "numeric",
-              month: "short",
-              day: "numeric",
-            })}
+            {getTranslatedTimeAgo(news.createDate, newsCard?.timeAgo)}
           </span>
         </div>
       </div>

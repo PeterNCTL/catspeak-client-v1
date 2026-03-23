@@ -138,7 +138,7 @@ const CreateRoomModal = ({ open, onCancel }) => {
       open={open}
       onClose={handleCancel}
       title={t.rooms.createRoom.title}
-      className="max-w-sm sm:max-w-md max-[425px]:max-w-none max-[425px]:h-full max-[425px]:rounded-none max-[425px]:flex max-[425px]:flex-col"
+      className="max-w-sm min-[426px]:max-w-md max-[425px]:max-w-none max-[425px]:h-full max-[425px]:flex max-[425px]:flex-col"
     >
       <div className="flex flex-col gap-5 max-h-[60vh] overflow-y-auto -mx-5 px-5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#990011] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar]:w-1.5 max-[425px]:max-h-none max-[425px]:flex-1">
         {/* Room Name */}

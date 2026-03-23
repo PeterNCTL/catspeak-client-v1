@@ -1,102 +1,32 @@
-import React, { useState } from "react"
+import React from "react"
+import { useParams } from "react-router-dom"
+import { LiveMessages } from "@/features/stories"
+import { MailDashboard } from "@/features/calendar"
 
-import dayjs from "dayjs"
-import { useLanguage } from "@/shared/context/LanguageContext"
-import {
-  useGetStoriesQuery,
-  useGetMyStoriesQuery,
-  useCreateStoryMutation,
-  useInteractWithStoryMutation,
-  useDeleteStoryMutation,
-} from "@/store/api/storiesApi"
-import { useDispatch } from "react-redux"
-import { setActiveConversation } from "@/store/slices/messageWidgetSlice"
-import LiveMessages from "@/features/mail/components/story/LiveMessages"
-import MailDashboard from "@/features/mail/components/calendar/MailDashboard"
+// Normalize URL lang codes to canonical backend values
+const LANG_TO_COMMUNITY = {
+  vi: "Vietnamese",
+  vn: "Vietnamese",
+  vietnam: "Vietnamese",
+  vietnamese: "Vietnamese",
+  en: "English",
+  eng: "English",
+  english: "English",
+  zh: "Chinese",
+  cn: "Chinese",
+  china: "Chinese",
+  chinese: "Chinese",
+}
 
 const MailPage = () => {
-  const { t } = useLanguage()
-  const dispatch = useDispatch()
-  const [inputValue, setInputValue] = useState("")
+  const { lang } = useParams()
 
-  // API Hooks
-  const { data: storiesData, isLoading: loadingStories } = useGetStoriesQuery()
-  const { data: myStoriesData, isLoading: loadingMyStories } =
-    useGetMyStoriesQuery()
-  const [createStory, { isLoading: isCreating }] = useCreateStoryMutation()
-  const [interactWithStory] = useInteractWithStoryMutation()
-  const [deleteStory] = useDeleteStoryMutation()
-
-  // Safe Data Extraction
-  const stories = storiesData?.data ?? []
-  const myStoriesRaw = myStoriesData?.data ?? []
-
-  // Filter out expired stories
-  const myStories = myStoriesRaw.filter((story) => {
-    return dayjs(story.expiresAt).isAfter(dayjs())
-  })
-
-  // Derived State
-  const canCreate = myStories.length < 2
-
-  // Handlers
-  const handleCreate = async (content) => {
-    if (!content.trim()) return
-
-    if (!canCreate) {
-      return
-    }
-
-    try {
-      await createStory({ storyContent: content }).unwrap()
-
-      setInputValue("")
-    } catch (error) {}
-  }
-
-  const handleInteract = async (storyId, actionType) => {
-    // actionType: 1 = Accept/Interest, 0 = Decline/Ignore, 2 = Decline?
-    // Based on user request info: 1 = Accept, 2 = Decline
-    try {
-      const response = await interactWithStory({
-        storyId,
-        action: actionType,
-      }).unwrap()
-
-      // If accepted provided, open conversation (assuming response structure matches requirements)
-      if (
-        actionType === 1 &&
-        response.success &&
-        response.data?.conversationId
-      ) {
-        dispatch(setActiveConversation(response.data.conversationId))
-      }
-    } catch (error) {
-      console.error("Interaction failed:", error)
-    }
-  }
-
-  const handleDelete = async (storyId) => {
-    try {
-      await deleteStory(storyId).unwrap()
-    } catch (error) {
-      console.error("Delete failed:", error)
-    }
-  }
+  // Resolve the language community from URL param
+  const languageCommunity = LANG_TO_COMMUNITY[lang?.toLowerCase()] || undefined
 
   return (
     <div className="w-full">
-      <LiveMessages
-        stories={stories}
-        myStories={myStories}
-        inputValue={inputValue}
-        onChangeInput={setInputValue}
-        onSend={handleCreate}
-        onInteract={handleInteract}
-        onDeleteStory={handleDelete}
-        userLetters={myStories.length}
-        totalLetters={stories.length + myStories.length}
-      />
+      <LiveMessages languageCommunity={languageCommunity} />
 
       {/* <div className="mt-8 mb-12 px-2 md:px-0">
         <MailDashboard />
@@ -106,3 +36,4 @@ const MailPage = () => {
 }
 
 export default MailPage
+

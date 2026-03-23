@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from "react"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useLocation } from "react-router-dom"
 import { useLanguage } from "@/shared/context/LanguageContext"
 import { QueueStatusCard } from "@/features/queue"
 
@@ -8,7 +8,11 @@ import Logo from "@/shared/assets/icons/logo/logo.svg"
 import { useQueueSignaling } from "@/features/queue"
 const QueuePage = () => {
   const navigate = useNavigate()
+  const location = useLocation()
   const { t } = useLanguage()
+
+  // Queue preferences passed from QueueModal via route state
+  const queuePreferences = location.state
 
   const [queueState, setQueueState] = useState({ type: "CONNECTING" })
   const [position, setPosition] = useState(0)
@@ -20,7 +24,8 @@ const QueuePage = () => {
         if (data.sessionId) {
           // Play notification sound?
           setTimeout(() => {
-            const communityLang = localStorage.getItem("communityLanguage") || "en"
+            const communityLang =
+              localStorage.getItem("communityLanguage") || "en"
             navigate(`/${communityLang}/meet/${data.sessionId}`)
           }, 1000)
         }
@@ -70,7 +75,7 @@ const QueuePage = () => {
 
       const initQueue = async () => {
         try {
-          await joinQueue()
+          await joinQueue(queuePreferences)
           // Success handled in 'QueueJoined' event
         } catch (err) {
           console.error("Failed to join queue:", err)

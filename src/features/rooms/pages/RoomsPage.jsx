@@ -18,6 +18,7 @@ import {
   AllowConnectSwitch,
 } from "@/features/rooms"
 import { WorkshopCarousel } from "@/features/workshops"
+
 import { useLanguage } from "@/shared/context/LanguageContext"
 import { PageNotFound } from "@/shared/pages"
 import { AnimatePresence } from "framer-motion"
@@ -38,7 +39,12 @@ const RoomsPage = () => {
   // Actions Wrappers
   const handleCreateOneOnOne = () => {
     actions.handleCreateOneOnOneSession(() => {
-      navigate("/queue")
+      const preferences = {
+        roomType: "OneToOne",
+
+        languageType: langMap[lang],
+      }
+      navigate("/queue", { state: preferences })
     })
   }
 

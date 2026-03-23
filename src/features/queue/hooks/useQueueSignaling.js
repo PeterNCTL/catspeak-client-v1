@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from "react"
-import * as signalR from "@microsoft/signalr"
+import { useState, useRef, useEffect, useCallback } from "react"
+import { HubConnectionBuilder, HubConnectionState, LogLevel } from "@microsoft/signalr"
 
 import { useAuth } from "@/features/auth"
 
@@ -25,12 +25,12 @@ export const useQueueSignaling = (handlers = {}) => {
     const baseUrl = apiUrl.replace(/\/api\/?$/, "")
     const hubUrl = `${baseUrl}/hubs/queue`
 
-    const newConnection = new signalR.HubConnectionBuilder()
+    const newConnection = new HubConnectionBuilder()
       .withUrl(hubUrl, {
         accessTokenFactory: () => token,
       })
       .withAutomaticReconnect()
-      .configureLogging(signalR.LogLevel.Warning)
+      .configureLogging(LogLevel.Warning)
       .build()
 
     connectionRef.current = newConnection
@@ -109,20 +109,22 @@ export const useQueueSignaling = (handlers = {}) => {
   }, [token]) // run when token changes
 
   // Wrappers for specific hub methods - Stabilize with useCallback
-  const invoke = React.useCallback(async (methodName, ...args) => {
-    if (connectionRef.current?.state === signalR.HubConnectionState.Connected) {
+  const invoke = useCallback(async (methodName, ...args) => {
+    if (connectionRef.current?.state === HubConnectionState.Connected) {
       return await connectionRef.current.invoke(methodName, ...args)
     }
     console.warn("[QueueSignalR] Cannot invoke, not connected.")
     return Promise.reject("Not Connected")
   }, [])
 
-  const joinQueue = React.useCallback(() => invoke("JoinQueue"), [invoke])
-  const leaveQueue = React.useCallback(() => invoke("LeaveQueue"), [invoke])
-  const getQueueStatus = React.useCallback(
-    () => invoke("GetQueueStatus"),
+  const joinQueue = useCallback(
+    (preferences) => {
+      console.log("[QueueSignalR] JoinQueue payload:", preferences)
+      return invoke("JoinQueue", preferences)
+    },
     [invoke],
   )
+  const leaveQueue = useCallback(() => invoke("LeaveQueue"), [invoke])
 
   return {
     isConnected,
@@ -130,6 +132,5 @@ export const useQueueSignaling = (handlers = {}) => {
     invoke,
     joinQueue,
     leaveQueue,
-    getQueueStatus,
   }
 }

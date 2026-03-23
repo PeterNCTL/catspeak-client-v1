@@ -18,7 +18,7 @@ const attachGestureListener = () => {
         try {
           await el.play()
           console.log(
-            "[VideoTile] ▶️ gesture-resumed playback for a blocked element",
+            "[VideoTile] [gesture recovery] ▶️ user gesture detected — successfully resumed a previously blocked <video> element",
           )
           pendingVideoElements.delete(el)
         } catch {
@@ -66,32 +66,42 @@ const VideoTile = ({ participantId }) => {
   const hasVideoTrack = sdkStream && sdkStream.getVideoTracks().length > 0
   const isVideoVisible = webcamOn && hasVideoTrack
 
-  // ─── Diagnostic: log stream/track state on meaningful changes ───
+  // ─── Diagnostic: log SDK state whenever mic/webcam/stream changes ───
   useEffect(() => {
     const audioState = audioTrack
       ? `readyState=${audioTrack.readyState} enabled=${audioTrack.enabled} muted=${audioTrack.muted}`
-      : "null"
+      : "not available"
     const videoState = videoTrack
       ? `readyState=${videoTrack.readyState} enabled=${videoTrack.enabled}`
-      : "null"
+      : "not available"
 
     console.log(
-      `${tag} stream update — micOn=${micOn} webcamOn=${webcamOn} ` +
-        `audioTrack=[${audioState}] videoTrack=[${videoState}] ` +
-        `sdkStream=${sdkStream ? `${sdkStream.getTracks().length} tracks` : "null"}`,
+      `${tag} [SDK state change] ` +
+        `mic=${micOn ? "ON" : "OFF"} (track: ${audioState}) | ` +
+        `cam=${webcamOn ? "ON" : "OFF"} (track: ${videoState}) | ` +
+        `MediaStream=${sdkStream ? `active with ${sdkStream.getTracks().length} track(s)` : "none"}`,
     )
   }, [sdkStream, micOn, webcamOn]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // ─── Diagnostic: monitor audio track lifecycle events ───
+  // ─── Diagnostic: monitor remote audio track WebRTC lifecycle events ───
   useEffect(() => {
     if (!audioTrack || isLocal) return
 
     const onEnded = () =>
       console.warn(
-        `${tag} ⚠️ audio track ENDED (readyState=${audioTrack.readyState})`,
+        `${tag} [WebRTC audio track ended] ⚠️ remote audio track has ended ` +
+          `(readyState=${audioTrack.readyState}) — no more audio data will arrive`,
       )
-    const onMute = () => console.warn(`${tag} ⚠️ audio track MUTED`)
-    const onUnmute = () => console.log(`${tag} ✅ audio track UNMUTED`)
+    const onMute = () =>
+      console.warn(
+        `${tag} [WebRTC audio track muted] ⚠️ remote peer's audio is muted ` +
+          `at the media level — track exists but is not delivering audio data`,
+      )
+    const onUnmute = () =>
+      console.log(
+        `${tag} [WebRTC audio track unmuted] ✅ remote peer's audio is now ` +
+          `delivering data — audio should be audible`,
+      )
 
     audioTrack.addEventListener("ended", onEnded)
     audioTrack.addEventListener("mute", onMute)
@@ -110,19 +120,19 @@ const VideoTile = ({ participantId }) => {
       if (!el || el.paused === false) return
       try {
         await el.play()
-        console.log(`${tag} ▶️ play() succeeded`)
+        console.log(`${tag} [<video> play()] ▶️ play() call succeeded — browser is now playing media`)
         pendingVideoElements.delete(el)
       } catch (err) {
         if (err.name === "NotAllowedError") {
           console.warn(
-            `${tag} ⚠️ play() blocked by autoplay policy — ` +
-              `will resume on next user gesture`,
+            `${tag} [<video> play() blocked] ⚠️ browser autoplay policy prevented playback — ` +
+              `element queued for retry on next user gesture (click/touch/keydown)`,
           )
           // Register this element to be resumed on next user gesture
           pendingVideoElements.add(el)
           attachGestureListener()
         } else {
-          console.error(`${tag} ❌ play() error: ${err.name} — ${err.message}`)
+          console.error(`${tag} [<video> play() failed] ❌ unexpected error: ${err.name} — ${err.message}`)
         }
       }
     },
@@ -135,9 +145,9 @@ const VideoTile = ({ participantId }) => {
 
     el.srcObject = sdkStream ?? null
     console.log(
-      `${tag} srcObject set — ` +
-        `audioTracks=${sdkStream?.getAudioTracks().length ?? 0} ` +
-        `videoTracks=${sdkStream?.getVideoTracks().length ?? 0}`,
+      `${tag} [srcObject assigned] <video>.srcObject ${sdkStream ? "set to new MediaStream" : "cleared to null"} — ` +
+        `audio tracks: ${sdkStream?.getAudioTracks().length ?? 0}, ` +
+        `video tracks: ${sdkStream?.getVideoTracks().length ?? 0}`,
     )
 
     if (sdkStream && !isLocal) {
@@ -153,13 +163,20 @@ const VideoTile = ({ participantId }) => {
     const onPause = () => {
       if (el.srcObject) {
         console.warn(
-          `${tag} ⏸️ <video> paused unexpectedly while srcObject is set`,
+          `${tag} [<video> unexpected pause] ⏸️ the <video> element paused while srcObject is still set — ` +
+            `attempting to resume playback automatically`,
         )
         attemptPlay(el)
       }
     }
-    const onStalled = () => console.warn(`${tag} ⏳ <video> stalled`)
-    const onPlaying = () => console.log(`${tag} ▶️ <video> is playing`)
+    const onStalled = () =>
+      console.warn(
+        `${tag} [<video> stalled] ⏳ browser is trying to fetch media data but it is not forthcoming`,
+      )
+    const onPlaying = () =>
+      console.log(
+        `${tag} [<video> playing] ▶️ the <video> element is now actively playing media`,
+      )
 
     el.addEventListener("pause", onPause)
     el.addEventListener("stalled", onStalled)
