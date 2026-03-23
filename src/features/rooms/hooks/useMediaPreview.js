@@ -22,6 +22,35 @@ export const useMediaPreview = () => {
   const getMediaStream = async ({ audio, video, device }) => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio, video })
+
+      // When another app (e.g. Google Meet) holds exclusive mic access,
+      // getUserMedia succeeds but the audio track's `muted` property is true
+      // — meaning no audio data is flowing from the hardware.
+      if (audio && device === "mic") {
+        const audioTrack = stream.getAudioTracks()[0]
+        if (audioTrack?.muted) {
+          const unmuted = await new Promise((resolve) => {
+            const onUnmute = () => resolve(true)
+            audioTrack.addEventListener("unmute", onUnmute, { once: true })
+            setTimeout(() => {
+              audioTrack.removeEventListener("unmute", onUnmute)
+              resolve(false)
+            }, 2000)
+          })
+          if (!unmuted) {
+            console.warn(
+              "[useMediaPreview] 🔇 Mic track is muted — another app likely holds exclusive access",
+            )
+            stream.getTracks().forEach((t) => t.stop())
+            toast.error(
+              t.rooms?.waitingScreen?.micInUse ??
+                "Microphone is in use by another app.",
+            )
+            return null
+          }
+        }
+      }
+
       streamRef.current = stream
       setLocalStream(stream)
       return stream

@@ -1,12 +1,16 @@
 import { useRef, useEffect, useState } from "react"
 import { useMeeting, useParticipant } from "@videosdk.live/react-sdk"
+import toast from "react-hot-toast"
 
 /**
  * Handles join/leave lifecycle and exposes local mic/cam state + toggle actions.
  * Participant data (list, streams, per-participant mic/cam) should be read directly
  * from useMeeting() / useParticipant() in the components that need them.
+ *
+ * @param {string} sdkToken - VideoSDK auth token
+ * @param {Object} t - Translation object (from useLanguage)
  */
-export const useVideoCall = (sdkToken) => {
+export const useVideoCall = (sdkToken, t) => {
   const [isJoined, setIsJoined] = useState(false)
 
   const { join, leave, toggleMic, toggleWebcam, localParticipant } = useMeeting(
@@ -55,15 +59,67 @@ export const useVideoCall = (sdkToken) => {
   const { micOn, webcamOn } = useParticipant(localParticipant?.id ?? "")
 
   // Toggle mic — probes getUserMedia first to surface permission errors cleanly.
+  // Also detects when another app holds exclusive mic access (track is muted).
   const toggleAudio = async () => {
+    console.log(
+      `[useVideoCall] 🎤 toggleAudio called — current micOn=${micOn}`,
+    )
     if (!micOn) {
       let probe = null
       try {
         probe = await navigator.mediaDevices.getUserMedia({ audio: true })
+        const audioTrack = probe.getAudioTracks()[0]
+
+        console.log(
+          `[useVideoCall] 🎤 Probe getUserMedia succeeded — ` +
+            `track: readyState=${audioTrack?.readyState} ` +
+            `enabled=${audioTrack?.enabled} ` +
+            `muted=${audioTrack?.muted} ` +
+            `label="${audioTrack?.label}"`,
+        )
+
+        // Check if the track is actually delivering audio data.
+        // When another app (e.g. Google Meet) holds exclusive mic access,
+        // getUserMedia succeeds but the track's `muted` property is true
+        // — meaning no audio data is flowing from the hardware.
+        if (audioTrack?.muted) {
+          console.log(
+            "[useVideoCall] ⏳ Track is muted — waiting up to 2s for unmute event...",
+          )
+          const unmuted = await new Promise((resolve) => {
+            const onUnmute = () => {
+              console.log(
+                "[useVideoCall] ✅ Track unmuted within 2s — mic hardware is available",
+              )
+              resolve(true)
+            }
+            audioTrack.addEventListener("unmute", onUnmute, { once: true })
+            setTimeout(() => {
+              audioTrack.removeEventListener("unmute", onUnmute)
+              resolve(false)
+            }, 2000)
+          })
+          if (!unmuted) {
+            console.warn(
+              "[useVideoCall] 🔇 Mic track stayed muted after 2s — " +
+                "another app likely holds exclusive mic access. Blocking toggle.",
+            )
+            toast.error(
+              t?.rooms?.waitingScreen?.micInUse ??
+                "Microphone is in use by another app.",
+            )
+            return // Don't toggle — mic won't produce audio
+          }
+        } else {
+          console.log(
+            "[useVideoCall] ✅ Track is NOT muted — mic hardware is available, proceeding",
+          )
+        }
       } finally {
         probe?.getTracks().forEach((t) => t.stop())
       }
     }
+    console.log("[useVideoCall] 🎤 Calling SDK toggleMic()")
     toggleMic()
   }
 

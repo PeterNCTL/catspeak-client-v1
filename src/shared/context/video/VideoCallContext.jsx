@@ -44,7 +44,7 @@ export const VideoCallContent = ({
 
   // Local mic/cam state + lifecycle (join/leave) + toggle actions
   const { micOn, cameraOn, toggleAudio, toggleVideo, leaveMeeting, isJoined } =
-    useVideoCall(sdkToken)
+    useVideoCall(sdkToken, t)
 
   // Chat via VideoSDK PubSub
   const { publish, messages } = usePubSub("CHAT", {})
