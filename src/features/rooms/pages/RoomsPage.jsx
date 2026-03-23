@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from "react"
 import { MessageCircle, Monitor, Users, Layers, Filter } from "lucide-react"
-import { useSearchParams, useParams, useNavigate } from "react-router-dom"
+import { useSearchParams, useParams } from "react-router-dom"
 import {
   RoomFilterSidebar,
   ClassSidebar,
@@ -18,6 +18,7 @@ import {
   AllowConnectSwitch,
 } from "@/features/rooms"
 import { WorkshopCarousel } from "@/features/workshops"
+import { QueueModal } from "@/features/queue"
 
 import { useLanguage } from "@/shared/context/LanguageContext"
 import { PageNotFound } from "@/shared/pages"
@@ -32,19 +33,14 @@ const RoomsPage = () => {
   const [page, setPage] = useState(1)
   const [tab, setTab] = useState("communicate")
   const [isCreateRoomModalOpen, setCreateRoomModalOpen] = useState(false)
+  const [isQueueModalOpen, setQueueModalOpen] = useState(false)
 
-  const navigate = useNavigate()
   const { state, actions } = useRoomsPageLogic()
 
   // Actions Wrappers
   const handleCreateOneOnOne = () => {
     actions.handleCreateOneOnOneSession(() => {
-      const preferences = {
-        roomType: "OneToOne",
-
-        languageType: langMap[lang],
-      }
-      navigate("/queue", { state: preferences })
+      setQueueModalOpen(true)
     })
   }
 
@@ -209,6 +205,11 @@ const RoomsPage = () => {
         <CreateRoomModal
           open={isCreateRoomModalOpen}
           onCancel={() => setCreateRoomModalOpen(false)}
+        />
+        <QueueModal
+          open={isQueueModalOpen}
+          onCancel={() => setQueueModalOpen(false)}
+          roomType="OneToOne"
         />
       </FluentAnimation>
     </AnimatePresence>

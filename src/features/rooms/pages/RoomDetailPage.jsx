@@ -8,6 +8,7 @@ import {
 } from "@/features/rooms"
 import { useAuth } from "@/features/auth"
 import { useLanguage } from "@/shared/context/LanguageContext"
+import LoadingSpinner from "@/shared/components/ui/LoadingSpinner"
 
 const RoomDetailPage = () => {
   const { id } = useParams()
@@ -70,7 +71,7 @@ const RoomDetailPage = () => {
   if (isLoadingRoom || isLoadingSessions) {
     return (
       <div className="flex h-screen items-center justify-center bg-white text-gray-500">
-        {t.rooms.waitingScreen.loading}
+        <LoadingSpinner text={t.rooms.waitingScreen.loading} />
       </div>
     )
   }

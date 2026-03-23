@@ -1,13 +1,10 @@
 // Message components
-export { default as FloatingButton } from "./components/FloatingButton"
 export { default as MessageModal } from "./components/MessageModal"
 export { default as MessageWidget } from "./components/MessageWidget"
 
 // Conversation Detail
 export { default as ConversationDetail } from "./components/conversation-detail/ConversationDetail"
 export { default as MessageBubble } from "./components/conversation-detail/MessageBubble"
-export { default as MessageInput } from "./components/conversation-detail/MessageInput"
-export { default as MessageList } from "./components/conversation-detail/MessageList"
 
 // Conversation List
 export { default as ConversationItem } from "./components/conversation-list/ConversationItem"

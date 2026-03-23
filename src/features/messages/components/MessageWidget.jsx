@@ -36,6 +36,8 @@ const MessageWidget = () => {
   React.useEffect(() => {
     const handleClickOutside = (event) => {
       if (widgetRef.current && !widgetRef.current.contains(event.target)) {
+        // Also check if click is inside the portal-rendered modal (mobile)
+        if (event.target.closest?.("[data-message-widget-portal]")) return
         if (isOpen) {
           dispatch(closeWidget())
         }
@@ -50,6 +52,7 @@ const MessageWidget = () => {
       document.removeEventListener("mousedown", handleClickOutside)
     }
   }, [isOpen, dispatch])
+
 
   // Fetch conversations from API
   const {

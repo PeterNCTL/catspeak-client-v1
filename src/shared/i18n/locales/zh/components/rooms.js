@@ -76,6 +76,9 @@ export default {
   badge: {
     live: "直播中",
   },
+  joinRoom: {
+    title: "加入房间",
+  },
   createRoom: {
     title: "你的房间叫什么名字？",
     namePlaceholder: "例如：轻松练习",
@@ -172,11 +175,10 @@ export default {
   },
   videoCall: {
     provider: {
-      loadingSession: "正在加载会话...",
+      connecting: "正在连接...",
       failedToLoad: "无法加载会话",
       unknownError: "发生未知错误",
       retry: "重试",
-      connecting: "正在连接到会议...",
     },
     error: {
       micPermission:

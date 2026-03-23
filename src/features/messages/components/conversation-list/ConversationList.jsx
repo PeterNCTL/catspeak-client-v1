@@ -1,5 +1,8 @@
 import React from "react"
 import ConversationItem from "./ConversationItem"
+import LoadingSpinner from "@/shared/components/ui/LoadingSpinner"
+import ErrorMessage from "@/shared/components/ui/ErrorMessage"
+import EmptyState from "@/shared/components/ui/EmptyState"
 import { useLanguage } from "@/shared/context/LanguageContext"
 
 const ConversationList = ({
@@ -11,23 +14,14 @@ const ConversationList = ({
   const { t } = useLanguage()
 
   return (
-    <div className="flex flex-col px-4 pt-3 pb-4">
-      <div className="text-xs font-semibold text-gray-900">
-        {t.messages.title}
-      </div>
-      <div className="mt-3 space-y-2 max-h-[400px] overflow-y-auto">
+    <div className="flex flex-1 flex-col overflow-hidden">
+      <div className="flex-1 space-y-2 overflow-y-auto overscroll-contain">
         {isLoading ? (
-          <div className="text-center text-sm text-gray-400 py-4">
-            {t.messages.loading}
-          </div>
+          <LoadingSpinner className="flex items-center justify-center py-4" />
         ) : isError ? (
-          <div className="text-center text-sm text-red-500 py-4">
-            {t.messages.error}
-          </div>
+          <ErrorMessage message={t.messages.error} className="py-4" />
         ) : conversations.length === 0 ? (
-          <div className="text-center text-sm text-gray-400 py-4">
-            {t.messages.noMessages}
-          </div>
+          <EmptyState message={t.messages.noMessages} className="py-4" />
         ) : (
           conversations.map((conv) => (
             <ConversationItem

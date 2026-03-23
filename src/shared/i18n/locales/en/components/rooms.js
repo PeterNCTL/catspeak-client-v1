@@ -77,6 +77,9 @@ export default {
   badge: {
     live: "LIVE NOW",
   },
+  joinRoom: {
+    title: "Join Room",
+  },
   createRoom: {
     title: "What's your room name?",
     namePlaceholder: "e.g. Chill Practice",
@@ -203,11 +206,10 @@ export default {
   },
   videoCall: {
     provider: {
-      loadingSession: "Loading Session...",
+      connecting: "Getting your session ready...",
       failedToLoad: "Failed to load session",
       unknownError: "Unknown error occurred",
       retry: "Retry",
-      connecting: "Connecting to meeting...",
     },
     error: {
       micPermission:

@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from "react"
 import { useParams, useLocation, useNavigate } from "react-router-dom"
 import { MeetingProvider } from "@videosdk.live/react-sdk"
-
 import { useGetProfileQuery } from "@/features/auth"
 import {
   useGetVideoSessionByIdQuery,
@@ -12,8 +11,8 @@ import PillButton from "@/shared/components/ui/PillButton"
 import { meetingConfig } from "@/shared/utils/videoSdkConfig"
 import { useLanguage } from "@/shared/context/LanguageContext"
 import { getCommunityPath } from "@/shared/utils/navigation"
-
 import { VideoCallContent } from "./VideoCallContext"
+import VideoCallLoading from "../../../features/video-call/components/VideoCallLoading"
 
 export const VideoCallProvider = ({ children }) => {
   const { id, lang } = useParams()
@@ -151,22 +150,20 @@ export const VideoCallProvider = ({ children }) => {
     )
   }
 
-  // Show loading until we have a token (session + user must exist first).
+  // Show a single loading screen until session, room, and SDK token are all ready.
   if (
     isLoadingSession ||
     !userData ||
     (session?.roomId && isLoadingRoom) ||
     !sdkToken
   ) {
-    const message =
-      sdkToken == null && session
-        ? (t.rooms.videoCall.provider.preparingSession ??
-          t.rooms.videoCall.provider.loadingSession)
-        : t.rooms.videoCall.provider.loadingSession
     return (
-      <div className="flex items-center justify-center h-screen bg-neutral-950 text-white">
-        <p>{message}</p>
-      </div>
+      <VideoCallLoading
+        message={
+          t.rooms.videoCall.provider.connecting ??
+          "Connecting..."
+        }
+      />
     )
   }
 

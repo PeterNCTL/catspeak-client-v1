@@ -83,6 +83,7 @@ export default {
         620: "620px",
       },
       screens: {
+        xs: "426px",
         sm: "640px",
         md: "768px",
         lg: "1024px",

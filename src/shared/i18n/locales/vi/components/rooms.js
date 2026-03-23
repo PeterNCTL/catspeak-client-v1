@@ -78,6 +78,9 @@ export default {
   badge: {
     live: "ĐANG DIỄN RA",
   },
+  joinRoom: {
+    title: "Tham gia phòng",
+  },
   createRoom: {
     title: "Tên phòng của bạn là gì?",
     namePlaceholder: "ví dụ: Luyện tập vui vẻ",
@@ -181,11 +184,10 @@ export default {
   },
   videoCall: {
     provider: {
-      loadingSession: "Đang tải phiên...",
+      connecting: "Đang kết nối...",
       failedToLoad: "Không thể tải phiên",
       unknownError: "Đã xảy ra lỗi không xác định",
       retry: "Thử lại",
-      connecting: "Đang kết nối vào cuộc họp...",
     },
     error: {
       micPermission:

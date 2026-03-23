@@ -1,12 +1,21 @@
 import { useMeeting } from "@videosdk.live/react-sdk"
 import VideoTile from "./VideoTile"
+import ScreenShareTile from "./ScreenShareTile"
 
 /**
  * Renders a responsive grid of VideoTile components.
- * Reads participant IDs directly from useMeeting() — no props needed for the list.
- * Accepts an optional `participantIds` override (e.g. to apply dedup logic from context).
+ * When a screen is being shared, switches to a spotlight layout:
+ *   - Screen share tile takes the main area
+ *   - Webcam tiles go into a scrollable sidebar/strip
  */
-const VideoGrid = ({ participantIds: propIds }) => {
+const VideoGrid = ({
+  participantIds: propIds,
+  screenShareOn,
+  screenShareStream,
+  screenSharePresenterId,
+  presenterDisplayName,
+  isLocalScreenShare,
+}) => {
   const { participants, localParticipant } = useMeeting()
 
   // Build ordered ID list: local first, then remotes.
@@ -20,20 +29,52 @@ const VideoGrid = ({ participantIds: propIds }) => {
       return list
     })()
 
-  const count = ids.length
-
-  /*
-    Grid layout:
-    1  → full-width single tile
-    2  → side by side
-    3-4 → 2-col grid
-    5+  → 3-col grid
-  */
   const gridClass = "min-[426px]:grid-cols-[repeat(auto-fit,minmax(260px,1fr))]"
 
   const scrollbarClasses =
     "[&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#990011] [&::-webkit-scrollbar-track]:bg-gray-200 [&::-webkit-scrollbar]:w-1.5"
 
+  // ─── Spotlight layout when someone is sharing their screen ───
+  if (screenShareOn && screenSharePresenterId && screenShareStream) {
+    return (
+      <div className="flex h-full w-full flex-col gap-2 p-2 sm:p-3 md:flex-row md:gap-3 md:p-4 overflow-hidden">
+        {/* Main: screen share tile */}
+        <div className="flex-1 min-h-0 min-w-0">
+          <ScreenShareTile
+            screenShareStream={screenShareStream}
+            presenterDisplayName={presenterDisplayName ?? "Unknown"}
+            isLocal={isLocalScreenShare}
+          />
+        </div>
+
+        {/* Sidebar: webcam tiles */}
+        <div
+          className={`
+            flex gap-2 overflow-auto
+            md:w-56 md:flex-col md:shrink-0
+            max-md:h-32 max-md:flex-row max-md:shrink-0
+            ${scrollbarClasses}
+          `}
+        >
+          {ids.map((participantId) => (
+            <div
+              key={participantId}
+              className="
+                shrink-0
+                md:w-full md:h-36
+                max-md:h-full max-md:w-44
+                rounded-lg overflow-hidden
+              "
+            >
+              <VideoTile participantId={participantId} />
+            </div>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  // ─── Normal grid layout (no screen share) ───
   return (
     <div
       className={`

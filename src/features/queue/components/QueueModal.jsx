@@ -7,7 +7,7 @@ import PillButton from "@/shared/components/ui/PillButton"
 import Modal from "@/shared/components/ui/Modal"
 import { TOPICS, LEVELS } from "@/features/rooms/config/constants"
 
-const QueueModal = ({ open, onCancel }) => {
+const QueueModal = ({ open, onCancel, roomType = "OneToOne" }) => {
   const { t } = useLanguage()
   const navigate = useNavigate()
   const { lang } = useParams()
@@ -52,8 +52,8 @@ const QueueModal = ({ open, onCancel }) => {
 
   const handleFindMatch = () => {
     const preferences = {
-      roomType: "OneToOne",
-      topics: topics.length > 0 ? topics : undefined,
+      roomType,
+      topics: topics.length > 0 ? topics : [],
       languageType: selectedLanguage,
       requiredLevel: selectedLevel || undefined,
     }

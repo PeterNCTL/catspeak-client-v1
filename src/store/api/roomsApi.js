@@ -71,16 +71,6 @@ export const roomsApi = baseApi.injectEndpoints({
       invalidatesTags: ["Rooms"],
     }),
 
-    // Join an existing room (2:5)
-    joinRoom: builder.mutation({
-      query: (criteria) => ({
-        url: "/rooms/join-room",
-        method: "POST",
-        body: criteria,
-      }),
-      invalidatesTags: ["Rooms"],
-    }),
-
     // Delete a room
     deleteRoom: builder.mutation({
       query: (id) => ({
@@ -98,5 +88,4 @@ export const {
   useGetRoomByIdQuery,
   useCreateRoomMutation,
   useDeleteRoomMutation,
-  useJoinRoomMutation,
 } = roomsApi

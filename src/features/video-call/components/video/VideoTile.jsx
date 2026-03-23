@@ -1,4 +1,4 @@
-import { MicOff, VideoOff } from "lucide-react"
+import { MicOff, VideoOff, MonitorUp } from "lucide-react"
 import Avatar from "@/shared/components/ui/Avatar"
 import useAudioLevel from "../../hooks/useAudioLevel"
 import { useEffect, useRef, useMemo, useCallback } from "react"
@@ -43,7 +43,7 @@ const attachGestureListener = () => {
 }
 
 const VideoTile = ({ participantId }) => {
-  const { displayName, webcamStream, micStream, webcamOn, micOn, isLocal } =
+  const { displayName, webcamStream, micStream, webcamOn, micOn, screenShareOn, isLocal } =
     useParticipant(participantId)
 
   const videoTrack = webcamStream?.track ?? null
@@ -248,6 +248,7 @@ const VideoTile = ({ participantId }) => {
 
       {/* Mic / cam off icons */}
       <div className="absolute bottom-5 right-5 flex items-center gap-4">
+        {screenShareOn && <MonitorUp className="text-yellow-500" />}
         {!micOn && <MicOff className="text-[#7A7574]" />}
         {!webcamOn && <VideoOff className="text-[#7A7574]" />}
       </div>

@@ -13,6 +13,7 @@ const QueuePage = () => {
 
   // Queue preferences passed from QueueModal via route state
   const queuePreferences = location.state
+  const roomType = queuePreferences?.roomType || "OneToOne"
 
   const [queueState, setQueueState] = useState({ type: "CONNECTING" })
   const [position, setPosition] = useState(0)
@@ -130,6 +131,7 @@ const QueuePage = () => {
         isConnected={isConnected}
         position={position}
         onCancel={handleCancel}
+        roomType={roomType}
       />
     </div>
   )

@@ -11,27 +11,27 @@ const Modal = ({
   title,
   showCloseButton = true,
 }) => {
-  // Prevent body scrolling and layout shift when modal is open
+const ModalScrollLock = () => {
   useEffect(() => {
-    if (open) {
-      // Calculate scrollbar width
-      const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth
-      
-      const originalStyle = window.getComputedStyle(document.body).overflow
-      const originalPaddingRight = window.getComputedStyle(document.body).paddingRight
+    const scrollbarWidth =
+      window.innerWidth - document.documentElement.clientWidth
 
-      // Set padding to prevent content from jumping
-      if (scrollbarWidth > 0) {
-        document.body.style.paddingRight = `calc(${originalPaddingRight} + ${scrollbarWidth}px)`
-      }
-      document.body.style.overflow = "hidden"
-      
-      return () => {
-        document.body.style.overflow = originalStyle
-        document.body.style.paddingRight = originalPaddingRight
-      }
+    const originalStyle = window.getComputedStyle(document.body).overflow
+    const originalPaddingRight = window.getComputedStyle(document.body).paddingRight
+
+    if (scrollbarWidth > 0) {
+      document.body.style.paddingRight = `calc(${originalPaddingRight} + ${scrollbarWidth}px)`
     }
-  }, [open])
+    document.body.style.overflow = "hidden"
+
+    return () => {
+      document.body.style.overflow = originalStyle
+      document.body.style.paddingRight = originalPaddingRight
+    }
+  }, [])
+
+  return null
+}
 
   // Modal visibility is handled by the "open" prop and AnimatePresence
 
@@ -40,6 +40,7 @@ const Modal = ({
     <AnimatePresence>
       {open && (
         <div className="fixed inset-0 z-[1300] flex items-center justify-center p-0 min-[426px]:p-4">
+          <ModalScrollLock />
           {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}

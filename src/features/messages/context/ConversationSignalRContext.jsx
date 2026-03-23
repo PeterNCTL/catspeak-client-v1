@@ -8,6 +8,18 @@ import React, {
 } from "react"
 import * as signalR from "@microsoft/signalr"
 import { useAuth } from "@/features/auth"
+import { store } from "@store"
+
+const MAX_START_RETRIES = 3
+const RETRY_DELAY_MS = 3000
+
+/** Hub events the server may push to clients */
+const HUB_EVENTS = [
+  "NewMessage",
+  "NewConversation",
+  "FriendStatusChange",
+  "ChatUpdated",
+]
 
 const ConversationSignalRContext = createContext(null)
 
@@ -21,18 +33,15 @@ export const ConversationSignalRProvider = ({ children }) => {
   const [connectionId, setConnectionId] = useState(null)
   const connectionRef = useRef(null)
 
-  // We need to keep track of subscribers
   // Map<EventName, Set<Callback>>
   const subscribersRef = useRef(new Map())
 
-  // Subscribe method
   const on = useCallback((eventName, callback) => {
     if (!subscribersRef.current.has(eventName)) {
       subscribersRef.current.set(eventName, new Set())
     }
     subscribersRef.current.get(eventName).add(callback)
 
-    // Return unsubscribe function
     return () => {
       const callbacks = subscribersRef.current.get(eventName)
       if (callbacks) {
@@ -48,7 +57,6 @@ export const ConversationSignalRProvider = ({ children }) => {
     }
   }, [])
 
-  // Helper to notify subscribers
   const notifySubscribers = useCallback((eventName, ...args) => {
     const callbacks = subscribersRef.current.get(eventName)
     if (callbacks) {
@@ -65,76 +73,107 @@ export const ConversationSignalRProvider = ({ children }) => {
     }
   }, [])
 
+  // ── Connection lifecycle ──────────────────────────────────────────
+  // Depend on `!!token` (boolean) rather than the raw token string.
+  // This prevents the effect from re-running when the token is silently
+  // refreshed — the accessTokenFactory already reads the latest token
+  // from the Redux store at negotiate-time, so a reconnect isn't needed.
+  const hasToken = !!token
+
   useEffect(() => {
-    // Only start SignalR when token is ready
-    if (!token) {
-      console.warn("[ConversationSignalR] Token not ready, waiting...")
-      return
-    }
+    if (!hasToken) return
+
+    const abortController = new AbortController()
+    const { signal } = abortController
 
     const apiUrl = import.meta.env.VITE_API_BASE_URL
     const baseUrl = apiUrl.replace(/\/api\/?$/, "")
     const hubUrl = `${baseUrl}/hubs/chat`
 
-    const newConnection = new signalR.HubConnectionBuilder()
+    const connection = new signalR.HubConnectionBuilder()
       .withUrl(hubUrl, {
-        accessTokenFactory: () => token,
+        accessTokenFactory: () => store.getState().auth.token,
       })
       .withAutomaticReconnect()
-      .configureLogging(signalR.LogLevel.Warning)
+      .configureLogging(signalR.LogLevel.Critical)
       .build()
 
-    connectionRef.current = newConnection
+    connectionRef.current = connection
 
-    // Bind server events to notify subscribers
-    const events = [
-      "NewMessage",
-      "NewConversation",
-      "FriendStatusChange",
-      "ChatUpdated",
-    ]
-    events.forEach((event) => {
-      newConnection.on(event, (...args) => notifySubscribers(event, ...args))
+    // Bind server → client events
+    HUB_EVENTS.forEach((event) => {
+      connection.on(event, (...args) => notifySubscribers(event, ...args))
     })
 
-    const start = async () => {
-      try {
-        await newConnection.start()
-
-        setIsConnected(true)
-        setConnectionId(newConnection.connectionId)
-        notifySubscribers("OnConnected", newConnection)
-      } catch (err) {
-        // console.error("[ConversationSignalR] Connection failed:", err)
-        setIsConnected(false)
-      }
-    }
-
-    start()
-
-    newConnection.onreconnecting(() => {
-      console.warn("[ConversationSignalR] Reconnecting...")
+    // Lifecycle handlers
+    connection.onreconnecting(() => {
+      setIsConnected(false)
     })
 
-    newConnection.onreconnected((id) => {
+    connection.onreconnected((id) => {
+      console.info("[ConversationSignalR] Reconnected, id:", id)
       setIsConnected(true)
       setConnectionId(id)
       notifySubscribers("OnReconnected", id)
     })
 
-    newConnection.onclose(() => {
-      console.warn("[ConversationSignalR] Disconnected")
+    connection.onclose(() => {
       setIsConnected(false)
       setConnectionId(null)
     })
 
+    // Start with retries, respecting abort signal
+    const start = async (attempt = 1) => {
+      if (signal.aborted) return
+      try {
+        await connection.start()
+        if (signal.aborted) return // effect was cleaned up while awaiting
+
+        console.info(
+          "[ConversationSignalR] Connected, id:",
+          connection.connectionId,
+        )
+        setIsConnected(true)
+        setConnectionId(connection.connectionId)
+        notifySubscribers("OnConnected", connection)
+      } catch (err) {
+        if (signal.aborted) return // cleanup interrupted the negotiation
+
+        if (attempt < MAX_START_RETRIES) {
+          console.debug(
+            `[ConversationSignalR] Attempt ${attempt}/${MAX_START_RETRIES} failed, retrying…`,
+          )
+          await new Promise((resolve, reject) => {
+            const timer = setTimeout(resolve, RETRY_DELAY_MS)
+            // If aborted during the wait, clean up and bail out
+            signal.addEventListener("abort", () => {
+              clearTimeout(timer)
+              reject(new DOMException("Aborted", "AbortError"))
+            }, { once: true })
+          }).catch(() => {})
+          return start(attempt + 1)
+        }
+
+        console.warn(
+          "[ConversationSignalR] Failed to connect after",
+          MAX_START_RETRIES,
+          "attempts:",
+          err.message || err,
+        )
+      }
+    }
+
+    start()
+
+    // Cleanup
     return () => {
-      newConnection.stop().catch(() => {})
+      abortController.abort()
+      connection.stop().catch(() => {})
+      connectionRef.current = null
       setIsConnected(false)
       setConnectionId(null)
-      connectionRef.current = null
     }
-  }, [token, notifySubscribers])
+  }, [hasToken, notifySubscribers])
 
   const invoke = useCallback(async (methodName, ...args) => {
     if (connectionRef.current?.state === signalR.HubConnectionState.Connected) {

@@ -17,6 +17,19 @@ const initialState = {
   status: "idle", // 'idle' | 'loading' | 'succeeded' | 'failed'
 }
 
+/** Decode JWT payload to read expiration */
+function decodeJwtExp(token) {
+  try {
+    const base64 = token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/")
+    const payload = JSON.parse(atob(base64))
+    return payload.exp ? new Date(payload.exp * 1000) : null
+  } catch {
+    return null
+  }
+}
+
+const AUTH_LOG = "[Auth]"
+
 const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -31,8 +44,15 @@ const authSlice = createSlice({
       localStorage.setItem("user", JSON.stringify(user))
       localStorage.setItem("token", token)
       if (refreshToken) localStorage.setItem("refreshToken", refreshToken)
+
+      // Diagnostic: log token expiry so we can correlate with 401 events
+      const exp = decodeJwtExp(token)
+      if (exp) {
+        console.info(AUTH_LOG, `Credentials set — token expires at ${exp.toISOString()}`)
+      }
     },
     logout: (state) => {
+      console.warn(AUTH_LOG, "Logout dispatched")
       state.user = null
       state.token = null
       state.refreshToken = null

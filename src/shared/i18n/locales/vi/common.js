@@ -3,6 +3,7 @@ export default {
   switchTo: "English",
   getStarted: "Bắt đầu ngay",
   seeMore: "Xem thêm",
+  back: "Quay lại",
   pagination: {
     range: "{{start}}-{{end}} trong số {{total}}",
   },

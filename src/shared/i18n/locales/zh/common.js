@@ -3,6 +3,7 @@ export default {
   switchTo: "Switch to English",
   getStarted: "开始使用",
   seeMore: "查看更多",
+  back: "返回",
   pagination: {
     range: "{{start}}-{{end}} 共 {{total}}",
   },

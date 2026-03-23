@@ -37,6 +37,13 @@ const VideoCallRoomContent = () => {
     handleToggleCam,
     handleSendMessage,
     handleLeaveSession,
+    // Screen share
+    screenShareOn,
+    screenShareStream,
+    screenSharePresenterId,
+    isLocalScreenShare,
+    presenterDisplayName,
+    handleToggleScreenShare,
   } = useVideoCallContext()
 
   const { formattedElapsed, formattedMax } = useSessionTimer(session)
@@ -105,7 +112,14 @@ const VideoCallRoomContent = () => {
         {/* Video Area */}
         <div className="relative flex flex-1 flex-col min-h-0 overflow-hidden bg-gradient-to-br from-primary2 via-white to-primary2">
           <div className="absolute inset-0 bg-[url('/bg-pattern.svg')] opacity-[0.03] pointer-events-none" />
-          <VideoGrid participantIds={participantIds} />
+          <VideoGrid
+            participantIds={participantIds}
+            screenShareOn={screenShareOn}
+            screenShareStream={screenShareStream}
+            screenSharePresenterId={screenSharePresenterId}
+            presenterDisplayName={presenterDisplayName}
+            isLocalScreenShare={isLocalScreenShare}
+          />
         </div>
 
         {/* Desktop Side Panel */}
@@ -191,6 +205,7 @@ const VideoCallRoomContent = () => {
       <VideoCallControlBar
         micOn={micOn}
         cameraOn={cameraOn}
+        screenShareOn={screenShareOn}
         showChat={showChat}
         setShowChat={setShowChat}
         showParticipants={showParticipants}
@@ -198,6 +213,7 @@ const VideoCallRoomContent = () => {
         unreadMessages={unreadMessages}
         handleToggleMic={handleToggleMic}
         handleToggleCam={handleToggleCam}
+        handleToggleScreenShare={handleToggleScreenShare}
         handleLeaveSession={handleLeaveSession}
       />
     </div>

@@ -1,12 +1,33 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
 import { setCredentials, logout } from "../slices/authSlice"
 
-// Base API configuration
+// ─── Helpers ────────────────────────────────────────────────────────
+const AUTH_LOG = "[Auth]"
+
+/** Decode JWT payload without a library */
+function decodeJwtPayload(token) {
+  try {
+    const base64 = token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/")
+    return JSON.parse(atob(base64))
+  } catch {
+    return null
+  }
+}
+
+/** Seconds until the token expires (negative = already expired) */
+function tokenSecondsRemaining(token) {
+  const payload = decodeJwtPayload(token)
+  if (!payload?.exp) return -1
+  return payload.exp - Date.now() / 1000
+}
+
+// How many seconds before expiry we proactively refresh
+const PROACTIVE_REFRESH_BUFFER = 60
+
+// ─── Base Query ─────────────────────────────────────────────────────
 const baseQuery = fetchBaseQuery({
   baseUrl: import.meta.env.VITE_API_BASE_URL || "/api",
   prepareHeaders: (headers, { getState }) => {
-    // Get token from state if available, otherwise check localStorage
-    // Get token from state if available, otherwise check localStorage
     const token = getState().auth.token
     if (token) {
       headers.set("authorization", `Bearer ${token}`)
@@ -15,94 +36,132 @@ const baseQuery = fetchBaseQuery({
   },
 })
 
-// Mutex lock for refresh
+// ─── Refresh logic ──────────────────────────────────────────────────
 let refreshPromise = null
 
-// Custom base query with auto-refresh logic
-const baseQueryWithReauth = async (args, api, extraOptions) => {
-  let result = await baseQuery(args, api, extraOptions)
-
-  // Normalize: args can be a plain string (e.g. query: () => "/conversations")
-  // or an object with { url, method, body, ... }. Always extract url safely.
-  const url = typeof args === "string" ? args : args?.url
-
-  if (result.error?.status === 401) {
-    console.warn("401 detected:", url)
+/**
+ * Attempt to refresh the token. Returns true on success.
+ * Uses a mutex so only one refresh happens at a time.
+ */
+async function ensureRefresh(api, extraOptions, reason) {
+  if (refreshPromise) {
+    console.info(AUTH_LOG, "Refresh already in progress, waiting…")
+    return refreshPromise
   }
 
-  if (result.error && result.error.status === 401) {
-    // Never retry or refresh for auth endpoints themselves — return immediately
-    // to avoid infinite loops or premature logouts
-    if (url === "/Auth/refresh-token" || url === "/Auth/login") {
-      return result
-    }
+  // Snapshot the credentials RIGHT NOW — before any concurrent call can
+  // update them — so we send a matched token + refreshToken pair.
+  const { token, refreshToken } = api.getState().auth
+  const lsToken = token || localStorage.getItem("token")
+  const lsRefresh = refreshToken || localStorage.getItem("refreshToken")
 
-    const state = api.getState().auth
-    const token = state.token || localStorage.getItem("token")
-    const refreshToken =
-      state.refreshToken || localStorage.getItem("refreshToken")
+  if (!lsRefresh || !lsToken) {
+    console.warn(AUTH_LOG, "No refresh token available — logging out", { reason })
+    api.dispatch(logout())
+    return false
+  }
 
-    if (!refreshToken || !token) {
+  console.info(AUTH_LOG, `Starting token refresh (reason: ${reason})`)
+
+  refreshPromise = (async () => {
+    try {
+      const refreshResult = await baseQuery(
+        {
+          url: "/Auth/refresh-token",
+          method: "POST",
+          body: { token: lsToken, refreshToken: lsRefresh },
+        },
+        api,
+        extraOptions,
+      )
+
+      if (refreshResult.error) {
+        const status = refreshResult.error.status
+        console.error(AUTH_LOG, `Refresh failed with status ${status} — logging out`, { reason })
+        api.dispatch(logout())
+        return false
+      }
+
+      if (refreshResult.data) {
+        const { user } = api.getState().auth
+        api.dispatch(
+          setCredentials({
+            ...refreshResult.data,
+            user: refreshResult.data.user || user,
+          }),
+        )
+        const remaining = tokenSecondsRemaining(refreshResult.data.token)
+        console.info(
+          AUTH_LOG,
+          `Refresh successful — new token expires in ${Math.round(remaining)}s`,
+        )
+        return true
+      }
+
+      console.error(AUTH_LOG, "Refresh returned no data — logging out", { reason })
       api.dispatch(logout())
-      localStorage.removeItem("token")
-      localStorage.removeItem("refreshToken")
+      return false
+    } catch (err) {
+      console.error(AUTH_LOG, "Refresh threw an exception — logging out", err, { reason })
+      api.dispatch(logout())
+      return false
+    } finally {
+      refreshPromise = null
+    }
+  })()
+
+  return refreshPromise
+}
+
+// ─── Custom base query ──────────────────────────────────────────────
+const baseQueryWithReauth = async (args, api, extraOptions) => {
+  const url = typeof args === "string" ? args : args?.url
+
+  // Skip proactive refresh for auth endpoints
+  const isAuthEndpoint = url === "/Auth/refresh-token" || url === "/Auth/login"
+
+  // ── Proactive refresh: if token is close to expiring, refresh first ──
+  if (!isAuthEndpoint) {
+    const currentToken = api.getState().auth.token
+    if (currentToken) {
+      const remaining = tokenSecondsRemaining(currentToken)
+      if (remaining > 0 && remaining < PROACTIVE_REFRESH_BUFFER) {
+        console.info(
+          AUTH_LOG,
+          `Token expires in ${Math.round(remaining)}s — proactively refreshing before ${url}`,
+        )
+        await ensureRefresh(api, extraOptions, `proactive (${Math.round(remaining)}s left)`)
+      }
+    }
+  }
+
+  // ── Execute the actual request ────────────────────────────────────
+  let result = await baseQuery(args, api, extraOptions)
+
+  // ── Handle 401 ────────────────────────────────────────────────────
+  if (result.error?.status === 401) {
+    console.warn(AUTH_LOG, `401 on ${url}`)
+
+    // Never retry auth endpoints to avoid infinite loops
+    if (isAuthEndpoint) {
       return result
     }
 
-    if (!refreshPromise) {
-      refreshPromise = (async () => {
-        try {
-          const refreshResult = await baseQuery(
-            {
-              url: "/Auth/refresh-token",
-              method: "POST",
-              body: { token, refreshToken },
-            },
-            api,
-            extraOptions,
-          )
-
-          if (refreshResult.error?.status === 401) {
-            // Refresh token invalid → logout
-            api.dispatch(logout())
-            localStorage.removeItem("token")
-            localStorage.removeItem("refreshToken")
-            return false
-          }
-
-          if (refreshResult.data) {
-            const { user } = api.getState().auth
-            api.dispatch(
-              setCredentials({
-                ...refreshResult.data,
-                user: refreshResult.data.user || user,
-              }),
-            )
-            return true
-          }
-          return false
-        } catch (err) {
-          api.dispatch(logout())
-          localStorage.removeItem("token")
-          localStorage.removeItem("refreshToken")
-          return false
-        } finally {
-          refreshPromise = null
-        }
-      })()
-    }
-
-    const success = await refreshPromise
+    const success = await ensureRefresh(api, extraOptions, `401 on ${url}`)
 
     if (success) {
+      // Retry the original request with the new token
       result = await baseQuery(args, api, extraOptions)
+      if (result.error) {
+        console.error(AUTH_LOG, `Retry of ${url} still failed with status ${result.error.status}`)
+      }
     }
   }
 
   return result
 }
 
-// Base API slice
+// ─── Base API slice ─────────────────────────────────────────────────
 export const baseApi = createApi({
   reducerPath: "api",
   baseQuery: baseQueryWithReauth,
@@ -117,6 +176,6 @@ export const baseApi = createApi({
     "Messages",
     "Events",
     "Post",
-  ], // Define tag types for cache invalidation
+  ],
   endpoints: () => ({}),
 })

@@ -3,8 +3,14 @@ import { Loader2 } from "lucide-react"
 import { useLanguage } from "@/shared/context/LanguageContext"
 import PillButton from "@/shared/components/ui/PillButton"
 
-const QueueStatusCard = ({ statusText, isConnected, position, onCancel }) => {
+const QueueStatusCard = ({ statusText, isConnected, position, onCancel, roomType = "OneToOne" }) => {
   const { t } = useLanguage()
+
+  const isGroup = roomType === "Group"
+  const emoji = isGroup ? "👥" : "😺"
+  const subtitle = isGroup
+    ? (t.rooms?.queue?.findingGroup || "Looking for a study group…")
+    : t.rooms.queue.findingMatch
 
   return (
     <div className="max-w-[400px] w-full rounded-xl overflow-hidden relative border border-[#C6C6C6] shadow-md bg-white">
@@ -16,13 +22,13 @@ const QueueStatusCard = ({ statusText, isConnected, position, onCancel }) => {
             strokeWidth={2}
           />
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="text-[2rem] leading-none">😺</div>
+            <div className="text-[2rem] leading-none">{emoji}</div>
           </div>
         </div>
 
         <div className="text-center">
           <h6 className="text-xl font-bold mb-2 text-black">{statusText}</h6>
-          <p className="text-sm text-[#7A7574]">{t.rooms.queue.findingMatch}</p>
+          <p className="text-sm text-[#7A7574]">{subtitle}</p>
         </div>
       </div>
 
