@@ -22,24 +22,10 @@ const ServerDownScreen = () => {
   const [countdown, setCountdown] = useState(RETRY_INTERVAL_SECONDS)
   const [isRetrying, setIsRetrying] = useState(false)
 
-  const healthCheck = useCallback(async () => {
+  const healthCheck = useCallback(() => {
     setIsRetrying(true)
-    try {
-      const baseUrl = import.meta.env.VITE_API_BASE_URL || "/api"
-      const res = await fetch(`${baseUrl}/health`, {
-        method: "GET",
-        cache: "no-store",
-      })
-      if (res.ok) {
-        dispatch(setServerUp())
-      }
-    } catch {
-      // Still down — countdown will restart
-    } finally {
-      setIsRetrying(false)
-      setCountdown(RETRY_INTERVAL_SECONDS)
-    }
-  }, [dispatch])
+    window.location.reload()
+  }, [])
 
   // Countdown timer
   useEffect(() => {
