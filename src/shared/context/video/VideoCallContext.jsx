@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from "react"
+import React, { createContext, useContext, useState, useEffect, useRef, useCallback } from "react"
 import { useParams, useNavigate, useLocation } from "react-router-dom"
 import { useMeeting, usePubSub } from "@videosdk.live/react-sdk"
 import { useVideoCall } from "@/features/video-call/hooks/useVideoCall"
@@ -40,6 +40,44 @@ export const VideoCallContent = ({
   const [showParticipants, setShowParticipants] = useState(false)
 
   const [leaveSession] = useLeaveVideoSessionMutation()
+
+  // Track whether we've already left the session (to avoid double-calls)
+  const hasLeftRef = useRef(false)
+
+  const leaveSessionOnUnload = useCallback(() => {
+    if (!id || hasLeftRef.current) return
+    hasLeftRef.current = true
+
+    // Use fetch with keepalive for reliable delivery during page unload
+    // (sendBeacon only supports POST, but the leave API requires DELETE)
+    const baseUrl = import.meta.env.VITE_API_BASE_URL || "/api"
+    const url = `${baseUrl}/video-sessions/${id}/participants`
+    const token = localStorage.getItem("token")
+
+    fetch(url, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { authorization: `Bearer ${token}` } : {}),
+      },
+      keepalive: true,
+    }).catch(() => {})
+  }, [id])
+
+  // Register beforeunload / pagehide to leave session when tab/window closes
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      leaveSessionOnUnload()
+    }
+
+    window.addEventListener("beforeunload", handleBeforeUnload)
+    window.addEventListener("pagehide", handleBeforeUnload)
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload)
+      window.removeEventListener("pagehide", handleBeforeUnload)
+    }
+  }, [leaveSessionOnUnload])
 
   // SDK — participant list & connected state
   const { participants, localParticipant } = useMeeting()
@@ -91,6 +129,7 @@ export const VideoCallContent = ({
   const handleSendMessage = (text) => publish(text, { persist: true })
 
   const handleLeaveSession = async () => {
+    hasLeftRef.current = true // prevent unload handler from double-firing
     if (id) {
       try {
         await leaveSession(id).unwrap()

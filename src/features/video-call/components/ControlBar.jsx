@@ -8,7 +8,7 @@ import {
   Users,
   Mic,
   MicOff,
-  PhoneOff,
+  Phone,
 } from "lucide-react"
 
 const VideoCallControlBar = ({
@@ -112,7 +112,7 @@ const VideoCallControlBar = ({
         title="Leave call"
         className={`${buttonBaseClass} bg-[#d40018] text-white hover:bg-[#e7001a] disabled:opacity-50`}
       >
-        <PhoneOff />
+        <Phone className="rotate-[135deg]" />
       </button>
     </div>
   )
