@@ -13,6 +13,7 @@ import { useLanguage } from "@/shared/context/LanguageContext"
 import { getCommunityPath } from "@/shared/utils/navigation"
 import { VideoCallContent } from "./VideoCallContext"
 import VideoCallLoading from "../../../features/video-call/components/VideoCallLoading"
+import { SearchX, Users, AlertCircle } from "lucide-react"
 
 export const VideoCallProvider = ({ children }) => {
   const { id, lang } = useParams()
@@ -89,40 +90,20 @@ export const VideoCallProvider = ({ children }) => {
 
   if (isRoomFull) {
     return (
-      <div className="flex flex-col items-center justify-center h-screen bg-neutral-950 text-white gap-4">
-        <p className="text-xl font-bold">{t.rooms.roomFullModal.title}</p>
-        <p className="text-gray-400">{t.rooms.roomFullModal.message}</p>
-        <PillButton
-          onClick={() => navigate(getCommunityPath(lang || language))}
-          className="mt-2 min-w-[150px]"
-        >
-          {t.rooms.waitingScreen.backToCommunity}
-        </PillButton>
-      </div>
-    )
-  }
-
-  if (sessionError) {
-    console.error("Failed to load session:", sessionError)
-    return (
-      <div className="flex items-center justify-center h-screen bg-neutral-950 text-white flex-col gap-4">
-        <p className="text-red-500 text-xl">
-          {t.rooms.videoCall.provider.failedToLoad}
-        </p>
-        <p className="text-gray-400 text-sm">
-          {sessionError?.data?.message ||
-            t.rooms.videoCall.provider.unknownError}
-        </p>
-        <div className="flex flex-col gap-3 min-w-[200px]">
-          <PillButton
-            onClick={() => window.location.reload()}
-            variant="primary"
-          >
-            {t.rooms.videoCall.provider.retry}
-          </PillButton>
+      <div className="flex items-center justify-center h-screen bg-neutral-950 animate-fadeIn">
+        <div className="flex flex-col items-center gap-4 max-w-[400px] px-8 py-12 text-center">
+          <div className="text-orange-500 mb-2">
+            <Users size={64} strokeWidth={1.5} />
+          </div>
+          <h1 className="text-2xl font-bold text-white leading-tight">
+            {t.rooms.roomFullModal.title}
+          </h1>
+          <p className="text-[15px] text-gray-400 leading-relaxed mb-2">
+            {t.rooms.roomFullModal.message}
+          </p>
           <PillButton
             onClick={() => navigate(getCommunityPath(lang || language))}
-            variant="secondary"
+            className="h-10 min-w-[140px] mt-2"
           >
             {t.rooms.waitingScreen.backToCommunity}
           </PillButton>
@@ -131,21 +112,63 @@ export const VideoCallProvider = ({ children }) => {
     )
   }
 
+  if (sessionError) {
+    console.error("Failed to load session:", sessionError)
+    return (
+      <div className="flex items-center justify-center h-screen bg-neutral-950 animate-fadeIn">
+        <div className="flex flex-col items-center gap-4 max-w-[400px] px-8 py-12 text-center">
+          <div className="text-red-500 mb-2">
+            <AlertCircle size={64} strokeWidth={1.5} />
+          </div>
+          <h1 className="text-2xl font-bold text-white leading-tight">
+            {t.rooms.videoCall.provider.failedToLoad}
+          </h1>
+          <p className="text-[15px] text-gray-400 leading-relaxed mb-2">
+            {sessionError?.data?.message ||
+              t.rooms.videoCall.provider.unknownError}
+          </p>
+          <div className="flex flex-col gap-3 w-full mt-2 min-w-[200px]">
+            <PillButton
+              onClick={() => window.location.reload()}
+              variant="primary"
+              className="h-10 w-full"
+            >
+              {t.rooms.videoCall.provider.retry}
+            </PillButton>
+            <PillButton
+              onClick={() => navigate(getCommunityPath(lang || language))}
+              variant="secondary"
+              className="h-10 w-full"
+            >
+              {t.rooms.waitingScreen.backToCommunity}
+            </PillButton>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   if (!isLoadingSession && !session) {
     return (
-      <div className="flex items-center justify-center h-screen bg-neutral-950 text-white flex-col gap-4">
-        <p className="text-red-500 text-xl">
-          {t.rooms.waitingScreen.roomNotFound}
-        </p>
-        <p className="text-gray-400 text-sm text-center max-w-[400px]">
-          {t.rooms.waitingScreen.roomNotFoundSubtext}
-        </p>
-        <PillButton
-          onClick={() => navigate(getCommunityPath(lang || language))}
-          variant="primary"
-        >
-          {t.rooms.waitingScreen.backToCommunity}
-        </PillButton>
+      <div className="flex items-center justify-center h-screen bg-neutral-950 animate-fadeIn">
+        <div className="flex flex-col items-center gap-4 max-w-[400px] px-8 py-12 text-center">
+          <div className="text-red-500 mb-2">
+            <SearchX size={64} strokeWidth={1.5} />
+          </div>
+          <h1 className="text-2xl font-bold text-white leading-tight">
+            {t.rooms.waitingScreen.roomNotFound}
+          </h1>
+          <p className="text-[15px] text-gray-400 leading-relaxed mb-2">
+            {t.rooms.waitingScreen.roomNotFoundSubtext}
+          </p>
+          <PillButton
+            onClick={() => navigate(getCommunityPath(lang || language))}
+            variant="primary"
+            className="h-10 min-w-[140px] mt-2"
+          >
+            {t.rooms.waitingScreen.backToCommunity}
+          </PillButton>
+        </div>
       </div>
     )
   }

@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
 import { setCredentials, logout } from "../slices/authSlice"
+import { setServerDown, setServerUp } from "../slices/serverStatusSlice"
 
 // ─── Helpers ────────────────────────────────────────────────────────
 const AUTH_LOG = "[Auth]"
@@ -161,6 +162,22 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
         console.error(AUTH_LOG, `Retry of ${url} still failed with status ${result.error.status}`)
       }
     }
+  }
+
+  // ── Handle server-down / network errors ─────────────────────────
+  if (
+    result.error?.status === "FETCH_ERROR" ||
+    result.error?.status === 502 ||
+    result.error?.status === 503
+  ) {
+    console.warn(AUTH_LOG, `Server unreachable for ${url} — not an auth issue, skipping logout`)
+    api.dispatch(setServerDown())
+  }
+
+  // ── Recovery: clear server-down flag when a request succeeds ───
+  if (!result.error && api.getState().serverStatus.isServerDown) {
+    console.info(AUTH_LOG, "Server is reachable again — clearing server-down flag")
+    api.dispatch(setServerUp())
   }
 
   return result

@@ -62,6 +62,7 @@ const routesConfig = [
         path: "verify-email",
         element: <VerifyEmailPage />,
       },
+      { path: "*", element: <PageNotFound /> },
     ],
   },
 
@@ -77,6 +78,7 @@ const routesConfig = [
             index: true,
             element: <RoomsPage />,
           },
+          { path: "*", element: <PageNotFound /> },
         ],
       },
     ],
@@ -117,6 +119,7 @@ const routesConfig = [
                 path: "mail",
                 element: <MailPage />,
               },
+              { path: "*", element: <PageNotFound /> },
             ],
           },
         ],
@@ -140,6 +143,7 @@ const routesConfig = [
               </AuthGuard>
             ),
           },
+          { path: "*", element: <PageNotFound /> },
         ],
       },
     ],
@@ -157,6 +161,7 @@ const routesConfig = [
           </AuthGuard>
         ),
       },
+      { path: "*", element: <PageNotFound /> },
     ],
   },
 
@@ -182,6 +187,7 @@ const routesConfig = [
             path: "setting",
             element: <SettingsPage />,
           },
+          { path: "*", element: <PageNotFound /> },
         ],
       },
     ],
@@ -212,6 +218,7 @@ const routesConfig = [
             path: "setting",
             element: <AccountSettingsPage />,
           },
+          { path: "*", element: <PageNotFound /> },
         ],
       },
     ],
@@ -228,6 +235,7 @@ const routesConfig = [
         index: true,
         element: <AdminPage />,
       },
+      { path: "*", element: <PageNotFound /> },
     ],
   },
   {
@@ -246,6 +254,7 @@ const routesConfig = [
         index: true,
         element: <ComingSoonPage />,
       },
+      { path: "*", element: <PageNotFound /> },
     ],
   },
   {
