@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import SearchInput from "@/shared/components/ui/SearchInput"
+import SearchInput from "@/shared/components/ui/inputs/SearchInput"
 import { useLanguage } from "@/shared/context/LanguageContext"
 import LevelFilter from "../filters/LevelFilter"
 import TopicFilter from "../filters/TopicFilter"

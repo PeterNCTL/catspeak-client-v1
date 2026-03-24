@@ -23,8 +23,11 @@ import { QueueModal } from "@/features/queue"
 import { useLanguage } from "@/shared/context/LanguageContext"
 import { PageNotFound } from "@/shared/pages"
 import { AnimatePresence } from "framer-motion"
-import { FadeAnimation, FluentAnimation } from "@/shared/animations"
-import InDevelopmentModal from "@/shared/components/common/InDevelopmentModal"
+import {
+  FadeAnimation,
+  FluentAnimation,
+} from "@/shared/components/ui/animations"
+import InDevelopmentModal from "@/shared/components/ui/InDevelopmentModal"
 
 const RoomsPage = () => {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
@@ -108,7 +111,7 @@ const RoomsPage = () => {
       <FluentAnimation
         animationKey="rooms-page"
         direction="up"
-        className="w-full overflow-x-hidden"
+        className="w-full"
       >
         {/* Hero Section - Improved mobile spacing */}
         <div className="grid grid-cols-1 gap-5 p-5 sm:px-6 sm:py-8 md:gap-10 md:py-12 lg:grid-cols-2">
@@ -177,7 +180,7 @@ const RoomsPage = () => {
                 </RoomsMobileDrawer>
 
                 {/* Tab Panels */}
-                <div className="overflow-hidden">
+                <div className="overflow-hidden py-10 -my-10 px-4 -mx-4">
                   <AnimatePresence mode="wait">
                     <FadeAnimation key={tab} className="w-full">
                       {tab === "communicate" && (

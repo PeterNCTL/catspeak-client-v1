@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { Eye, EyeOff } from "lucide-react"
-import TextInput from "@/shared/components/ui/TextInput"
+import TextInput from "@/shared/components/ui/inputs/TextInput"
 import FormDatePicker from "../../forms/FormDatePicker"
 import FormSelectField from "../../forms/FormSelectField"
 

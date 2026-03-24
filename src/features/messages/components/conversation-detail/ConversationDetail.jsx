@@ -1,10 +1,10 @@
 import React, { useEffect, useRef } from "react"
 import { FiSend, FiPlus, FiPaperclip, FiImage } from "react-icons/fi"
 import MessageBubble from "./MessageBubble"
-import LoadingSpinner from "@/shared/components/ui/LoadingSpinner"
-import EmptyState from "@/shared/components/ui/EmptyState"
-import TextInput from "@/shared/components/ui/TextInput"
-import PillButton from "@/shared/components/ui/PillButton"
+import LoadingSpinner from "@/shared/components/ui/indicators/LoadingSpinner"
+import EmptyState from "@/shared/components/ui/indicators/EmptyState"
+import TextInput from "@/shared/components/ui/inputs/TextInput"
+import PillButton from "@/shared/components/ui/buttons/PillButton"
 import { useLanguage } from "@/shared/context/LanguageContext"
 
 const ConversationDetail = ({

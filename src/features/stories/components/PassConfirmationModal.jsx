@@ -10,7 +10,7 @@ import {
 } from "@mui/material"
 import { useLanguage } from "@/shared/context/LanguageContext"
 
-import PillButton from "@/shared/components/ui/PillButton"
+import PillButton from "@/shared/components/ui/buttons/PillButton"
 
 const PassConfirmationModal = ({ open, onResult }) => {
   const { t } = useLanguage()

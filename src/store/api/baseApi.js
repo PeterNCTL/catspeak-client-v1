@@ -39,6 +39,11 @@ const baseQuery = fetchBaseQuery({
 // ─── Refresh logic ──────────────────────────────────────────────────
 let refreshPromise = null
 
+/** Expose the in-flight refresh promise so other modules (e.g. SignalR) can wait for it */
+export function getRefreshPromise() {
+  return refreshPromise
+}
+
 /**
  * Attempt to refresh the token. Returns true on success.
  * Uses a mutex so only one refresh happens at a time.

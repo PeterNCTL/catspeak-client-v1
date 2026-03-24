@@ -1,7 +1,7 @@
 import React from "react"
 import { useNavigate, useSearchParams } from "react-router-dom"
-import { ArrowLeft } from "lucide-react"
-import PillButton from "@/shared/components/ui/PillButton"
+import PillButton from "@/shared/components/ui/buttons/PillButton"
+import BackButton from "@/shared/components/ui/buttons/BackButton"
 import ParticipantsPreview from "./ParticipantsPreview"
 import VideoPreview from "./VideoPreview"
 import { useLanguage } from "@/shared/context/LanguageContext"
@@ -31,18 +31,16 @@ const WaitingScreen = ({
     <div className="flex min-h-screen w-full flex-col items-center justify-center relative bg-gray-50 p-4 md:p-0">
       {/* Back Button */}
       <div className="absolute top-4 left-4 md:top-8 md:left-8 z-10">
-        <button
+        <BackButton
           onClick={() =>
             navigate({
               pathname: `/${communityLanguage}/community`,
               search: searchParams.toString(),
             })
           }
-          className="flex items-center gap-2 h-10 px-3 rounded-lg w-fit hover:bg-[#E5E5E5] transition-colors font-medium"
         >
-          <ArrowLeft />
           {t.rooms.waitingScreen.backToCommunity}
-        </button>
+        </BackButton>
       </div>
 
       <div className="mb-6 text-center">

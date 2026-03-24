@@ -6,8 +6,8 @@ import AuthButton from "../../ui/AuthButton"
 import { useLoginMutation } from "@/store/api/authApi"
 import { useAuthModal } from "@/shared/context/AuthModalContext"
 import Modal from "@/shared/components/ui/Modal"
-import TextInput from "@/shared/components/ui/TextInput"
-import Checkbox from "@/shared/components/ui/Checkbox"
+import TextInput from "@/shared/components/ui/inputs/TextInput"
+import Checkbox from "@/shared/components/ui/inputs/Checkbox"
 
 const LoginPopup = ({ open, onClose, onSwitchMode }) => {
   const { t } = useLanguage()

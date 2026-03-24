@@ -7,7 +7,7 @@ export default {
   },
   newsDetail: {
     back: "Trở lại",
-    reactions: "Lượt tương tác",
+    reactions: "lượt tương tác",
     like: "Thích",
     love: "Yêu",
     haha: "Haha",

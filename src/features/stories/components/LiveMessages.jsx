@@ -3,7 +3,8 @@ import { Send, Check, X } from "lucide-react"
 import PassConfirmationModal from "./PassConfirmationModal"
 import MyStoryModal from "./MyStoryModal"
 import { useLanguage } from "@/shared/context/LanguageContext"
-import TextInput from "@/shared/components/ui/TextInput"
+import TextInput from "@/shared/components/ui/inputs/TextInput"
+import { BubbleButton } from "@/shared/components/ui/buttons"
 import useStories from "../hooks/useStories"
 
 const LiveMessages = ({ languageCommunity }) => {
@@ -66,7 +67,9 @@ const LiveMessages = ({ languageCommunity }) => {
           <div className="shrink-0 text-xs text-[#7A7574]">
             <span className="font-semibold">{myStories.length}</span>{" "}
             {t.catSpeak.mail.yours} |{" "}
-            <span className="font-semibold">{stories.length + myStories.length}</span>{" "}
+            <span className="font-semibold">
+              {stories.length + myStories.length}
+            </span>{" "}
             {t.catSpeak.mail.total}
           </div>
         </div>
@@ -115,7 +118,9 @@ const LiveMessages = ({ languageCommunity }) => {
         <div className="text-sm whitespace-nowrap">
           <span className="font-semibold">{myStories.length}</span>{" "}
           {t.catSpeak.mail.yours} |{" "}
-          <span className="font-semibold">{stories.length + myStories.length}</span>{" "}
+          <span className="font-semibold">
+            {stories.length + myStories.length}
+          </span>{" "}
           {t.catSpeak.mail.total}
         </div>
       </div>
@@ -150,7 +155,8 @@ const LiveMessages = ({ languageCommunity }) => {
           >
             {/* Repeat messages enough times to fill width and loop smoothly */}
             {marqueeItems.map((story, idx) => (
-              <div
+              <BubbleButton
+                as="div"
                 key={`${rowIdx}-${idx}`}
                 onClick={() => {
                   if (story.isOwn) {
@@ -162,6 +168,7 @@ const LiveMessages = ({ languageCommunity }) => {
                     ? "bg-blue-600 cursor-pointer hover:bg-blue-700"
                     : "bg-[#990011]"
                 }`}
+                bubbleColor={story.isOwn ? "#2563eb" : "#990011"}
               >
                 <span className="block">{story.storyContent}</span>
 
@@ -190,7 +197,7 @@ const LiveMessages = ({ languageCommunity }) => {
                     </button>
                   </div>
                 )}
-              </div>
+              </BubbleButton>
             ))}
           </div>
         </div>

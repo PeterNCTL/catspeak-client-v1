@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from "react"
 import { useNavigate, useParams } from "react-router-dom"
-import {
-  useCreateRoomMutation,
-} from "@/store/api/roomsApi"
+import { useCreateRoomMutation } from "@/store/api/roomsApi"
 import { useLanguage } from "@/shared/context/LanguageContext"
-import TextInput from "@/shared/components/ui/TextInput"
+import TextInput from "@/shared/components/ui/inputs/TextInput"
 import TopicSelect from "./ui/TopicSelect"
 import LevelSelector from "./ui/LevelSelector"
-import PillButton from "@/shared/components/ui/PillButton"
+import PillButton from "@/shared/components/ui/buttons/PillButton"
 import Modal from "@/shared/components/ui/Modal"
 import { motion, AnimatePresence } from "framer-motion"
 import { TOPICS, LEVELS } from "../config/constants"
@@ -91,6 +89,14 @@ const CreateRoomModal = ({ open, onCancel }) => {
 
     const topicsList = topics.length > 0 ? topics : ["Other"]
     topicsList.forEach((topic) => formData.append("Topics", topic))
+
+    console.log("[CreateRoomModal] CreateRoom payload:", {
+      Name: name || "",
+      RoomType: "Group",
+      LanguageType: selectedLanguage,
+      RequiredLevel: selectedLevel || "",
+      Topics: topicsList,
+    })
 
     try {
       const createResult = await createRoom(formData).unwrap()

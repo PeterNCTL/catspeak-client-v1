@@ -1,15 +1,21 @@
 import React from "react"
 import { Loader2 } from "lucide-react"
 import { useLanguage } from "@/shared/context/LanguageContext"
-import PillButton from "@/shared/components/ui/PillButton"
+import PillButton from "@/shared/components/ui/buttons/PillButton"
 
-const QueueStatusCard = ({ statusText, isConnected, position, onCancel, roomType = "OneToOne" }) => {
+const QueueStatusCard = ({
+  statusText,
+  isConnected,
+  position,
+  onCancel,
+  roomType = "OneToOne",
+}) => {
   const { t } = useLanguage()
 
   const isGroup = roomType === "Group"
   const emoji = isGroup ? "👥" : "😺"
   const subtitle = isGroup
-    ? (t.rooms?.queue?.findingGroup || "Looking for a study group…")
+    ? t.rooms?.queue?.findingGroup || "Looking for a study group…"
     : t.rooms.queue.findingMatch
 
   return (

@@ -9,9 +9,10 @@ import {
   formatTimeRange,
   calculateEndDate,
 } from "@/shared/utils/dateFormatter"
-import InDevelopmentModal from "@/shared/components/common/InDevelopmentModal"
+import InDevelopmentModal from "@/shared/components/ui/InDevelopmentModal"
 import Modal from "@/shared/components/ui/Modal"
 import RoomFullModal from "./RoomFullModal"
+import Animated3DCard from "@/shared/components/ui/animations/Animated3DCard"
 
 import { getTranslatedRoomName } from "../utils/roomNameUtils"
 
@@ -77,10 +78,10 @@ const RoomCard = ({ room }) => {
 
   return (
     <>
-      <div
+      <Animated3DCard
         onClick={handleRoomClick}
         style={{ fontFamily: "'Inter', sans-serif" }}
-        className="group relative flex w-full flex-col overflow-hidden rounded-xl bg-white shadow-sm transition-all duration-300 hover:shadow-xl cursor-pointer border border-[#C6C6C6]"
+        className="relative flex w-full flex-col overflow-hidden rounded-xl bg-white border border-[#C6C6C6]"
       >
         {/* Cover Image Section */}
         <div className="relative h-48 w-full overflow-hidden">
@@ -148,7 +149,7 @@ const RoomCard = ({ room }) => {
             </div>
           </div>
         </div>
-      </div>
+      </Animated3DCard>
 
       <InDevelopmentModal
         open={showDevModal}

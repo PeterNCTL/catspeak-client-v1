@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react"
 import dayjs from "dayjs"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { AnimatePresence } from "framer-motion"
-import { FluentAnimation } from "@/shared/animations"
+import { FluentAnimation } from "@/shared/components/ui/animations"
 import colors from "@/shared/utils/colors"
 
 const DatePicker = ({ value, onChange, color = "#B91264", className = "" }) => {

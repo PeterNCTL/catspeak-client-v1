@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react"
 import { ChevronDown } from "lucide-react"
 import { AnimatePresence } from "framer-motion"
-import { FluentAnimation } from "@/shared/animations"
+import { FluentAnimation } from "@/shared/components/ui/animations"
 import { useLanguage } from "@/shared/context/LanguageContext"
 import colors from "@/shared/utils/colors"
 

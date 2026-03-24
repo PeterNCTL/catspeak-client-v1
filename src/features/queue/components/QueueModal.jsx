@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom"
 import { useLanguage } from "@/shared/context/LanguageContext"
 import TopicSelect from "@/features/rooms/components/ui/TopicSelect"
 import LevelSelector from "@/features/rooms/components/ui/LevelSelector"
-import PillButton from "@/shared/components/ui/PillButton"
+import PillButton from "@/shared/components/ui/buttons/PillButton"
 import Modal from "@/shared/components/ui/Modal"
 import { TOPICS, LEVELS } from "@/features/rooms/config/constants"
 

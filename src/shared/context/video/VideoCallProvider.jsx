@@ -7,7 +7,7 @@ import {
   useGetVideoSdkTokenMutation,
 } from "@/store/api/videoSessionsApi"
 import { useGetRoomByIdQuery } from "@/features/rooms"
-import PillButton from "@/shared/components/ui/PillButton"
+import PillButton from "@/shared/components/ui/buttons/PillButton"
 import { meetingConfig } from "@/shared/utils/videoSdkConfig"
 import { useLanguage } from "@/shared/context/LanguageContext"
 import { getCommunityPath } from "@/shared/utils/navigation"
@@ -159,10 +159,7 @@ export const VideoCallProvider = ({ children }) => {
   ) {
     return (
       <VideoCallLoading
-        message={
-          t.rooms.videoCall.provider.connecting ??
-          "Connecting..."
-        }
+        message={t.rooms.videoCall.provider.connecting ?? "Connecting..."}
       />
     )
   }

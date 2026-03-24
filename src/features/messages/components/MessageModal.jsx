@@ -1,7 +1,7 @@
 import React, { useEffect } from "react"
 import { createPortal } from "react-dom"
 import { AnimatePresence, motion } from "framer-motion"
-import FluentAnimation from "@/shared/animations/FluentAnimation"
+import FluentAnimation from "@/shared/components/ui/animations/FluentAnimation"
 
 const useIsMobile = (breakpoint = 425) => {
   const [isMobile, setIsMobile] = React.useState(
@@ -46,7 +46,10 @@ const MessageModal = ({ isOpen, children }) => {
     return createPortal(
       <AnimatePresence>
         {isOpen && (
-          <div data-message-widget-portal className="fixed inset-0 z-[1200] flex items-center justify-center">
+          <div
+            data-message-widget-portal
+            className="fixed inset-0 z-[1200] flex items-center justify-center"
+          >
             {/* Backdrop */}
             <motion.div
               initial={{ opacity: 0 }}

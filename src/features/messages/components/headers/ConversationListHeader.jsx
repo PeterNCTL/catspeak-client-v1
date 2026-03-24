@@ -1,7 +1,7 @@
 import React from "react"
 import { FiSearch, FiArrowLeft } from "react-icons/fi"
 import { useLanguage } from "@/shared/context/LanguageContext"
-import TextInput from "@/shared/components/ui/TextInput"
+import TextInput from "@/shared/components/ui/inputs/TextInput"
 
 const ConversationListHeader = ({ onClose, isLoading }) => {
   const { t } = useLanguage()
@@ -33,10 +33,7 @@ const ConversationListHeader = ({ onClose, isLoading }) => {
         </button>
       </div>
       <div className="px-4 pb-3">
-        <TextInput
-          icon={FiSearch}
-          placeholder={t.messages.search}
-        />
+        <TextInput icon={FiSearch} placeholder={t.messages.search} />
       </div>
     </div>
   )

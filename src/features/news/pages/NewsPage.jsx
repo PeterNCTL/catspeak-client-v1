@@ -2,9 +2,9 @@ import React, { useState } from "react"
 import { useLanguage } from "@/shared/context/LanguageContext"
 import { useGetPostsQuery } from "@/store/api/postsApi"
 import NewsCard from "../components/NewsCard"
-import LoadingSpinner from "@/shared/components/ui/LoadingSpinner"
-import ErrorMessage from "@/shared/components/ui/ErrorMessage"
-import EmptyState from "@/shared/components/ui/EmptyState"
+import LoadingSpinner from "@/shared/components/ui/indicators/LoadingSpinner"
+import ErrorMessage from "@/shared/components/ui/indicators/ErrorMessage"
+import EmptyState from "@/shared/components/ui/indicators/EmptyState"
 
 const NewsPage = () => {
   const { t } = useLanguage()

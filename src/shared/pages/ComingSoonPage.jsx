@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom"
 import { FiClock } from "react-icons/fi"
 import { useLanguage } from "@/shared/context/LanguageContext"
 import { AnimatePresence } from "framer-motion"
-import { FluentAnimation } from "@/shared/animations"
+import { FluentAnimation } from "@/shared/components/ui/animations"
 
 const ComingSoonPage = () => {
   const navigate = useNavigate()

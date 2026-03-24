@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react"
 import { ChevronDown } from "lucide-react"
 import { AnimatePresence } from "framer-motion"
-import { FluentAnimation } from "@/shared/animations"
+import { FluentAnimation } from "@/shared/components/ui/animations"
 
 const FilterDropdown = ({ label, options = [], onSelect }) => {
   const [isOpen, setIsOpen] = useState(false)

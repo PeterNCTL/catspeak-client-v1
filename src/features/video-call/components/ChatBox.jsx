@@ -3,7 +3,7 @@ import { Send } from "lucide-react"
 import { useLanguage } from "@/shared/context/LanguageContext"
 import { colors } from "@/shared/utils/colors"
 import { formatTime } from "@/shared/utils/dateFormatter"
-import TextInput from "@/shared/components/ui/TextInput"
+import TextInput from "@/shared/components/ui/inputs/TextInput"
 
 const ChatBox = ({
   messages,

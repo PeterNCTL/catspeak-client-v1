@@ -6,8 +6,8 @@ import CategoryRoomSection from "../sections/CategoryRoomSection"
 import EmptyRoomState from "../EmptyRoomState"
 import { useLanguage } from "@/shared/context/LanguageContext"
 import { AnimatePresence } from "framer-motion"
-import { FadeAnimation } from "@/shared/animations"
-import Breadcrumb from "@/shared/components/ui/Breadcrumb"
+import { FadeAnimation } from "@/shared/components/ui/animations"
+import Breadcrumb from "@/shared/components/ui/navigation/Breadcrumb"
 import { categoryFriendlyNames, getSections } from "../../config/communicateTabConfig"
 
 const CommunicateTab = ({
@@ -46,7 +46,7 @@ const CommunicateTab = ({
   const sections = getSections(t)
 
   return (
-    <div className="w-full relative overflow-hidden">
+    <div className="w-full relative">
       <AnimatePresence mode="wait">
         <FadeAnimation
           key={isFilteredView ? "filtered" : "overview"}

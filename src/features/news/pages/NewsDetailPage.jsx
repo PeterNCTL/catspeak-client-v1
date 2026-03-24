@@ -1,23 +1,17 @@
 import React, { useState } from "react"
-import { useParams, useNavigate, Link } from "react-router-dom"
-import {
-  ArrowLeft,
-  ChevronRight,
-  Eye,
-  MessageCircle,
-  ThumbsUp,
-  Heart,
-  Smile,
-} from "lucide-react"
+import { useParams, useNavigate } from "react-router-dom"
+import { ThumbsUp, Heart, Smile } from "lucide-react"
 import {
   useGetPostByIdQuery,
   useReactToPostMutation,
 } from "@/store/api/postsApi"
 import { useLanguage } from "@/shared/context/LanguageContext"
 import PostContent from "../components/PostContent"
-import placeholderImg from "@/shared/assets/images/news/placeholder.jpg"
-import LoadingSpinner from "@/shared/components/ui/LoadingSpinner"
+import LoadingSpinner from "@/shared/components/ui/indicators/LoadingSpinner"
 import Carousel from "@/shared/components/ui/Carousel"
+import BackButton from "@/shared/components/ui/buttons/BackButton"
+import Avatar from "@/shared/components/ui/Avatar"
+import { formatDaysAgo, formatExactDate } from "@/features/news/utils/newsUtils"
 
 const IMAGE_BASE_URL = "https://api.catspeak.com.vn"
 
@@ -47,109 +41,103 @@ const NewsDetailPage = () => {
     return (
       <div className="flex min-h-[50vh] flex-col items-center justify-center">
         <h5 className="mb-4 text-2xl font-bold">{t.news?.error?.notFound}</h5>
-        <button
-          className="flex items-center gap-2 rounded-md border px-4 py-2 text-sm"
-          onClick={() => navigate(`/${lang}/cat-speak/news`)}
-        >
-          <ArrowLeft className="h-4 w-4" />
+        <BackButton onClick={() => navigate(`/${lang}/cat-speak/news`)}>
           {t.news?.error?.backToNews}
-        </button>
+        </BackButton>
       </div>
     )
   }
 
-  return (
-    <div className="mx-auto max-w-4xl space-y-5">
-      {/* Header */}
-      <div className="flex flex-col gap-3">
-        <Link
-          to={`/${lang}/cat-speak/news`}
-          className="flex items-center gap-2 h-12 px-3  rounded-xl w-fit text-gray-500 hover:text-gray-900 hover:bg-[#E5E5E5] transition-colors font-medium"
-        >
-          <ArrowLeft className="h-6 w-6" />
-          {t.news?.newsDetail?.back}
-        </Link>
+  const avatarSrc = newsItem.avatarUrl
+    ? `${IMAGE_BASE_URL}${newsItem.avatarUrl}`
+    : undefined
 
-        <div className="space-y-3">
-          <h1 className="text-4xl sm:text-5xl font-bold m-0">
-            {newsItem.title}
-          </h1>
-          <div className="flex items-center gap-3">
-            {newsItem.avatarUrl ? (
-              <img
-                src={`${IMAGE_BASE_URL}${newsItem.avatarUrl}`}
-                alt={newsItem.authorName}
-                className="w-10 h-10 rounded-full object-cover"
-              />
-            ) : (
-              <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 font-bold">
-                {newsItem.authorName?.charAt(0)?.toUpperCase() || "?"}
-              </div>
-            )}
-            <div className="flex flex-col">
-              <span className="font-semibold text-gray-900">
-                {newsItem.authorName}
-              </span>
-              <span className="text-xs uppercase text-[#7A7574] font-semibold">
-                {new Date(newsItem.createDate).toLocaleDateString()}
-              </span>
-            </div>
+  return (
+    <div className="mx-auto max-w-4xl">
+      {/* Back Button */}
+      <BackButton to={`/${lang}/cat-speak/news`}>
+        {t.news?.newsDetail?.back}
+      </BackButton>
+
+      {/* Author */}
+      <div className="flex items-center gap-3 mt-3 mb-3">
+        <Avatar
+          size={40}
+          src={avatarSrc}
+          name={newsItem.authorName}
+          alt={newsItem.authorName}
+        />
+        <div className="flex flex-col">
+          <span className="text-base font-semibold">{newsItem.authorName}</span>
+          <div className="flex flex-wrap items-center gap-1 text-sm text-[#7A7574]">
+            {/* <span>{formatExactDate(newsItem.createDate)}</span>
+            <span>·</span> */}
+            <span>{formatDaysAgo(newsItem.createDate)}</span>
+            {/* {newsItem.lastEdited && (
+              <>
+                <span>·</span>
+                <span>Edited {formatExactDate(newsItem.lastEdited)}</span>
+              </>
+            )} */}
           </div>
         </div>
       </div>
 
-      {/* Article */}
+      {/* Title */}
+      <h1 className="text-lg font-bold m-0 leading-snug mb-4">
+        {newsItem.title}
+      </h1>
+
+      {/* Hero Image / Carousel */}
+      {newsItem.media && newsItem.media.length > 0 && (
+        <Carousel
+          images={newsItem.media.map((item) => ({
+            url: `${IMAGE_BASE_URL}${item.mediaUrl}`,
+            alt: newsItem.title,
+          }))}
+          className="rounded-xl mb-1"
+        />
+      )}
+
       <article className="overflow-hidden bg-white">
-        {/* Hero / Carousel */}
-        {newsItem.media && newsItem.media.length > 0 && (
-          <Carousel
-            images={newsItem.media.map((item) => ({
-              url: `${IMAGE_BASE_URL}${item.mediaUrl}`,
-              alt: newsItem.title,
-            }))}
-            className="rounded-3xl"
-          />
-        )}
+        {/* Interaction Stats */}
+        <div className="text-sm text-[#7A7574] mb-2">
+          {newsItem.totalReactions} {t.news?.newsDetail?.reactions}
+        </div>
 
-        {/* Stats & Actions */}
-        <div className="flex flex-col items-start gap-2 py-4 border-b border-[#C6C6C6]">
-          <div className="text-base">
-            {newsItem.totalReactions} {t.news?.newsDetail?.reactions}
-          </div>
-
-          <div className="flex flex-wrap items-center gap-2">
-            <button
-              onClick={() => handleReact("Like")}
-              className={`flex items-center gap-2 h-12 px-3 rounded-xl text-base hover:bg-[#E5E5E5] transition-colors ${newsItem.currentUserReaction === "Like" ? "text-blue-600 font-medium" : ""}`}
-            >
-              <ThumbsUp
-                className={`${newsItem.currentUserReaction === "Like" ? "fill-blue-600" : ""}`}
-              />
-              {t.news?.newsDetail?.like}
-            </button>
-            <button
-              onClick={() => handleReact("Love")}
-              className={`flex items-center gap-2 h-12 px-3 rounded-xl text-base hover:bg-[#E5E5E5] transition-colors ${newsItem.currentUserReaction === "Love" ? "text-red-500 font-medium" : ""}`}
-            >
-              <Heart
-                className={`${newsItem.currentUserReaction === "Love" ? "fill-red-500" : ""}`}
-              />
-              {t.news?.newsDetail?.love}
-            </button>
-            <button
-              onClick={() => handleReact("Haha")}
-              className={`flex items-center gap-2 h-12 px-3 rounded-xl text-base hover:bg-[#E5E5E5] transition-colors ${newsItem.currentUserReaction === "Haha" ? "text-yellow-500 font-medium" : ""}`}
-            >
-              <Smile
-                className={`${newsItem.currentUserReaction === "Haha" ? "text-yellow-500" : ""}`}
-              />
-              {t.news?.newsDetail?.haha}
-            </button>
-          </div>
+        {/* Interaction Buttons */}
+        <div className="flex flex-wrap items-center gap-2 pb-4 border-b border-[#C6C6C6]">
+          <button
+            onClick={() => handleReact("Like")}
+            className={`flex items-center gap-2 h-10 px-3 rounded-lg bg-[#F2F2F2] text-sm hover:bg-[#E5E5E5] transition-colors ${newsItem.currentUserReaction === "Like" ? "text-blue-600 font-medium" : ""}`}
+          >
+            <ThumbsUp
+              className={`${newsItem.currentUserReaction === "Like" ? "fill-blue-600" : ""}`}
+            />
+            {t.news?.newsDetail?.like}
+          </button>
+          <button
+            onClick={() => handleReact("Love")}
+            className={`flex items-center gap-2 h-10 px-3 rounded-lg bg-[#F2F2F2] text-sm hover:bg-[#E5E5E5] transition-colors ${newsItem.currentUserReaction === "Love" ? "text-red-500 font-medium" : ""}`}
+          >
+            <Heart
+              className={`${newsItem.currentUserReaction === "Love" ? "fill-red-500" : ""}`}
+            />
+            {t.news?.newsDetail?.love}
+          </button>
+          <button
+            onClick={() => handleReact("Haha")}
+            className={`flex items-center gap-2 h-10 px-3 rounded-lg bg-[#F2F2F2] text-sm hover:bg-[#E5E5E5] transition-colors ${newsItem.currentUserReaction === "Haha" ? "text-yellow-500 font-medium" : ""}`}
+          >
+            <Smile
+              className={`${newsItem.currentUserReaction === "Haha" ? "text-yellow-500" : ""}`}
+            />
+            {t.news?.newsDetail?.haha}
+          </button>
         </div>
 
         {/* Body */}
-        <div className="space-y-6 text-gray-700 leading-relaxed p-4 text-base">
+        <div className="space-y-6 text-gray-700 leading-relaxed my-4 text-base">
           <PostContent html={newsItem.content} />
         </div>
       </article>

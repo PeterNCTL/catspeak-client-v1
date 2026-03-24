@@ -2,7 +2,7 @@ import React, { useState } from "react"
 import dayjs from "dayjs"
 import { useLanguage } from "@/shared/context/LanguageContext"
 
-import PillButton from "@/shared/components/ui/PillButton"
+import PillButton from "@/shared/components/ui/buttons/PillButton"
 import Modal from "@/shared/components/ui/Modal"
 
 const MyStoryModal = ({ open, story, onClose, onDelete }) => {

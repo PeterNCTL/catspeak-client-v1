@@ -1,8 +1,8 @@
 import React from "react"
 import ConversationItem from "./ConversationItem"
-import LoadingSpinner from "@/shared/components/ui/LoadingSpinner"
-import ErrorMessage from "@/shared/components/ui/ErrorMessage"
-import EmptyState from "@/shared/components/ui/EmptyState"
+import LoadingSpinner from "@/shared/components/ui/indicators/LoadingSpinner"
+import ErrorMessage from "@/shared/components/ui/indicators/ErrorMessage"
+import EmptyState from "@/shared/components/ui/indicators/EmptyState"
 import { useLanguage } from "@/shared/context/LanguageContext"
 
 const ConversationList = ({

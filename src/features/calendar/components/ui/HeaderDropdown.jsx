@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react"
 import { ChevronDown } from "lucide-react"
 import { AnimatePresence } from "framer-motion"
-import { FluentAnimation } from "@/shared/animations"
+import { FluentAnimation } from "@/shared/components/ui/animations"
 
 const HeaderDropdown = ({ triggerIcon, label, children }) => {
   const [isOpen, setIsOpen] = useState(false)

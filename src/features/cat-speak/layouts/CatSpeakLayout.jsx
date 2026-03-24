@@ -1,7 +1,7 @@
 import React from "react"
 import { Outlet, useLocation } from "react-router-dom"
 import { CatSpeakSidebar } from "@/features/cat-speak"
-import { FluentAnimation } from "@/shared/animations"
+import { FluentAnimation } from "@/shared/components/ui/animations"
 import { AnimatePresence } from "framer-motion"
 
 const CatSpeakLayout = () => {

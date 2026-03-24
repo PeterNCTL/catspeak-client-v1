@@ -18,6 +18,7 @@ export default {
     hskExamPrep: "HSK备考室",
     doYouHavePets: "你有养宠物吗？",
     schoolLife: "学校生活",
+    whatILike: "我喜欢什么",
   },
   heroCarousel: {
     comingSoonTitle: "即将推出",

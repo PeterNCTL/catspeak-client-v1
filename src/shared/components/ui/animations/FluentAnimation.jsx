@@ -14,6 +14,7 @@ const FluentAnimation = ({
   direction = "up",
   distance = 20,
   exit = false,
+  duration = 0.28,
   className,
 }) => {
   const getInitialPosition = () => {
@@ -45,7 +46,7 @@ const FluentAnimation = ({
       animate={{ y: 0, x: 0, opacity: 1 }}
       exit={exit ? { y: initialPos.y, x: initialPos.x, opacity: 0 } : undefined}
       transition={{
-        duration: 0.28,
+        duration: duration,
         ease: [0.16, 1, 0.3, 1], // Strong ease-out (fast → slow)
       }}
       className={className || "w-full h-full"}

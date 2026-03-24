@@ -5,7 +5,7 @@ import DesktopNav from "@/features/navigation/components/DesktopNav/DesktopNav"
 import MobileDrawer from "@/features/navigation/components/MobileNav/MobileDrawer"
 import HeaderUserControls from "./Header/HeaderUserControls"
 import HeaderGuestControls from "./Header/HeaderGuestControls"
-import LanguageSwitcher from "@/shared/components/common/LanguageSwitcher"
+import LanguageSwitcher from "@/shared/components/ui/LanguageSwitcher"
 import { useAuth } from "@/features/auth"
 
 const HeaderBar = ({ onGetStarted }) => {

@@ -8,7 +8,7 @@ import {
 } from "@/features/rooms"
 import { useAuth } from "@/features/auth"
 import { useLanguage } from "@/shared/context/LanguageContext"
-import LoadingSpinner from "@/shared/components/ui/LoadingSpinner"
+import LoadingSpinner from "@/shared/components/ui/indicators/LoadingSpinner"
 
 const RoomDetailPage = () => {
   const { id } = useParams()

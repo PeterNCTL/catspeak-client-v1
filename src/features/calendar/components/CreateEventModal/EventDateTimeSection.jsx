@@ -1,5 +1,5 @@
 import dayjs from "dayjs"
-import DatePicker from "@/shared/components/ui/DatePicker"
+import DatePicker from "@/shared/components/ui/inputs/DatePicker"
 import TimeDropdown from "../ui/TimeDropdown"
 import TimezoneDropdown from "../ui/TimezoneDropdown"
 import RecurrenceDropdown from "../ui/RecurrenceDropdown"

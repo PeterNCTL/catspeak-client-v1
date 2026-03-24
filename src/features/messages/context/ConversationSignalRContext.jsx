@@ -9,6 +9,7 @@ import React, {
 import * as signalR from "@microsoft/signalr"
 import { useAuth } from "@/features/auth"
 import { store } from "@store"
+import { getRefreshPromise } from "@store/api/baseApi"
 
 const MAX_START_RETRIES = 3
 const RETRY_DELAY_MS = 3000
@@ -143,6 +144,15 @@ export const ConversationSignalRProvider = ({ children }) => {
           console.debug(
             `[ConversationSignalR] Attempt ${attempt}/${MAX_START_RETRIES} failed, retrying…`,
           )
+
+          // If a token refresh is in progress, wait for it to finish so the
+          // next attempt uses a fresh access token instead of the expired one.
+          const pending = getRefreshPromise()
+          if (pending) {
+            console.debug("[ConversationSignalR] Waiting for token refresh before retry…")
+            await pending
+          }
+
           await new Promise((resolve, reject) => {
             const timer = setTimeout(resolve, RETRY_DELAY_MS)
             // If aborted during the wait, clean up and bail out

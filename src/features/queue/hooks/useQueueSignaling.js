@@ -38,7 +38,7 @@ export const useQueueSignaling = (handlers = {}) => {
     const safeHandler =
       (name) =>
       (...args) => {
-        // console.log(`[QueueSignalR] Event Received: ${name}`, args)
+        console.log(`[QueueSignalR] Event Received: ${name}`, args)
         const handler = handlersRef.current[name]
         if (handler) {
           handler(...args)
@@ -111,20 +111,38 @@ export const useQueueSignaling = (handlers = {}) => {
   // Wrappers for specific hub methods - Stabilize with useCallback
   const invoke = useCallback(async (methodName, ...args) => {
     if (connectionRef.current?.state === HubConnectionState.Connected) {
-      return await connectionRef.current.invoke(methodName, ...args)
+      console.log(`[QueueSignalR] Invoking ${methodName} with args:`, args)
+      try {
+        const result = await connectionRef.current.invoke(methodName, ...args)
+        console.log(`[QueueSignalR] Invoke ${methodName} result:`, result)
+        return result
+      } catch (err) {
+        console.error(`[QueueSignalR] Invoke ${methodName} error:`, err)
+        throw err
+      }
     }
     console.warn("[QueueSignalR] Cannot invoke, not connected.")
     return Promise.reject("Not Connected")
   }, [])
 
   const joinQueue = useCallback(
-    (preferences) => {
+    async (preferences) => {
       console.log("[QueueSignalR] JoinQueue payload:", preferences)
-      return invoke("JoinQueue", preferences)
+      try {
+        const result = await invoke("JoinQueue", preferences)
+        console.log("[QueueSignalR] JoinQueue returned:", result)
+        return result
+      } catch (err) {
+        console.error("[QueueSignalR] JoinQueue failed:", err)
+        throw err
+      }
     },
     [invoke],
   )
-  const leaveQueue = useCallback(() => invoke("LeaveQueue"), [invoke])
+  const leaveQueue = useCallback(() => {
+    console.log("[QueueSignalR] LeaveQueue called")
+    return invoke("LeaveQueue")
+  }, [invoke])
 
   return {
     isConnected,

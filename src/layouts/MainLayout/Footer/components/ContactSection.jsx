@@ -3,7 +3,7 @@ import Send from "@mui/icons-material/Send"
 import { useLanguage } from "@/shared/context/LanguageContext.jsx"
 import { Typography, TextField } from "@mui/material"
 import { colors } from "@/shared/utils/colors"
-import InDevelopmentModal from "@/shared/components/common/InDevelopmentModal"
+import InDevelopmentModal from "@/shared/components/ui/InDevelopmentModal"
 
 const ContactSection = () => {
   const { t } = useLanguage()

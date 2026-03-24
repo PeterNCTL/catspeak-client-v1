@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from "react"
 import { useNavigate, useParams } from "react-router-dom"
-import InDevelopmentModal from "@/shared/components/common/InDevelopmentModal"
+import InDevelopmentModal from "@/shared/components/ui/InDevelopmentModal"
 import Avatar from "@/shared/components/ui/Avatar"
 import { COLORS } from "@/shared/constants/constants"
 import { useLanguage } from "@/shared/context/LanguageContext"

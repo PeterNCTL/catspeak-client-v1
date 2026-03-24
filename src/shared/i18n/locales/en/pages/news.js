@@ -7,7 +7,7 @@ export default {
   },
   newsDetail: {
     back: "Back",
-    reactions: "Reactions",
+    reactions: "reactions",
     like: "Like",
     love: "Love",
     haha: "Haha",

@@ -14,7 +14,7 @@ import {
   MessageSquare,
 } from "lucide-react"
 import { useLanguage } from "@/shared/context/LanguageContext"
-import InDevelopmentModal from "@/shared/components/common/InDevelopmentModal"
+import InDevelopmentModal from "@/shared/components/ui/InDevelopmentModal"
 
 const CatSpeakSidebar = () => {
   const { t } = useLanguage()

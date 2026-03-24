@@ -2,7 +2,7 @@ import { useState } from "react"
 import { ArrowLeft, Hash } from "lucide-react"
 import { useLanguage } from "@/shared/context/LanguageContext.jsx"
 import AuthButton from "../../ui/AuthButton"
-import TextInput from "@/shared/components/ui/TextInput"
+import TextInput from "@/shared/components/ui/inputs/TextInput"
 import { useVerifyResetOtpMutation } from "@/store/api/authApi"
 
 const VerifyOtpStep = ({ email, onSuccess, onBack }) => {
@@ -37,7 +37,11 @@ const VerifyOtpStep = ({ email, onSuccess, onBack }) => {
       onSuccess(otpValue)
     } catch (err) {
       console.error("OTP verification failed:", err)
-      setError(err?.data?.message || authText.verifyOtpFailed || "Invalid or expired OTP.")
+      setError(
+        err?.data?.message ||
+          authText.verifyOtpFailed ||
+          "Invalid or expired OTP.",
+      )
     }
   }
 
@@ -58,8 +62,7 @@ const VerifyOtpStep = ({ email, onSuccess, onBack }) => {
         {authText.forgotStep2Title || "Verify OTP"}
       </h2>
       <p className="mb-6 text-center text-sm text-[#7A7574]">
-        {authText.forgotStep2Subtitle || "Enter the 6-digit code sent to"}
-        {" "}
+        {authText.forgotStep2Subtitle || "Enter the 6-digit code sent to"}{" "}
         <strong className="text-black">{email}</strong>
       </p>
 
@@ -88,7 +91,9 @@ const VerifyOtpStep = ({ email, onSuccess, onBack }) => {
           disabled={isVerifyingOtp}
           className="w-full rounded-lg"
         >
-          {isVerifyingOtp ? (authText.verifying || "VERIFYING...") : (authText.verifyOtpButton?.toUpperCase() || "VERIFY CODE")}
+          {isVerifyingOtp
+            ? authText.verifying || "VERIFYING..."
+            : authText.verifyOtpButton?.toUpperCase() || "VERIFY CODE"}
         </AuthButton>
       </form>
     </div>

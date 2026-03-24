@@ -20,6 +20,7 @@ export default {
     hskExamPrep: "Phòng luyện thi HSK",
     doYouHavePets: "Bạn có nuôi thú cưng không?",
     schoolLife: "Cuộc sống ở trường",
+    whatILike: "Điều tôi thích!",
   },
   heroCarousel: {
     comingSoonTitle: "Sắp ra mắt",

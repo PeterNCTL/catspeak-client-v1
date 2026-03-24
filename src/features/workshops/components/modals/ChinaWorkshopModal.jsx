@@ -1,6 +1,6 @@
 import LogoDefault from "@/shared/assets/images/LogoDefault.png"
 import Modal from "@/shared/components/ui/Modal"
-import PillButton from "@/shared/components/ui/PillButton"
+import PillButton from "@/shared/components/ui/buttons/PillButton"
 
 const ChinaWorkshopModal = ({ open, onClose, t }) => {
   const workshop = t.workshops.chinaWorkshop

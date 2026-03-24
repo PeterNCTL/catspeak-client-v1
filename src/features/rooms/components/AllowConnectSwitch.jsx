@@ -1,6 +1,6 @@
 import React, { useState } from "react"
-import Switch from "@/shared/components/ui/Switch"
-import InDevelopmentModal from "@/shared/components/common/InDevelopmentModal"
+import Switch from "@/shared/components/ui/inputs/Switch"
+import InDevelopmentModal from "@/shared/components/ui/InDevelopmentModal"
 import { useLanguage } from "@/shared/context/LanguageContext"
 
 const AllowConnectSwitch = () => {

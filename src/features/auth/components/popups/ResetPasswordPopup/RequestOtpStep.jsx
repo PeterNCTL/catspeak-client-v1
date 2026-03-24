@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { useLanguage } from "@/shared/context/LanguageContext.jsx"
 import AuthButton from "../../ui/AuthButton"
-import TextInput from "@/shared/components/ui/TextInput"
+import TextInput from "@/shared/components/ui/inputs/TextInput"
 import { useForgotPasswordMutation } from "@/store/api/authApi"
 
 const RequestOtpStep = ({ onSuccess }) => {
@@ -43,12 +43,15 @@ const RequestOtpStep = ({ onSuccess }) => {
         {authText.forgotStep1Title || "Forgot Password?"}
       </h2>
       <p className="mb-6 text-center text-sm text-[#7A7574]">
-        {authText.forgotStep1Subtitle || "Enter your email address to receive a verification code."}
+        {authText.forgotStep1Subtitle ||
+          "Enter your email address to receive a verification code."}
       </p>
 
       <form onSubmit={handleSubmit}>
         <div className="mb-6">
-          <label className="mb-2 block text-sm">{authText.emailLabel || "Email"}</label>
+          <label className="mb-2 block text-sm">
+            {authText.emailLabel || "Email"}
+          </label>
           <TextInput
             type="email"
             variant="square"
@@ -72,7 +75,9 @@ const RequestOtpStep = ({ onSuccess }) => {
           disabled={isSendingOtp}
           className="w-full rounded-lg"
         >
-          {isSendingOtp ? (authText.sending || "SENDING...") : (authText.sendOtpButton?.toUpperCase() || "SEND OTP")}
+          {isSendingOtp
+            ? authText.sending || "SENDING..."
+            : authText.sendOtpButton?.toUpperCase() || "SEND OTP"}
         </AuthButton>
       </form>
     </div>

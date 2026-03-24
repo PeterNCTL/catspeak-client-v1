@@ -1,8 +1,8 @@
 import React, { useEffect } from "react"
 import { createPortal } from "react-dom"
 import { AnimatePresence } from "framer-motion"
-import { FluentAnimation } from "@/shared/animations"
-import LanguageSwitcher from "@/shared/components/common/LanguageSwitcher"
+import { FluentAnimation } from "@/shared/components/ui/animations"
+import LanguageSwitcher from "@/shared/components/ui/LanguageSwitcher"
 import MobileNavLinks from "./MobileNavLinks"
 import { X } from "lucide-react"
 

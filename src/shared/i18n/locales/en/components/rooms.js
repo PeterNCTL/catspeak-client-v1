@@ -19,6 +19,7 @@ export default {
     hskExamPrep: "HSK Exam Prep Room",
     doYouHavePets: "Do you have pets?",
     schoolLife: "School life",
+    whatILike: "What I like!",
   },
   heroCarousel: {
     comingSoonTitle: "Coming Soon",

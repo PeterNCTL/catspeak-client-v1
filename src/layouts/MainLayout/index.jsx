@@ -11,7 +11,7 @@ import Footer from "./Footer"
 import Auth from "@/features/auth/components"
 import AuthModalContext from "@/shared/context/AuthModalContext"
 import { AnimatePresence } from "framer-motion"
-import { FluentAnimation } from "@/shared/animations"
+import { FluentAnimation } from "@/shared/components/ui/animations"
 
 const { Content } = Layout
 

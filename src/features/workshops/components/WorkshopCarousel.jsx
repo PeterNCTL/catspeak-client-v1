@@ -3,12 +3,12 @@ import { useParams } from "react-router-dom"
 import {
   BubbleChevronLeft,
   BubbleChevronRight,
-} from "@/shared/components/ui/button/index"
+} from "@/shared/components/ui/buttons/index"
 import { useLanguage } from "@/shared/context/LanguageContext"
-import InDevelopmentModal from "@/shared/components/common/InDevelopmentModal"
+import InDevelopmentModal from "@/shared/components/ui/InDevelopmentModal"
 import ChinaWorkshopModal from "./modals/ChinaWorkshopModal"
 import { getWorkshopSlides } from "../data/workshopSlides"
-import PillButton from "@/shared/components/ui/PillButton"
+import PillButton from "@/shared/components/ui/buttons/PillButton"
 
 const WorkshopCarousel = ({ slides: propSlides = [] }) => {
   const { lang } = useParams()

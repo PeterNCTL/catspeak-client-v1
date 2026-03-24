@@ -2,7 +2,7 @@ import { useState } from "react"
 import { Lock, Eye, EyeOff } from "lucide-react"
 import { useLanguage } from "@/shared/context/LanguageContext.jsx"
 import AuthButton from "../../ui/AuthButton"
-import TextInput from "@/shared/components/ui/TextInput"
+import TextInput from "@/shared/components/ui/inputs/TextInput"
 import { useResetPasswordMutation } from "@/store/api/authApi"
 
 const ResetPasswordFormStep = ({ email, token, onSuccess }) => {
@@ -20,14 +20,29 @@ const ResetPasswordFormStep = ({ email, token, onSuccess }) => {
   const [resetPassword, { isLoading: isResetting }] = useResetPasswordMutation()
 
   const validateNewPassword = (value) => {
-    if (!value) return authText.validationNewPasswordRequired || "Please input your new password!"
-    if (value.length < 6) return authText.validationPasswordMin || "Password must be at least 6 characters!"
+    if (!value)
+      return (
+        authText.validationNewPasswordRequired ||
+        "Please input your new password!"
+      )
+    if (value.length < 6)
+      return (
+        authText.validationPasswordMin ||
+        "Password must be at least 6 characters!"
+      )
     return ""
   }
 
   const validateConfirmPassword = (newPass, confirmPass) => {
-    if (!confirmPass) return authText.validationConfirmPasswordRequired || "Please confirm your password!"
-    if (newPass !== confirmPass) return authText.validationPasswordMatch || "The two passwords do not match!"
+    if (!confirmPass)
+      return (
+        authText.validationConfirmPasswordRequired ||
+        "Please confirm your password!"
+      )
+    if (newPass !== confirmPass)
+      return (
+        authText.validationPasswordMatch || "The two passwords do not match!"
+      )
     return ""
   }
 
@@ -37,7 +52,7 @@ const ResetPasswordFormStep = ({ email, token, onSuccess }) => {
 
     const newPassErr = validateNewPassword(newPassword)
     const confirmPassErr = validateConfirmPassword(newPassword, confirmPassword)
-    
+
     setNewPasswordError(newPassErr)
     setConfirmPasswordError(confirmPassErr)
 
@@ -135,7 +150,9 @@ const ResetPasswordFormStep = ({ email, token, onSuccess }) => {
               </button>
             </div>
             {confirmPasswordError && (
-              <p className="mt-1 text-xs text-red-600">{confirmPasswordError}</p>
+              <p className="mt-1 text-xs text-red-600">
+                {confirmPasswordError}
+              </p>
             )}
           </div>
         </div>

@@ -1,5 +1,5 @@
 import { useState } from "react"
-import Checkbox from "@/shared/components/ui/Checkbox"
+import Checkbox from "@/shared/components/ui/inputs/Checkbox"
 import PolicyModal from "../PolicyModal"
 
 const AgreementSection = ({ authText, formData, onChange }) => {

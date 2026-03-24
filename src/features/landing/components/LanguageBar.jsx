@@ -2,7 +2,7 @@ import { VietNam, China, USA } from "@/shared/assets/icons/flags"
 import { useLanguage } from "@/shared/context/LanguageContext.jsx"
 import { useNavigate } from "react-router-dom"
 import { useState } from "react"
-import InDevelopmentModal from "@/shared/components/common/InDevelopmentModal"
+import InDevelopmentModal from "@/shared/components/ui/InDevelopmentModal"
 
 const LanguageBar = () => {
   const { t } = useLanguage()
