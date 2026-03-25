@@ -1,14 +1,32 @@
-import React, { createContext, useContext, useState, useEffect, useRef, useCallback } from "react"
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+} from "react"
 import { useParams, useNavigate, useLocation } from "react-router-dom"
-import { useMeeting, usePubSub } from "@videosdk.live/react-sdk"
-import { useVideoCall } from "@/features/video-call/hooks/useVideoCall"
-import { useScreenShare } from "@/features/video-call/hooks/useScreenShare"
+import {
+  useRoomContext,
+  useParticipants,
+  useLocalParticipant,
+  useConnectionState,
+} from "@livekit/components-react"
+import {
+  ConnectionState,
+  RoomEvent,
+  DataPacket_Kind,
+  Track,
+} from "livekit-client"
 import toast from "react-hot-toast"
+
+import { useVideoCall, useScreenShare } from "@/features/video-call"
 import { useLanguage } from "@/shared/context/LanguageContext"
 import { getCommunityPath } from "@/shared/utils/navigation"
 import { useLeaveVideoSessionMutation } from "@/store/api/videoSessionsApi"
 import { handleMediaError } from "@/shared/utils/mediaErrorUtils"
-import VideoCallLoading from "../../../features/video-call/components/VideoCallLoading"
+import VideoCallLoading from "@/features/video-call/components/VideoCallLoading"
 
 const VideoCallContext = createContext()
 
@@ -19,17 +37,34 @@ export const useVideoCallContext = () => {
   return context
 }
 
+// ── Chat helpers (replaces VideoSDK PubSub) ──
+function uid() {
+  return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
+}
+
+function decodePacket(payload) {
+  try {
+    const text = new TextDecoder().decode(payload)
+    const parsed = JSON.parse(text)
+    if (parsed && parsed.type === "CHAT_MESSAGE" && parsed.payload)
+      return parsed
+    return null
+  } catch {
+    return null
+  }
+}
+
+function encodePacket(payload) {
+  return new TextEncoder().encode(
+    JSON.stringify({ type: "CHAT_MESSAGE", payload }),
+  )
+}
+
 /**
- * Renders inside MeetingProvider. Owns all call-level state and actions,
+ * Renders inside LiveKitRoom. Owns all call-level state and actions,
  * then provides them via context.
  */
-export const VideoCallContent = ({
-  children,
-  user,
-  session,
-  sessionError,
-  sdkToken,
-}) => {
+export const VideoCallContent = ({ children, user, session, sessionError }) => {
   const { id, lang } = useParams()
   const navigate = useNavigate()
   const location = useLocation()
@@ -49,7 +84,6 @@ export const VideoCallContent = ({
     hasLeftRef.current = true
 
     // Use fetch with keepalive for reliable delivery during page unload
-    // (sendBeacon only supports POST, but the leave API requires DELETE)
     const baseUrl = import.meta.env.VITE_API_BASE_URL || "/api"
     const url = `${baseUrl}/video-sessions/${id}/participants`
     const token = localStorage.getItem("token")
@@ -79,12 +113,15 @@ export const VideoCallContent = ({
     }
   }, [leaveSessionOnUnload])
 
-  // SDK — participant list & connected state
-  const { participants, localParticipant } = useMeeting()
+  // LiveKit — room, participants, connection state
+  const room = useRoomContext()
+  const connectionState = useConnectionState()
+  const participants = useParticipants()
+  const { localParticipant } = useLocalParticipant()
 
-  // Local mic/cam state + lifecycle (join/leave) + toggle actions
+  // Local mic/cam state + toggle actions
   const { micOn, cameraOn, toggleAudio, toggleVideo, leaveMeeting, isJoined } =
-    useVideoCall(sdkToken, t)
+    useVideoCall(t)
 
   // Screen share state & actions
   const {
@@ -96,8 +133,43 @@ export const VideoCallContent = ({
     presenterDisplayName,
   } = useScreenShare()
 
-  // Chat via VideoSDK PubSub
-  const { publish, messages } = usePubSub("CHAT", {})
+  // ── Chat via LiveKit data channels (replaces VideoSDK PubSub) ──
+  const [messages, setMessages] = useState([])
+  const messagesRef = useRef(messages)
+  messagesRef.current = messages
+
+  useEffect(() => {
+    if (!room) return
+
+    const handleDataReceived = (payload, participant) => {
+      const packet = decodePacket(payload)
+      if (!packet) return
+
+      const data = packet.payload
+      // Avoid duplicates
+      if (messagesRef.current.some((m) => m.id === data.id)) return
+
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: data.id,
+          senderId: data.senderId,
+          senderName:
+            data.senderName ||
+            participant?.name ||
+            participant?.identity ||
+            "Unknown",
+          message: data.message,
+          timestamp: data.timestamp,
+        },
+      ])
+    }
+
+    room.on(RoomEvent.DataReceived, handleDataReceived)
+    return () => {
+      room.off(RoomEvent.DataReceived, handleDataReceived)
+    }
+  }, [room])
 
   const handleToggleMic = async () => {
     try {
@@ -115,9 +187,9 @@ export const VideoCallContent = ({
     }
   }
 
-  const handleToggleScreenShare = () => {
+  const handleToggleScreenShare = async () => {
     try {
-      toggleScreenShare()
+      await toggleScreenShare()
     } catch (err) {
       console.error("[VideoCallContext] Screen share error:", err)
       toast.error(
@@ -126,7 +198,25 @@ export const VideoCallContent = ({
     }
   }
 
-  const handleSendMessage = (text) => publish(text, { persist: true })
+  const handleSendMessage = (text) => {
+    if (!room?.localParticipant || !text.trim()) return
+
+    const msg = {
+      id: uid(),
+      senderId: user?.accountId,
+      senderName: user?.username || room.localParticipant.name || "Guest",
+      message: text.trim(),
+      timestamp: new Date().toISOString(),
+    }
+
+    const encoded = encodePacket(msg)
+    room.localParticipant.publishData(encoded, {
+      kind: DataPacket_Kind.RELIABLE,
+    })
+
+    // Add to local state immediately
+    setMessages((prev) => [...prev, msg])
+  }
 
   const handleLeaveSession = async () => {
     hasLeftRef.current = true // prevent unload handler from double-firing
@@ -146,41 +236,16 @@ export const VideoCallContent = ({
     toast.success("Link copied to clipboard!")
   }
 
-  // Build a stable participant id list for VideoGrid.
-  // Deduplication: if the same accountId joins on two tabs only show them once.
-  const seenAccountIds = new Set()
-  const participantIds = []
+  // Build a stable participant identity list for VideoGrid.
+  // LiveKit participants already have unique identities.
+  const participantIds = participants.map((p) => p.identity)
 
-  if (localParticipant) {
-    const aid = localParticipant.metaData?.accountId
-    if (aid) seenAccountIds.add(String(aid))
-    participantIds.push(localParticipant.id)
-  }
-
-  ;[...participants.values()].forEach((p) => {
-    if (p.id === localParticipant?.id) return
-    const aid = p.metaData?.accountId
-    const key = aid ? String(aid) : `__sdk__${p.id}`
-    if (seenAccountIds.has(key)) {
-      console.warn(
-        `[VideoCallContext] 🔄 Dedup: dropping participant ${p.id} ` +
-          `(accountId=${aid}, displayName=${p.displayName}) — already seen`,
-      )
-      return
-    }
-    seenAccountIds.add(key)
-    participantIds.push(p.id)
-  })
-
-  const isConnected = isJoined
+  const isConnected = connectionState === ConnectionState.Connected
 
   if (!isConnected) {
     return (
       <VideoCallLoading
-        message={
-          t.rooms.videoCall.provider.connecting ??
-          "Connecting..."
-        }
+        message={t.rooms.videoCall.provider.connecting ?? "Connecting..."}
       />
     )
   }

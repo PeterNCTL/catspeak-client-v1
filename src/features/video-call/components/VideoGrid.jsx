@@ -1,4 +1,6 @@
-import { useMeeting } from "@videosdk.live/react-sdk"
+import React from "react"
+import { useParticipants, useLocalParticipant } from "@livekit/components-react"
+
 import VideoTile from "./VideoTile"
 import ScreenShareTile from "./ScreenShareTile"
 
@@ -16,15 +18,16 @@ const VideoGrid = ({
   presenterDisplayName,
   isLocalScreenShare,
 }) => {
-  const { participants, localParticipant } = useMeeting()
+  const participants = useParticipants()
+  const { localParticipant } = useLocalParticipant()
 
-  // Build ordered ID list: local first, then remotes.
+  // Build ordered identity list: local first, then remotes.
   const ids =
     propIds ??
     (() => {
-      const list = localParticipant ? [localParticipant.id] : []
-      ;[...participants.values()].forEach((p) => {
-        if (p.id !== localParticipant?.id) list.push(p.id)
+      const list = localParticipant ? [localParticipant.identity] : []
+      participants.forEach((p) => {
+        if (p.identity !== localParticipant?.identity) list.push(p.identity)
       })
       return list
     })()
@@ -56,9 +59,9 @@ const VideoGrid = ({
             ${scrollbarClasses}
           `}
         >
-          {ids.map((participantId) => (
+          {ids.map((participantIdentity) => (
             <div
-              key={participantId}
+              key={participantIdentity}
               className="
                 shrink-0
                 md:w-full md:h-36
@@ -66,7 +69,7 @@ const VideoGrid = ({
                 rounded-lg overflow-hidden
               "
             >
-              <VideoTile participantId={participantId} />
+              <VideoTile participantIdentity={participantIdentity} />
             </div>
           ))}
         </div>
@@ -88,12 +91,12 @@ const VideoGrid = ({
     ${scrollbarClasses}
   `}
     >
-      {ids.map((participantId) => (
+      {ids.map((participantIdentity) => (
         <div
-          key={participantId}
+          key={participantIdentity}
           className="relative w-full max-w-full max-[425px]:min-h-[300px] max-[425px]:flex-1 max-[425px]:shrink-0"
         >
-          <VideoTile participantId={participantId} />
+          <VideoTile participantIdentity={participantIdentity} />
         </div>
       ))}
     </div>

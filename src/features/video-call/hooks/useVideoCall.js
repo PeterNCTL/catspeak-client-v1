@@ -1,69 +1,37 @@
-import { useRef, useEffect, useState } from "react"
-import { useMeeting, useParticipant } from "@videosdk.live/react-sdk"
+import { useCallback } from "react"
+import {
+  useLocalParticipant,
+  useRoomContext,
+  useConnectionState,
+} from "@livekit/components-react"
+import { ConnectionState } from "livekit-client"
 import toast from "react-hot-toast"
 
 /**
- * Handles join/leave lifecycle and exposes local mic/cam state + toggle actions.
- * Participant data (list, streams, per-participant mic/cam) should be read directly
- * from useMeeting() / useParticipant() in the components that need them.
+ * Handles local mic/cam state + toggle actions using LiveKit.
+ * Participant data (list, streams, per-participant mic/cam) should be read
+ * from LiveKit hooks in the components that need them.
  *
- * @param {string} sdkToken - VideoSDK auth token
  * @param {Object} t - Translation object (from useLanguage)
  */
-export const useVideoCall = (sdkToken, t) => {
-  const [isJoined, setIsJoined] = useState(false)
+export const useVideoCall = (t) => {
+  const room = useRoomContext()
+  const { localParticipant } = useLocalParticipant()
+  const connectionState = useConnectionState()
 
-  const { join, leave, toggleMic, toggleWebcam, localParticipant } = useMeeting(
-    {
-      onMeetingJoined: () => {
-        console.log("[useVideoCall] ✅ Has joined the meeting")
-        setIsJoined(true)
-      },
-      onMeetingLeft: () => {
-        console.log("[useVideoCall] ❌ Has left the meeting")
-        setIsJoined(false)
-      },
-      onError: (error) => {
-        console.error("[useVideoCall] VideoSDK Error:", error)
-      },
-    },
-  )
+  const isJoined = connectionState === ConnectionState.Connected
 
-  // Join once on mount; leave on unmount.
-  const hasJoinedRef = useRef(false)
-
-  useEffect(() => {
-    // console.log("[useVideoCall] sdkToken:", sdkToken)
-    if (!sdkToken) return
-    if (hasJoinedRef.current) return
-
-    const timeout = setTimeout(() => {
-      console.log("[useVideoCall] ⏳ Joining meeting...")
-      hasJoinedRef.current = true
-      join()
-    }, 500)
-
-    return () => {
-      clearTimeout(timeout)
-
-      // ✅ Only leave if we actually joined
-      if (hasJoinedRef.current) {
-        console.log("[useVideoCall] 🚪 Leaving meeting...")
-        leave()
-        hasJoinedRef.current = false
-      }
-    }
-  }, [sdkToken]) // join/leave are stable SDK references
-
-  // Reactive local mic/cam state via useParticipant (more reliable than useMeeting).
-  const { micOn, webcamOn } = useParticipant(localParticipant?.id ?? "")
+  const micOn = localParticipant?.isMicrophoneEnabled ?? false
+  const cameraOn = localParticipant?.isCameraEnabled ?? false
 
   // Toggle mic — probes getUserMedia first to surface permission errors cleanly.
-  // Also detects when another app holds exclusive mic access (track is muted).
-  const toggleAudio = async () => {
+  const toggleAudio = useCallback(async () => {
+    if (!localParticipant) return
+
     console.log(
       `[useVideoCall] 🎤 toggleAudio called — current micOn=${micOn}`,
     )
+
     if (!micOn) {
       let probe = null
       try {
@@ -79,9 +47,6 @@ export const useVideoCall = (sdkToken, t) => {
         )
 
         // Check if the track is actually delivering audio data.
-        // When another app (e.g. Google Meet) holds exclusive mic access,
-        // getUserMedia succeeds but the track's `muted` property is true
-        // — meaning no audio data is flowing from the hardware.
         if (audioTrack?.muted) {
           console.log(
             "[useVideoCall] ⏳ Track is muted — waiting up to 2s for unmute event...",
@@ -108,7 +73,7 @@ export const useVideoCall = (sdkToken, t) => {
               t?.rooms?.waitingScreen?.micInUse ??
                 "Microphone is in use by another app.",
             )
-            return // Don't toggle — mic won't produce audio
+            return
           }
         } else {
           console.log(
@@ -119,13 +84,16 @@ export const useVideoCall = (sdkToken, t) => {
         probe?.getTracks().forEach((t) => t.stop())
       }
     }
-    console.log("[useVideoCall] 🎤 Calling SDK toggleMic()")
-    toggleMic()
-  }
+
+    console.log("[useVideoCall] 🎤 Calling LiveKit setMicrophoneEnabled()")
+    await localParticipant.setMicrophoneEnabled(!micOn)
+  }, [localParticipant, micOn, t])
 
   // Toggle webcam — probes getUserMedia first to surface permission errors cleanly.
-  const toggleVideo = async () => {
-    if (!webcamOn) {
+  const toggleVideo = useCallback(async () => {
+    if (!localParticipant) return
+
+    if (!cameraOn) {
       let probe = null
       try {
         probe = await navigator.mediaDevices.getUserMedia({ video: true })
@@ -133,15 +101,20 @@ export const useVideoCall = (sdkToken, t) => {
         probe?.getTracks().forEach((t) => t.stop())
       }
     }
-    toggleWebcam()
-  }
+
+    await localParticipant.setCameraEnabled(!cameraOn)
+  }, [localParticipant, cameraOn])
+
+  const leaveMeeting = useCallback(() => {
+    room?.disconnect()
+  }, [room])
 
   return {
-    micOn: micOn ?? false,
-    cameraOn: webcamOn ?? false,
+    micOn,
+    cameraOn,
     toggleAudio,
     toggleVideo,
-    leaveMeeting: leave,
+    leaveMeeting,
     isJoined,
   }
 }

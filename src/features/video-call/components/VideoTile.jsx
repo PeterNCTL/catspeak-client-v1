@@ -1,8 +1,10 @@
+import React, { useEffect, useRef, useMemo, useCallback } from "react"
+import { useParticipants, useLocalParticipant } from "@livekit/components-react"
+import { Track } from "livekit-client"
 import { MicOff, VideoOff, MonitorUp } from "lucide-react"
+
 import Avatar from "@/shared/components/ui/Avatar"
-import useAudioLevel from "../../hooks/useAudioLevel"
-import { useEffect, useRef, useMemo, useCallback } from "react"
-import { useParticipant } from "@videosdk.live/react-sdk"
+import { useAudioLevel } from "@/features/video-call"
 
 // ─── Global: resume all blocked <video> elements on first user gesture ───
 const pendingVideoElements = new Set()
@@ -42,17 +44,37 @@ const attachGestureListener = () => {
   document.addEventListener("keydown", resumeAll, true)
 }
 
-const VideoTile = ({ participantId }) => {
-  const { displayName, webcamStream, micStream, webcamOn, micOn, screenShareOn, isLocal } =
-    useParticipant(participantId)
+const VideoTile = ({ participantIdentity }) => {
+  const participants = useParticipants()
+  const { localParticipant } = useLocalParticipant()
 
-  const videoTrack = webcamStream?.track ?? null
-  const audioTrack = micStream?.track ?? null
+  // Find the participant by identity
+  const participant = participants.find(
+    (p) => p.identity === participantIdentity,
+  )
+  const isLocal = participant?.identity === localParticipant?.identity
 
-  const tag = `[VideoTile:${participantId?.slice(0, 6)}${isLocal ? ":local" : ""}]`
+  const displayName = participant?.name || participant?.identity || "?"
+  const micOn = participant?.isMicrophoneEnabled ?? false
+  const webcamOn = participant?.isCameraEnabled ?? false
+  const screenShareOn = participant?.isScreenShareEnabled ?? false
+
+  // Get the camera track's MediaStreamTrack
+  const cameraPublication = participant?.getTrackPublication(
+    Track.Source.Camera,
+  )
+  const videoTrack = cameraPublication?.track?.mediaStreamTrack ?? null
+
+  // Get the microphone track's MediaStreamTrack
+  const micPublication = participant?.getTrackPublication(
+    Track.Source.Microphone,
+  )
+  const audioTrack = micPublication?.track?.mediaStreamTrack ?? null
+
+  const tag = `[VideoTile:${participantIdentity?.slice(0, 6)}${isLocal ? ":local" : ""}]`
 
   // Build a stable MediaStream only when the underlying tracks change.
-  const sdkStream = useMemo(() => {
+  const mediaStream = useMemo(() => {
     const tracks = []
     if (videoTrack && webcamOn) tracks.push(videoTrack)
     if (audioTrack && micOn) tracks.push(audioTrack)
@@ -63,10 +85,10 @@ const VideoTile = ({ participantId }) => {
   const isSpeaking = micOn && audioLevel > 5
 
   const videoRef = useRef(null)
-  const hasVideoTrack = sdkStream && sdkStream.getVideoTracks().length > 0
+  const hasVideoTrack = mediaStream && mediaStream.getVideoTracks().length > 0
   const isVideoVisible = webcamOn && hasVideoTrack
 
-  // ─── Diagnostic: log SDK state whenever mic/webcam/stream changes ───
+  // ─── Diagnostic: log state whenever mic/webcam/stream changes ───
   useEffect(() => {
     const audioState = audioTrack
       ? `readyState=${audioTrack.readyState} enabled=${audioTrack.enabled} muted=${audioTrack.muted}`
@@ -76,12 +98,12 @@ const VideoTile = ({ participantId }) => {
       : "not available"
 
     console.log(
-      `${tag} [SDK state change] ` +
+      `${tag} [state change] ` +
         `mic=${micOn ? "ON" : "OFF"} (track: ${audioState}) | ` +
         `cam=${webcamOn ? "ON" : "OFF"} (track: ${videoState}) | ` +
-        `MediaStream=${sdkStream ? `active with ${sdkStream.getTracks().length} track(s)` : "none"}`,
+        `MediaStream=${mediaStream ? `active with ${mediaStream.getTracks().length} track(s)` : "none"}`,
     )
-  }, [sdkStream, micOn, webcamOn]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [mediaStream, micOn, webcamOn]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // ─── Diagnostic: monitor remote audio track WebRTC lifecycle events ───
   useEffect(() => {
@@ -120,7 +142,9 @@ const VideoTile = ({ participantId }) => {
       if (!el || el.paused === false) return
       try {
         await el.play()
-        console.log(`${tag} [<video> play()] ▶️ play() call succeeded — browser is now playing media`)
+        console.log(
+          `${tag} [<video> play()] ▶️ play() call succeeded — browser is now playing media`,
+        )
         pendingVideoElements.delete(el)
       } catch (err) {
         if (err.name === "NotAllowedError") {
@@ -132,7 +156,9 @@ const VideoTile = ({ participantId }) => {
           pendingVideoElements.add(el)
           attachGestureListener()
         } else {
-          console.error(`${tag} [<video> play() failed] ❌ unexpected error: ${err.name} — ${err.message}`)
+          console.error(
+            `${tag} [<video> play() failed] ❌ unexpected error: ${err.name} — ${err.message}`,
+          )
         }
       }
     },
@@ -143,17 +169,17 @@ const VideoTile = ({ participantId }) => {
     const el = videoRef.current
     if (!el) return
 
-    el.srcObject = sdkStream ?? null
+    el.srcObject = mediaStream ?? null
     console.log(
-      `${tag} [srcObject assigned] <video>.srcObject ${sdkStream ? "set to new MediaStream" : "cleared to null"} — ` +
-        `audio tracks: ${sdkStream?.getAudioTracks().length ?? 0}, ` +
-        `video tracks: ${sdkStream?.getVideoTracks().length ?? 0}`,
+      `${tag} [srcObject assigned] <video>.srcObject ${mediaStream ? "set to new MediaStream" : "cleared to null"} — ` +
+        `audio tracks: ${mediaStream?.getAudioTracks().length ?? 0}, ` +
+        `video tracks: ${mediaStream?.getVideoTracks().length ?? 0}`,
     )
 
-    if (sdkStream && !isLocal) {
+    if (mediaStream && !isLocal) {
       attemptPlay(el)
     }
-  }, [sdkStream, isLocal, attemptPlay, tag])
+  }, [mediaStream, isLocal, attemptPlay, tag])
 
   // ─── Diagnostic: detect if <video> stops playing unexpectedly ───
   useEffect(() => {
@@ -215,13 +241,13 @@ const VideoTile = ({ participantId }) => {
         muted={isLocal}
         ref={videoRef}
         className={`h-full w-full object-cover ${
-          sdkStream && isVideoVisible ? "block" : "hidden"
+          mediaStream && isVideoVisible ? "block" : "hidden"
         }`}
         onError={() => {}}
       />
 
       {/* Avatar fallback when no video */}
-      {(!sdkStream || !isVideoVisible) && (
+      {(!mediaStream || !isVideoVisible) && (
         <div className="flex h-full w-full items-center justify-center">
           <Avatar
             size={64}

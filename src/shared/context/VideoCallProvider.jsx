@@ -1,19 +1,19 @@
 import React, { useEffect, useRef, useState } from "react"
 import { useParams, useLocation, useNavigate } from "react-router-dom"
-import { MeetingProvider } from "@videosdk.live/react-sdk"
+import { LiveKitRoom } from "@livekit/components-react"
+import { SearchX, Users, AlertCircle } from "lucide-react"
+
 import { useGetProfileQuery } from "@/features/auth"
 import {
   useGetVideoSessionByIdQuery,
-  useGetVideoSdkTokenMutation,
+  useGetLiveKitTokenMutation,
 } from "@/store/api/videoSessionsApi"
 import { useGetRoomByIdQuery } from "@/features/rooms"
 import PillButton from "@/shared/components/ui/buttons/PillButton"
-import { meetingConfig } from "@/shared/utils/videoSdkConfig"
 import { useLanguage } from "@/shared/context/LanguageContext"
 import { getCommunityPath } from "@/shared/utils/navigation"
+import VideoCallLoading from "@/features/video-call/components/VideoCallLoading"
 import { VideoCallContent } from "./VideoCallContext"
-import VideoCallLoading from "../../../features/video-call/components/VideoCallLoading"
-import { SearchX, Users, AlertCircle } from "lucide-react"
 
 export const VideoCallProvider = ({ children }) => {
   const { id, lang } = useParams()
@@ -21,7 +21,8 @@ export const VideoCallProvider = ({ children }) => {
   const location = useLocation()
   const { t, language } = useLanguage()
 
-  const [sdkToken, setSdkToken] = useState(null)
+  const [liveKitToken, setLiveKitToken] = useState(null)
+  const [serverUrl, setServerUrl] = useState(null)
   const hasInitRef = useRef(false)
 
   const { data: userData } = useGetProfileQuery()
@@ -33,7 +34,7 @@ export const VideoCallProvider = ({ children }) => {
     error: sessionError,
   } = useGetVideoSessionByIdQuery(id, { skip: !id })
 
-  const [getVideoSdkToken] = useGetVideoSdkTokenMutation()
+  const [getLiveKitToken] = useGetLiveKitTokenMutation()
 
   const { data: room, isLoading: isLoadingRoom } = useGetRoomByIdQuery(
     session?.roomId,
@@ -50,41 +51,37 @@ export const VideoCallProvider = ({ children }) => {
     (room.currentParticipantCount || 0) >= room.maxParticipants &&
     !isUserParticipant
 
-  // Fetch the VideoSDK token once all prerequisites are ready.
+  // Fetch the LiveKit token once all prerequisites are ready.
   useEffect(() => {
     if (!id || !session || !user || isLoadingRoom || isRoomFull) return
     if (hasInitRef.current) return
 
-    const initMeeting = async () => {
+    const initConnection = async () => {
       try {
         hasInitRef.current = true
-        // console.log(
-        //   "[VideoCall] Fetching VideoSDK token for meeting:",
-        //   session.videoSdkMeetingId,
-        // )
 
-        const res = await getVideoSdkToken({
-          meetingId: session.videoSdkMeetingId,
-          name: user.username,
+        const res = await getLiveKitToken({
+          roomId: session.roomId,
+          participantName: user.username,
         }).unwrap()
 
-        const token = res?.token
-        // console.log("[VideoCall] Token fetched from backend:", res)
+        const token = res?.participant_token
+        const url = res?.server_url
 
-        if (typeof token !== "string" || token.trim().split(".").length !== 3) {
-          throw new Error("Invalid VideoSDK token received from backend")
+        if (!token || !url) {
+          throw new Error("Invalid LiveKit token response from backend")
         }
 
-        setSdkToken(token)
-        // console.log("[VideoCall] sdkToken set in state ✅")
+        setLiveKitToken(token)
+        setServerUrl(url)
       } catch (err) {
-        console.error("[VideoCall] Meeting init failed:", err)
+        console.error("[VideoCall] LiveKit token init failed:", err)
         hasInitRef.current = false // allow retry on next render
       }
     }
 
-    initMeeting()
-  }, [id, session, user, getVideoSdkToken, isLoadingRoom, isRoomFull])
+    initConnection()
+  }, [id, session, user, getLiveKitToken, isLoadingRoom, isRoomFull])
 
   // --- Loading / error guards ---
 
@@ -173,12 +170,13 @@ export const VideoCallProvider = ({ children }) => {
     )
   }
 
-  // Show a single loading screen until session, room, and SDK token are all ready.
+  // Show a single loading screen until session, room, and LiveKit token are all ready.
   if (
     isLoadingSession ||
     !userData ||
     (session?.roomId && isLoadingRoom) ||
-    !sdkToken
+    !liveKitToken ||
+    !serverUrl
   ) {
     return (
       <VideoCallLoading
@@ -191,29 +189,27 @@ export const VideoCallProvider = ({ children }) => {
   const initCam = location.state?.webcamEnabled ?? false
 
   return (
-    <MeetingProvider
-      config={{
-        ...meetingConfig,
-        meetingId: session.videoSdkMeetingId,
-        micEnabled: initMic,
-        webcamEnabled: initCam,
-        name: user?.username || "Guest",
-        metaData: {
-          accountId: user?.accountId,
-          username: user?.username,
-        },
+    <LiveKitRoom
+      serverUrl={serverUrl}
+      token={liveKitToken}
+      connect={true}
+      audio={initMic}
+      video={initCam}
+      onDisconnected={() => {
+        console.log("[VideoCallProvider] LiveKit disconnected")
       }}
-      token={sdkToken}
-      joinWithoutUserInteraction={false}
+      onError={(err) => {
+        console.error("[VideoCallProvider] LiveKit error:", err)
+      }}
+      style={{ display: "contents" }}
     >
       <VideoCallContent
         user={user}
         session={session}
         sessionError={sessionError}
-        sdkToken={sdkToken}
       >
         {children}
       </VideoCallContent>
-    </MeetingProvider>
+    </LiveKitRoom>
   )
 }

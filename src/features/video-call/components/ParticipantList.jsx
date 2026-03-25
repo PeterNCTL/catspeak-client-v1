@@ -1,27 +1,30 @@
 import { Mic, MicOff, Video, VideoOff } from "lucide-react"
-import { useParticipant, useMeeting } from "@videosdk.live/react-sdk"
+import { useParticipants, useLocalParticipant } from "@livekit/components-react"
 import { useLanguage } from "@/shared/context/LanguageContext"
 import Avatar from "@/shared/components/ui/Avatar"
 
 /**
  * A single row in the participant list.
- * All reactive state (mic/cam) comes from useParticipant() for remote participants,
- * or from the localMicOn/localCameraOn props for the local user.
+ * All reactive state (mic/cam) comes from the LiveKit participant object.
  */
 const ParticipantItem = ({
-  participantId,
+  participantIdentity,
   isLocal,
   localMicOn,
   localCameraOn,
 }) => {
   const { t } = useLanguage()
   const pl = t.rooms.videoCall.participantList
-  const { displayName, micOn, webcamOn } = useParticipant(participantId)
+  const participants = useParticipants()
+  const participant = participants.find((p) => p.identity === participantIdentity)
 
-  const isMicOn = isLocal ? localMicOn : (micOn ?? false)
-  const isCameraOn = isLocal ? localCameraOn : (webcamOn ?? false)
+  const micOn = participant?.isMicrophoneEnabled ?? false
+  const webcamOn = participant?.isCameraEnabled ?? false
+  const displayName = participant?.name || participant?.identity || ""
+
+  const isMicOn = isLocal ? localMicOn : micOn
+  const isCameraOn = isLocal ? localCameraOn : webcamOn
   const name = displayName || (isLocal ? pl.you : pl.guest)
-  const initial = name.charAt(0).toUpperCase()
 
   return (
     <div className="flex items-center justify-between pl-1.5 pr-2 py-1 rounded">
@@ -45,8 +48,7 @@ const ParticipantItem = ({
  * Participant list panel.
  *
  * Props:
- *  participantIds  – ordered array of VideoSDK participant IDs (local first)
- *  currentUserId   – the logged-in user's accountId (to identify the local tile)
+ *  participantIds  – ordered array of LiveKit participant identities (local first)
  *  localMicOn      – reactive local mic state from useVideoCall()
  *  localCameraOn   – reactive local cam state from useVideoCall()
  */
@@ -58,8 +60,8 @@ const ParticipantList = ({
 }) => {
   const { t } = useLanguage()
   const pl = t.rooms.videoCall.participantList
-  const { localParticipant } = useMeeting()
-  const localSdkId = localParticipant?.id
+  const { localParticipant } = useLocalParticipant()
+  const localIdentity = localParticipant?.identity
 
   return (
     <div className="flex flex-col h-full w-full bg-white">
@@ -75,8 +77,8 @@ const ParticipantList = ({
           {participantIds.map((pid) => (
             <li key={pid}>
               <ParticipantItem
-                participantId={pid}
-                isLocal={pid === localSdkId}
+                participantIdentity={pid}
+                isLocal={pid === localIdentity}
                 localMicOn={localMicOn}
                 localCameraOn={localCameraOn}
               />

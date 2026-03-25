@@ -39,13 +39,14 @@ export const videoSessionsApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: (result, error, id) => [{ type: "VideoSessions", id }],
     }),
-    getVideoSdkToken: builder.mutation({
-      query: ({ meetingId, name }) => ({
-        url: "/videosdk/get-meeting-token",
+    getLiveKitToken: builder.mutation({
+      query: ({ roomId, participantName, participantIdentity }) => ({
+        url: "/livekit/token",
         method: "POST",
         body: {
-          meetingId,
-          name,
+          roomId,
+          participantName,
+          participantIdentity,
         },
       }),
     }),
@@ -59,5 +60,5 @@ export const {
   useJoinVideoSessionMutation,
   useLeaveVideoSessionMutation,
   useEndVideoSessionMutation,
-  useGetVideoSdkTokenMutation,
+  useGetLiveKitTokenMutation,
 } = videoSessionsApi
