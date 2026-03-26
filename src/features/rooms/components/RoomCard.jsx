@@ -93,12 +93,25 @@ const RoomCard = ({ room }) => {
           />
 
           {/* Top Overlay: Tags & Bookmark */}
-          <div className="absolute left-4 top-4 flex gap-2">
+          <div className="absolute left-4 top-4 right-14 flex flex-wrap gap-2">
             {room.requiredLevel && (
               <span className="rounded-full bg-[#990011] px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white">
                 {room.requiredLevel}
               </span>
             )}
+            {room?.topic &&
+              room.topic.split(",").map((t_topic) => {
+                const trimmed = t_topic.trim()
+                return (
+                  <span
+                    key={trimmed}
+                    className="rounded-full bg-[#990011] px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white"
+                  >
+                    {t.rooms.createRoom?.topics?.[trimmed.toLowerCase()] ||
+                      trimmed}
+                  </span>
+                )
+              })}
           </div>
 
           <div
